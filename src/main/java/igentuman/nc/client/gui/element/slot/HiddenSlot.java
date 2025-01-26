@@ -1,9 +1,6 @@
 package igentuman.nc.client.gui.element.slot;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import igentuman.nc.client.gui.element.NCGuiElement;
-import igentuman.nc.client.gui.processor.side.SideConfigScreen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 
 import static igentuman.nc.handler.sided.SlotModePair.SlotMode.INPUT;
@@ -15,24 +12,23 @@ public class HiddenSlot extends NCGuiElement {
     String type;
     public int color = OUTPUT.getColor();
 
-    public HiddenSlot(int[] pos, String pType)  {
+    public HiddenSlot(int[] pos, String pType) {
         this(pos[0], pos[1], pType);
     }
 
-    public HiddenSlot(int xMin, int yMin, String pType)  {
+    public HiddenSlot(int xMin, int yMin, String pType) {
         super(xMin, yMin, 18, 18, null);
         x = xMin;
         y = yMin;
         width = 18;
         height = 18;
         type = pType;
-        if(type.contains("_in")) {
+        if (type.contains("_in")) {
             color = INPUT.getColor();
         }
     }
 
-    public boolean onPress()
-    {
+    public boolean onPress() {
         return super.onPress();
     }
 

@@ -71,13 +71,13 @@ public class NCNoiseInterpolator {
     }
 
     public void selectYZ(int y, int z) {
-        this.noise000 = this.slice0[  z  ][  y  ];
-        this.noise001 = this.slice0[z + 1][  y  ];
-        this.noise100 = this.slice1[  z  ][  y  ];
-        this.noise101 = this.slice1[z + 1][  y  ];
-        this.noise010 = this.slice0[  z  ][y + 1];
+        this.noise000 = this.slice0[z][y];
+        this.noise001 = this.slice0[z + 1][y];
+        this.noise100 = this.slice1[z][y];
+        this.noise101 = this.slice1[z + 1][y];
+        this.noise010 = this.slice0[z][y + 1];
         this.noise011 = this.slice0[z + 1][y + 1];
-        this.noise110 = this.slice1[  z  ][y + 1];
+        this.noise110 = this.slice1[z][y + 1];
         this.noise111 = this.slice1[z + 1][y + 1];
     }
 

@@ -12,11 +12,11 @@ import net.minecraft.world.level.block.state.BlockState;
 public class GlowingMushroomBlock extends MushroomBlock {
 
     public GlowingMushroomBlock(BlockBehaviour.Properties pProperties) {
-        super(pProperties, null);
+        super(null, pProperties);
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader pLevel, BlockPos pPos, BlockState pState, boolean pIsClient) {
+    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
         return false;
     }
 

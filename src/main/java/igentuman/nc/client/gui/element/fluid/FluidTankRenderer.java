@@ -1,28 +1,29 @@
 package igentuman.nc.client.gui.element.fluid;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import igentuman.nc.NuclearCraft;
 import igentuman.nc.client.gui.element.NCGuiElement;
 import igentuman.nc.network.toServer.PacketFlushSlotContent;
-import igentuman.nc.network.toServer.PacketSideConfigToggle;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Matrix4f;
@@ -92,10 +93,10 @@ public class FluidTankRenderer extends NCGuiElement {
 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        if(X() <= pMouseX && pMouseX < X() + width && Y() <= pMouseY && pMouseY < Y() + height) {
-           if(!tank.isEmpty() && SHIFT_PRESSED) {
-               NuclearCraft.packetHandler().sendToServer(new PacketFlushSlotContent(getPosition(), slotId));
-           }
+        if (X() <= pMouseX && pMouseX < X() + width && Y() <= pMouseY && pMouseY < Y() + height) {
+            if (!tank.isEmpty() && SHIFT_PRESSED) {
+                PacketDistributor.sendToServer(new PacketFlushSlotContent(getPosition(), slotId));
+            }
         }
         return false;
     }
@@ -114,6 +115,7 @@ public class FluidTankRenderer extends NCGuiElement {
         this.x = x;
         this.y = y;
     }
+
     @Override
     public void draw(GuiGraphics graphics, int mX, int mY, float pTicks) {
         super.draw(graphics, mX, mY, pTicks);
@@ -219,13 +221,11 @@ public class FluidTankRenderer extends NCGuiElement {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
         Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferBuilder.vertex(matrix, xCoord, yCoord + 16, zLevel).uv(uMin, vMax).endVertex();
-        bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).uv(uMax, vMax).endVertex();
-        bufferBuilder.vertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).uv(uMax, vMin).endVertex();
-        bufferBuilder.vertex(matrix, xCoord, yCoord + maskTop, zLevel).uv(uMin, vMin).endVertex();
-        tessellator.end();
+        BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferBuilder.addVertex(matrix, xCoord, yCoord + 16, zLevel).setUv(uMin, vMax);
+        bufferBuilder.addVertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).setUv(uMax, vMax);
+        bufferBuilder.addVertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).setUv(uMax, vMin);
+        bufferBuilder.addVertex(matrix, xCoord, yCoord + maskTop, zLevel).setUv(uMin, vMin);
     }
 
     public List<Component> getTooltips() {
@@ -237,7 +237,7 @@ public class FluidTankRenderer extends NCGuiElement {
                 return tooltip;
             }
 
-            MutableComponent displayName = MutableComponent.create(tank.getFluid().getDisplayName().getContents());
+            MutableComponent displayName = Component.translatable(tank.getFluid().getDescriptionId());
             tooltip.add(displayName.withStyle(ChatFormatting.AQUA));
 
             long amount = tank.getFluid().getAmount();
@@ -250,7 +250,7 @@ public class FluidTankRenderer extends NCGuiElement {
                 MutableComponent amountString = Component.translatable("gui.nc.fluid_tank_renderer.amount", nf.format(milliBuckets));
                 tooltip.add(amountString.withStyle(ChatFormatting.WHITE));
             }
-            if(canVoid) {
+            if (canVoid) {
                 tooltip.add(Component.translatable("gui.nc.fluid_tank_renderer.can_void").withStyle(ChatFormatting.GOLD));
             }
         } catch (RuntimeException e) {

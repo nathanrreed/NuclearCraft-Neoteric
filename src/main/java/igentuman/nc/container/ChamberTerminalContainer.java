@@ -11,11 +11,11 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 import static igentuman.nc.NuclearCraft.MODID;
 import static igentuman.nc.util.TextUtils.roundFormat;
@@ -32,15 +32,14 @@ public class ChamberTerminalContainer extends AbstractContainerMenu {
     public ChamberTerminalContainer(int pContainerId, BlockPos pos, Inventory playerInventory) {
         super(KugelblitzRegistration.CHAMBER_TERMINAL_CONTAINER.get(), pContainerId);
         this.playerEntity = playerInventory.player;
-        this.playerInventory =  new InvWrapper(playerInventory);
+        this.playerInventory = new InvWrapper(playerInventory);
         blockEntity = (ChamberTerminalBE<?>) playerEntity.getCommandSenderWorld().getBlockEntity(pos);
         layoutPlayerInventorySlots();
-        blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
-            addSlot(new NCSlotItemHandler.Input(h, 0, 56, 35));
-        });
-        blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
-            addSlot(new NCSlotItemHandler.Output(h, 1, 116, 35));
-        });
+        IItemHandler cap = blockEntity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+        if (cap != null) {
+            addSlot(new NCSlotItemHandler.Input(cap, 0, 56, 35));
+            addSlot(new NCSlotItemHandler.Output(cap, 1, 116, 35));
+        }
     }
 
     @Override
@@ -50,12 +49,12 @@ public class ChamberTerminalContainer extends AbstractContainerMenu {
         if (slot != null && slot.hasItem()) {
             ItemStack stack = slot.getItem();
             itemstack = stack.copy();
-            if(slot instanceof NCSlotItemHandler.Output || slot instanceof NCSlotItemHandler.Input) {
+            if (slot instanceof NCSlotItemHandler.Output || slot instanceof NCSlotItemHandler.Input) {
                 if (!this.moveItemStackTo(stack, 0, 36, true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                if (!this.moveItemStackTo(stack, slots.size()-2, slots.size(), true)) {
+                if (!this.moveItemStackTo(stack, slots.size() - 2, slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
             }
@@ -86,7 +85,7 @@ public class ChamberTerminalContainer extends AbstractContainerMenu {
     }
 
     public Component getTitle() {
-        return Component.translatable("block."+MODID+"."+name);
+        return Component.translatable("block." + MODID + "." + name);
     }
 
     public boolean isCasingValid() {
@@ -105,8 +104,7 @@ public class ChamberTerminalContainer extends AbstractContainerMenu {
         return blockEntity.getWidth();
     }
 
-    public int getHeight()
-    {
+    public int getHeight() {
         return blockEntity.getHeight();
     }
 
@@ -115,11 +113,11 @@ public class ChamberTerminalContainer extends AbstractContainerMenu {
     }
 
     public BlockPos getValidationResultData() {
-        return  blockEntity.errorBlockPos;
+        return blockEntity.errorBlockPos;
     }
 
     public String getValidationResultKey() {
-        return  blockEntity.validationResult.messageKey;
+        return blockEntity.validationResult.messageKey;
     }
 
     public int getEnergy() {
@@ -128,7 +126,7 @@ public class ChamberTerminalContainer extends AbstractContainerMenu {
 
 
     private void addSlotRange(IItemHandler handler, int x, int y, int amount, int dx) {
-        for (int i = 0 ; i < amount ; i++) {
+        for (int i = 0; i < amount; i++) {
             addSlot(new SlotItemHandler(handler, slotIndex, x, y));
             x += dx;
             slotIndex++;
@@ -136,7 +134,7 @@ public class ChamberTerminalContainer extends AbstractContainerMenu {
     }
 
     protected void addSlotBox(IItemHandler handler, int x, int y, int horAmount, int dx, int verAmount, int dy) {
-        for (int j = 0 ; j < verAmount ; j++) {
+        for (int j = 0; j < verAmount; j++) {
             addSlotRange(handler, x, y, horAmount, dx);
             y += dy;
         }
@@ -150,9 +148,8 @@ public class ChamberTerminalContainer extends AbstractContainerMenu {
         addSlotBox(playerInventory, leftCol, topRow, 9, 18, 3, 18);
     }
 
-    public ItemStack getResultStack()
-    {
-        if(blockEntity.recipeInfo.recipe != null) {
+    public ItemStack getResultStack() {
+        if (blockEntity.recipeInfo.recipe != null) {
             return blockEntity.recipeInfo.recipe.getResultItem();
         }
         return ItemStack.EMPTY;

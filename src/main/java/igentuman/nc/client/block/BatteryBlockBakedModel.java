@@ -9,14 +9,13 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.IDynamicBakedModel;
-import net.minecraftforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.IDynamicBakedModel;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -53,7 +52,7 @@ public class BatteryBlockBakedModel implements IDynamicBakedModel {
     public List<BakedQuad> sideQuads;
 
     public List<BakedQuad> sideQuads() {
-        if(sideQuads == null) {
+        if (sideQuads == null) {
             float l = 0;
             float r = 1;
             float p = 1;
@@ -74,10 +73,11 @@ public class BatteryBlockBakedModel implements IDynamicBakedModel {
         }
         return sideQuads;
     }
+
     /**
-     * @param state the blockstate for our block
-     * @param side the six directions or null for quads that are not at a specific direction
-     * @param rand random generator that you can use to add variations to your model (usually for textures)
+     * @param state     the blockstate for our block
+     * @param side      the six directions or null for quads that are not at a specific direction
+     * @param rand      random generator that you can use to add variations to your model (usually for textures)
      * @param extraData this represents the data that is given to use from our block entity
      * @return a list of quads
      */
@@ -89,11 +89,11 @@ public class BatteryBlockBakedModel implements IDynamicBakedModel {
             return Collections.emptyList();
         }
         HashMap<Integer, ISizeToggable.SideMode> sideConfig = extraData.get(BatteryBE.SIDE_CONFIG);
-        if(sideConfig == null) {
+        if (sideConfig == null) {
             return sideQuads();
         }
         String cacheKey = keyFor(sideConfig.values());
-        if(quadCache.containsKey(cacheKey) && quadCache.get(cacheKey) != null) {
+        if (quadCache.containsKey(cacheKey) && quadCache.get(cacheKey) != null) {
             return quadCache.get(cacheKey);
         }
 
@@ -112,21 +112,21 @@ public class BatteryBlockBakedModel implements IDynamicBakedModel {
             default -> textureTop = spriteGetter.apply(batteryModelGeometry.topDefault);
         }
         quadCache.put(cacheKey,
-            List.of(
-                    ClientTools.createQuad(v(r, p, r), v(r, p, l), v(l, p, l), v(l, p, r), textureTop),
-                    ClientTools.createQuad(v(l, l, l), v(r, l, l), v(r, l, r), v(l, l, r), getSideTexture(sideConfig, Direction.DOWN)),
-                    ClientTools.createQuad(v(r, p, r), v(r, l, r), v(r, l, l), v(r, p, l), getSideTexture(sideConfig, Direction.EAST)),
-                    ClientTools.createQuad(v(l, p, l), v(l, l, l), v(l, l, r), v(l, p, r), getSideTexture(sideConfig, Direction.WEST)),
-                    ClientTools.createQuad(v(r, p, l), v(r, l, l), v(l, l, l), v(l, p, l), getSideTexture(sideConfig, Direction.NORTH)),
-                    ClientTools.createQuad(v(l, p, r), v(l, l, r), v(r, l, r), v(r, p, r), getSideTexture(sideConfig, Direction.SOUTH))
-        ));
+                List.of(
+                        ClientTools.createQuad(v(r, p, r), v(r, p, l), v(l, p, l), v(l, p, r), textureTop),
+                        ClientTools.createQuad(v(l, l, l), v(r, l, l), v(r, l, r), v(l, l, r), getSideTexture(sideConfig, Direction.DOWN)),
+                        ClientTools.createQuad(v(r, p, r), v(r, l, r), v(r, l, l), v(r, p, l), getSideTexture(sideConfig, Direction.EAST)),
+                        ClientTools.createQuad(v(l, p, l), v(l, l, l), v(l, l, r), v(l, p, r), getSideTexture(sideConfig, Direction.WEST)),
+                        ClientTools.createQuad(v(r, p, l), v(r, l, l), v(l, l, l), v(l, p, l), getSideTexture(sideConfig, Direction.NORTH)),
+                        ClientTools.createQuad(v(l, p, r), v(l, l, r), v(r, l, r), v(r, p, r), getSideTexture(sideConfig, Direction.SOUTH))
+                ));
 
         return quadCache.get(cacheKey);
     }
 
     private String keyFor(Collection<ISizeToggable.SideMode> values) {
         String result = "";
-        for(ISizeToggable.SideMode value : values) {
+        for (ISizeToggable.SideMode value : values) {
             result += value.ordinal();
         }
         return result;

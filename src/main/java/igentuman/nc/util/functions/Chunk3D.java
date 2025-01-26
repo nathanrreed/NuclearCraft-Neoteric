@@ -34,7 +34,6 @@ public class Chunk3D extends ChunkPos {
      *
      * @param dimension Dimension ID
      * @param chunkPos  Long representation of the chunk position
-     *
      * @since 10.3.2
      */
     public Chunk3D(ResourceKey<Level> dimension, long chunkPos) {
@@ -64,7 +63,6 @@ public class Chunk3D extends ChunkPos {
      * Calculates the set of chunks in a given radius around this chunk.
      *
      * @param chunkRadius Radius in chunks.
-     *
      * @return Set of chunks in the given radius centered on this chunk.
      */
     public Set<Chunk3D> expand(int chunkRadius) {

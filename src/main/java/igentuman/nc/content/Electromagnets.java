@@ -1,8 +1,6 @@
 package igentuman.nc.content;
 
 import igentuman.nc.handler.config.CommonConfig;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,21 +15,21 @@ public class Electromagnets {
     private static HashMap<String, MagnetPrefab> registered = new HashMap<>();
 
     public static HashMap<String, MagnetPrefab> all() {
-        if(all.isEmpty()) {
-            all.put("basic_electromagnet", new MagnetPrefab("basic_electromagnet",500, 300, 0.25D, 350000, 75));
-            all.put("magnesium_diboride_electromagnet", new MagnetPrefab("magnesium_diboride_electromagnet",1000, 500, 0.5D, 39000, 80));
-            all.put("niobium_tin_electromagnet", new MagnetPrefab("niobium_tin_electromagnet",1500, 1140, 1D, 18000, 90));
-            all.put("niobium_titanium_electromagnet", new MagnetPrefab("niobium_titanium_electromagnet",2000, 2260, 2D, 10000, 95));
-            all.put("bscco_electromagnet", new MagnetPrefab("bscco_electromagnet",3000, 4500, 4D, 104000, 99));
+        if (all.isEmpty()) {
+            all.put("basic_electromagnet", new MagnetPrefab("basic_electromagnet", 500, 300, 0.25D, 350000, 75));
+            all.put("magnesium_diboride_electromagnet", new MagnetPrefab("magnesium_diboride_electromagnet", 1000, 500, 0.5D, 39000, 80));
+            all.put("niobium_tin_electromagnet", new MagnetPrefab("niobium_tin_electromagnet", 1500, 1140, 1D, 18000, 90));
+            all.put("niobium_titanium_electromagnet", new MagnetPrefab("niobium_titanium_electromagnet", 2000, 2260, 2D, 10000, 95));
+            all.put("bscco_electromagnet", new MagnetPrefab("bscco_electromagnet", 3000, 4500, 4D, 104000, 99));
         }
         return all;
     }
 
     public static HashMap<String, MagnetPrefab> registered() {
-        if(registered.isEmpty()) {
-            for(String name: all().keySet()) {
+        if (registered.isEmpty()) {
+            for (String name : all().keySet()) {
                 if (all().get(name).config().isRegistered())
-                    registered.put(name,all().get(name));
+                    registered.put(name, all().get(name));
             }
         }
         return registered;
@@ -39,7 +37,7 @@ public class Electromagnets {
 
     public static List<Boolean> initialRegistered() {
         List<Boolean> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(true);
         }
         return tmp;
@@ -47,7 +45,7 @@ public class Electromagnets {
 
     public static List<Integer> initialPower() {
         List<Integer> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(all().get(name).getPower());
         }
         return tmp;
@@ -55,7 +53,7 @@ public class Electromagnets {
 
     public static Collection<Double> initialMagneticField() {
         List<Double> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(all().get(name).getMagneticField());
         }
         return tmp;
@@ -63,7 +61,7 @@ public class Electromagnets {
 
     public static Collection<Integer> initialHeat() {
         List<Integer> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(all().get(name).getHeat());
         }
         return tmp;
@@ -98,10 +96,9 @@ public class Electromagnets {
             return this;
         }
 
-        public MagnetPrefab config()
-        {
-            if(!initialized) {
-                if(!CommonConfig.isLoaded()) {
+        public MagnetPrefab config() {
+            if (!initialized) {
+                if (!CommonConfig.isLoaded()) {
                     return this;
                 }
                 int id = Electromagnets.all().keySet().stream().toList().indexOf(name);
@@ -113,8 +110,9 @@ public class Electromagnets {
             }
             return this;
         }
+
         public boolean isRegistered() {
-            return  registered;
+            return registered;
         }
 
         public double getMagneticField() {

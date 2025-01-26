@@ -1,19 +1,17 @@
 package igentuman.nc.block;
 
+import com.mojang.serialization.MapCodec;
 import igentuman.nc.block.entity.RedstoneDimmerBE;
-import igentuman.nc.container.RedstoneDImmerContainer;
 import igentuman.nc.util.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
@@ -33,8 +31,8 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 import static igentuman.nc.setup.registration.NCBlocks.REDSTONE_DIMMER_BE;
@@ -62,6 +60,11 @@ public class RedstoneDimmerBlock extends HorizontalDirectionalBlock implements E
     }
 
     @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return null;
+    }
+
+    @Override
     public boolean isSignalSource(BlockState state) {
         return true;
     }
@@ -84,8 +87,7 @@ public class RedstoneDimmerBlock extends HorizontalDirectionalBlock implements E
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         /*if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof RedstoneDimmerBE)  {
@@ -103,6 +105,11 @@ public class RedstoneDimmerBlock extends HorizontalDirectionalBlock implements E
                 NetworkHooks.openScreen((ServerPlayer) player, containerProvider, be.getBlockPos());
             }
         }*/
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         return InteractionResult.SUCCESS;
     }
 
@@ -113,11 +120,11 @@ public class RedstoneDimmerBlock extends HorizontalDirectionalBlock implements E
             return (lvl, pos, blockState, t) -> {
                 if (t instanceof RedstoneDimmerBE tile) {
                     tile.tickClient();
-                   // level.setBlockAndUpdate(pos, blockState.setValue(ACTIVE, tile.output > 0));
+                    // level.setBlockAndUpdate(pos, blockState.setValue(ACTIVE, tile.output > 0));
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof RedstoneDimmerBE tile) {
                 tile.tickServer();
             }
@@ -144,9 +151,8 @@ public class RedstoneDimmerBlock extends HorizontalDirectionalBlock implements E
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag) {
-        if(asItem().toString().contains("empty") || this.asItem().equals(Items.AIR)) return;
-        list.add(TextUtils.applyFormat(Component.translatable("nc.redstone_dimmer.description"), ChatFormatting.AQUA));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        if (asItem().toString().contains("empty") || this.asItem().equals(Items.AIR)) return;
+        tooltipComponents.add(TextUtils.applyFormat(Component.translatable("nc.redstone_dimmer.description"), ChatFormatting.AQUA));
     }
-
 }

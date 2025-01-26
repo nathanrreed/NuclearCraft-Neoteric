@@ -5,14 +5,13 @@ import igentuman.nc.block.entity.fusion.FusionCoreProxyBE;
 import igentuman.nc.container.FusionCoreContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
@@ -32,7 +31,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -50,6 +48,7 @@ public class FusionCoreBlock extends FusionBeBlock {
                         .setValue(ACTIVE, false)
         );
     }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState();
@@ -81,17 +80,17 @@ public class FusionCoreBlock extends FusionBeBlock {
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
-        if(pState.getBlock() != pNewState.getBlock()) {
+        if (pState.getBlock() != pNewState.getBlock()) {
             removeProxyBlocks(pState, pLevel, pPos);
         }
     }
 
     public void removeProxyBlocks(BlockState pState, Level pLevel, BlockPos pPos) {
-        for(int x = -1; x < 2; x++) {
+        for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
-                for(int y = 0; y < 3; y++) {
+                for (int y = 0; y < 3; y++) {
                     BlockPos pos = pPos.offset(x, y, z);
-                    if(pPos.equals(pos)) continue;
+                    if (pPos.equals(pos)) continue;
                     pLevel.removeBlock(pos, false);
                 }
             }
@@ -99,11 +98,11 @@ public class FusionCoreBlock extends FusionBeBlock {
     }
 
     public void placeProxyBlocks(BlockState pState, Level pLevel, BlockPos pPos, FusionCoreBE core) {
-        for(int x = -1; x < 2; x++) {
+        for (int x = -1; x < 2; x++) {
             for (int z = -1; z < 2; z++) {
-                for(int y = 0; y < 3; y++) {
+                for (int y = 0; y < 3; y++) {
                     BlockPos pos = pPos.offset(x, y, z);
-                    if(pPos.equals(pos)) continue;
+                    if (pPos.equals(pos)) continue;
                     pLevel.setBlock(pos, FUSION_CORE_PROXY.get().defaultBlockState(), 3);
                     FusionCoreProxyBE be = (FusionCoreProxyBE) pLevel.getBlockEntity(pos);
                     be.setCore(core);
@@ -125,10 +124,10 @@ public class FusionCoreBlock extends FusionBeBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof FusionCoreBE)  {
+            if (be instanceof FusionCoreBE) {
                 MenuProvider containerProvider = new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
@@ -140,7 +139,7 @@ public class FusionCoreBlock extends FusionBeBlock {
                         return new FusionCoreContainer(windowId, pos, playerInventory);
                     }
                 };
-                NetworkHooks.openScreen((ServerPlayer) player, containerProvider, be.getBlockPos());
+                player.openMenu(containerProvider, be.getBlockPos());
             }
         }
         return InteractionResult.SUCCESS;
@@ -153,11 +152,11 @@ public class FusionCoreBlock extends FusionBeBlock {
             return (lvl, pos, blockState, t) -> {
                 if (t instanceof FusionCoreBE<?> tile) {
                     tile.tickClient();
-                   // level.setBlockAndUpdate(pos, blockState.setValue(ACTIVE, tile.isActive));
+                    // level.setBlockAndUpdate(pos, blockState.setValue(ACTIVE, tile.isActive));
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof FusionCoreBE<?> tile) {
                 tile.tickServer();
             }
@@ -165,8 +164,7 @@ public class FusionCoreBlock extends FusionBeBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag) {
-        if(asItem().toString().contains("empty") || this.asItem().equals(Items.AIR)) return;
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        if (asItem().toString().contains("empty") || this.asItem().equals(Items.AIR)) return;
     }
-
 }

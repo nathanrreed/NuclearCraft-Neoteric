@@ -1,14 +1,12 @@
 package igentuman.nc.item;
 
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.RecordItem;
 
-import java.util.function.Supplier;
-
-public class MusicDiscItem extends RecordItem {
-
-    public MusicDiscItem(int pAnalogOutput, Supplier<SoundEvent> pSound, Properties pProperties, int pLengthInSeconds) {
-        super(pAnalogOutput, pSound, pProperties.rarity(Rarity.RARE).stacksTo(1), pLengthInSeconds);
+public class MusicDiscItem extends Item {
+    public MusicDiscItem(ResourceKey<JukeboxSong> pSound, Item.Properties pProperties) {
+        super(pProperties.rarity(Rarity.RARE).stacksTo(1).jukeboxPlayable(pSound));
     }
 }

@@ -1,15 +1,17 @@
 package igentuman.nc.setup.registration;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import igentuman.nc.NuclearCraft;
 import igentuman.nc.registry.ParticleTypeDeferredRegister;
 import igentuman.nc.registry.RecipeSerializerDeferredRegister;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -19,38 +21,38 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.world.BiomeModifier;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.neoforge.common.world.BiomeModifier;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+
 import static igentuman.nc.NuclearCraft.MODID;
 import static igentuman.nc.recipes.NcRecipeType.RECIPE_TYPES;
 
 public class Registries {
-    public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, MODID);
+    public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, MODID);
     public static final ParticleTypeDeferredRegister PARTICLE_TYPES = new ParticleTypeDeferredRegister(NuclearCraft.MODID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(net.minecraft.core.registries.Registries.CREATIVE_MODE_TAB, MODID);
-    public static final ResourceKey<Registry<Block>> BLOCK_REGISTRY = ForgeRegistries.BLOCKS.getRegistryKey();
-    public static final ResourceKey<Registry<Item>> ITEM_REGISTRY = ForgeRegistries.ITEMS.getRegistryKey();
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-    public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(ForgeRegistries.FLUIDS, MODID);
-    public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(ForgeRegistries.Keys.FLUID_TYPES, MODID);
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MODID);
-    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
-    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
-    public static final DeferredRegister<Codec<? extends BiomeModifier>> BIOME_MODIFIERS = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MODID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+    public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(BuiltInRegistries.FLUID, MODID);
+    public static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS = DeferredRegister.create(BuiltInRegistries.ARMOR_MATERIAL, MODID);
+    public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.FLUID_TYPES, MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(net.minecraft.core.registries.Registries.BLOCK_ENTITY_TYPE, MODID);
+    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(net.minecraft.core.registries.Registries.MENU, MODID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(net.minecraft.core.registries.Registries.ENTITY_TYPE, MODID);
+    public static final DeferredRegister<MapCodec<? extends BiomeModifier>> BIOME_MODIFIERS = DeferredRegister.create(NeoForgeRegistries.BIOME_MODIFIER_SERIALIZERS, MODID);
     public static final DeferredRegister<StructureType<?>> STRUCTURES = DeferredRegister.create(net.minecraft.core.registries.Registries.STRUCTURE_TYPE, MODID);
     public static final DeferredRegister<PlacedFeature> PLACED_FEATURES = DeferredRegister.create(net.minecraft.core.registries.Registries.PLACED_FEATURE, MODID);
-    public static final DeferredRegister<Feature<?>> FEATURE_REGISTER = DeferredRegister.create(ForgeRegistries.FEATURES, MODID);
-    public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MODID);
-    public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
+    public static final DeferredRegister<Feature<?>> FEATURE_REGISTER = DeferredRegister.create(net.minecraft.core.registries.Registries.FEATURE, MODID);
+    public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(net.minecraft.core.registries.Registries.MOB_EFFECT, MODID);
+    public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(net.minecraft.core.registries.Registries.RECIPE_SERIALIZER, MODID);
     public static final RecipeSerializerDeferredRegister RECIPE_SERIALIZERS = new RecipeSerializerDeferredRegister(NuclearCraft.MODID);
 
     public static void init() {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus bus = ModLoadingContext.get().getActiveContainer().getEventBus();
         BLOCKS.register(bus);
         ITEMS.register(bus);
         FLUIDS.register(bus);

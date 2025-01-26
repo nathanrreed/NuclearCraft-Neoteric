@@ -1,7 +1,9 @@
 package igentuman.nc.util;
 
+import com.lowdragmc.lowdraglib.misc.ItemHandlerHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -14,8 +16,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -38,25 +38,25 @@ public final class StackUtils {
     @Nullable
     public static BlockState getStateForPlacement(ItemStack stack, BlockPos pos, Player player) {
         return Block.byItem(stack.getItem()).getStateForPlacement(new BlockPlaceContext(new UseOnContext(player, InteractionHand.MAIN_HAND,
-              new BlockHitResult(Vec3.ZERO, Direction.UP, pos, false))));
+                new BlockHitResult(Vec3.ZERO, Direction.UP, pos, false))));
     }
 
 
     public static Item getItemByRegistryName(String id) {
-        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
+        return BuiltInRegistries.ITEM.get(ResourceLocation.parse(id));
     }
 
     private static final List<Item> allowedTools = new ArrayList<>();
 
     public static boolean isMultiTool(ItemStack stack) {
-        if(allowedTools.isEmpty()) {
+        if (allowedTools.isEmpty()) {
             allowedTools.add(MULTITOOL.get());
             Item wrench = getItemByRegistryName("rftoolsbase:smartwrench");
             Item configurator = getItemByRegistryName("mekanism:configurator");
             Item thermal = getItemByRegistryName("thermalfoundation:wrench");
             Item hammer = getItemByRegistryName("immersiveengineering:hammer");
             Item enderIoWrench = getItemByRegistryName("enderio:item_yeta_wrench");
-            if(!(wrench instanceof AirItem)) {
+            if (!(wrench instanceof AirItem)) {
                 allowedTools.add(wrench);
             }
             if (!(configurator instanceof AirItem)) {

@@ -1,8 +1,8 @@
 package igentuman.nc.block.entity.energy;
 
 import igentuman.nc.NuclearCraft;
-import igentuman.nc.radiation.data.RadiationManager;
 import igentuman.nc.content.energy.RTGs;
+import igentuman.nc.radiation.data.RadiationManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -21,16 +21,17 @@ public class RTGBE extends NCEnergy {
     }
 
     protected int radiationTimer = 40;
+
     @Override
     public void tickServer() {
-        if(NuclearCraft.instance.isNcBeStopped) return;
+        if (NuclearCraft.instance.isNcBeStopped) return;
         super.tickServer();
         energyStorage.setEnergy(getEnergyMaxStorage());
         sendOutPower();
         radiationTimer--;
-        if(radiationTimer <= 0) {
+        if (radiationTimer <= 0) {
             radiationTimer = 40;
-            RadiationManager.get(getLevel()).addRadiation(getLevel(), (double) RTGs.all().get(getName()).config().getRadiation() /500000000, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
+            RadiationManager.get(getLevel()).addRadiation(getLevel(), (double) RTGs.all().get(getName()).config().getRadiation() / 500000000, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
         }
     }
 
@@ -38,6 +39,7 @@ public class RTGBE extends NCEnergy {
     protected int getEnergyMaxStorage() {
         return RTGs.all().get(getName()).config().getActualGeneration();
     }
+
     @Override
     protected int getEnergyTransferPerTick() {
         return Math.min(RTGs.all().get(getName()).config().getActualGeneration(), energyStorage.getEnergyStored());

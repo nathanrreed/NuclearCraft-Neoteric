@@ -2,16 +2,15 @@ package igentuman.nc.compat.jei;
 
 import igentuman.nc.compat.jei.util.TickTimer;
 import igentuman.nc.recipes.type.MekChemicalConversionRecipe;
-import mekanism.api.chemical.gas.GasStack;
-import mekanism.api.chemical.slurry.SlurryStack;
-import mekanism.client.jei.MekanismJEI;
+import mekanism.api.IMekanismAccess;
+import mekanism.api.chemical.ChemicalStack;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
@@ -33,20 +32,19 @@ import static net.minecraft.world.item.Items.BUCKET;
 
 @SuppressWarnings("removal")
 public class MekChemicalConversionCategoryWrapper<T extends MekChemicalConversionRecipe> implements IRecipeCategory<T> {
-    public final static ResourceLocation TEXTURE =
-            new ResourceLocation(MODID, "textures/gui/processor_jei.png");
+    public final static ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/processor_jei.png");
 
     private final IDrawable background;
     private final IDrawable icon;
     protected RecipeType<T> recipeType;
     HashMap<Integer, TickTimer> timer = new HashMap<>();
     IDrawable arrow;
-    private  IDrawable[] slots;
+    private IDrawable[] slots;
 
     IGuiHelper guiHelper;
 
     public MekChemicalConversionCategoryWrapper(IGuiHelper guiHelper, RecipeType<T> recipeType) {
-        this.recipeType = (RecipeType<T>) recipeType;
+        this.recipeType = recipeType;
         this.guiHelper = guiHelper;
         this.background = guiHelper.createDrawable(TEXTURE, 0, 0, 105, 32);
         this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(BUCKET));
@@ -65,7 +63,7 @@ public class MekChemicalConversionCategoryWrapper<T extends MekChemicalConversio
     @Override
     public @NotNull List<Component> getTooltipStrings(T recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         List<Component> lines = new ArrayList<>();
-        if(mouseX > 34 && mouseX < 76 && mouseY > 16 && mouseY < 32) {
+        if (mouseX > 34 && mouseX < 76 && mouseY > 16 && mouseY < 32) {
             lines.add(Component.translatable("tooltip.nc.jei.gas_to_fluid.desc").withStyle(ChatFormatting.AQUA));
         }
         return lines;
@@ -97,18 +95,14 @@ public class MekChemicalConversionCategoryWrapper<T extends MekChemicalConversio
         arrow = guiHelper.drawableBuilder(rl("textures/gui/progress.png"), 0, 0, 36, 15)
                 .buildAnimated(new TickTimer(100, 36, true), IDrawableAnimated.StartDirection.LEFT);
 
-        if(recipe.inputChemical instanceof GasStack) {
+        if (recipe.inputChemical instanceof ChemicalStack) {
             builder.addSlot(RecipeIngredientRole.INPUT, 12, 6)
-                    .addIngredients(MekanismJEI.TYPE_GAS, List.of((GasStack) recipe.inputChemical));
-        }
-        if(recipe.inputChemical instanceof SlurryStack) {
-            builder.addSlot(RecipeIngredientRole.INPUT, 12, 6)
-                    .addIngredients(MekanismJEI.TYPE_SLURRY, List.of((SlurryStack) recipe.inputChemical));
+                    .addIngredients(IMekanismAccess.INSTANCE.jeiHelper().getChemicalStackHelper().getIngredientType(), List.of((ChemicalStack) recipe.inputChemical));
         }
         slots[0] = guiHelper.createDrawable(rl("textures/gui/widgets.png"), 18, 0, 18, 18);
 
         builder.addSlot(RecipeIngredientRole.OUTPUT, 75, 6)
-                .addIngredients(ForgeTypes.FLUID_STACK, List.of(recipe.outputFluid))
+                .addIngredients(NeoForgeTypes.FLUID_STACK, List.of(recipe.outputFluid))
                 .setFluidRenderer(1000, false, 16, 16);
         slots[1] = guiHelper.createDrawable(rl("textures/gui/widgets.png"), 18, 0, 18, 18);
     }

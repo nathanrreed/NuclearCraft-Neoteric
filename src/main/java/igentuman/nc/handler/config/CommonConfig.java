@@ -5,23 +5,23 @@ import igentuman.nc.content.energy.RTGs;
 import igentuman.nc.content.energy.SolarPanels;
 import igentuman.nc.content.storage.BarrelBlocks;
 import igentuman.nc.content.storage.ContainerBlocks;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class CommonConfig {
-    public static <T> List<T> toList(Collection<T> vals)
-    {
+    public static <T> List<T> toList(Collection<T> vals) {
         return new ArrayList<>(vals);
     }
-    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+
+    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
     public static final EnergyGenerationConfig ENERGY_GENERATION = new EnergyGenerationConfig(BUILDER);
     public static final EnergyStorageConfig ENERGY_STORAGE = new EnergyStorageConfig(BUILDER);
 
     public static final StorageBlocksConfig STORAGE_BLOCKS = new StorageBlocksConfig(BUILDER);
-    public static final ForgeConfigSpec spec = BUILDER.build();
+    public static final ModConfigSpec spec = BUILDER.build();
     private static boolean loaded = false;
     private static List<Runnable> loadActions = new ArrayList<>();
 
@@ -42,19 +42,17 @@ public class CommonConfig {
             loadActions.add(action);
     }
 
-
     public static class EnergyGenerationConfig {
-        public ForgeConfigSpec.ConfigValue<List<Boolean>> REGISTER_SOLAR_PANELS;
-        public ForgeConfigSpec.ConfigValue<List<Integer>> SOLAR_PANELS_GENERATION;
-        public ForgeConfigSpec.ConfigValue<List<Boolean>> REGISTER_RTG;
-        public ForgeConfigSpec.ConfigValue<List<Integer>> RTG_GENERATION;
-        public ForgeConfigSpec.ConfigValue<List<Integer>> RTG_RADIATION;
-        public ForgeConfigSpec.ConfigValue<Integer> STEAM_TURBINE;
-        public ForgeConfigSpec.ConfigValue<Integer> DECAY_GENERATOR;
-        public ForgeConfigSpec.ConfigValue<Double> GENERATION_MULTIPLIER;
+        public ModConfigSpec.ConfigValue<List<Boolean>> REGISTER_SOLAR_PANELS;
+        public ModConfigSpec.ConfigValue<List<Integer>> SOLAR_PANELS_GENERATION;
+        public ModConfigSpec.ConfigValue<List<Boolean>> REGISTER_RTG;
+        public ModConfigSpec.ConfigValue<List<Integer>> RTG_GENERATION;
+        public ModConfigSpec.ConfigValue<List<Integer>> RTG_RADIATION;
+        public ModConfigSpec.ConfigValue<Integer> STEAM_TURBINE;
+        public ModConfigSpec.ConfigValue<Integer> DECAY_GENERATOR;
+        public ModConfigSpec.ConfigValue<Double> GENERATION_MULTIPLIER;
 
-
-        public EnergyGenerationConfig(ForgeConfigSpec.Builder builder) {
+        public EnergyGenerationConfig(ModConfigSpec.Builder builder) {
             builder.push("Energy");
 
             GENERATION_MULTIPLIER = builder
@@ -94,11 +92,11 @@ public class CommonConfig {
     }
 
     public static class StorageBlocksConfig {
-        public ForgeConfigSpec.ConfigValue<List<Boolean>> REGISTER_BARREL;
-        public ForgeConfigSpec.ConfigValue<List<Boolean>> REGISTER_CONTAINER;
-        public ForgeConfigSpec.ConfigValue<List<Integer>> BARREL_CAPACITY;
+        public ModConfigSpec.ConfigValue<List<Boolean>> REGISTER_BARREL;
+        public ModConfigSpec.ConfigValue<List<Boolean>> REGISTER_CONTAINER;
+        public ModConfigSpec.ConfigValue<List<Integer>> BARREL_CAPACITY;
 
-        public StorageBlocksConfig(ForgeConfigSpec.Builder builder) {
+        public StorageBlocksConfig(ModConfigSpec.Builder builder) {
 
             builder.push("storage_blocks")
                     .comment("Blocks to store items, fluids, etc...");
@@ -117,18 +115,17 @@ public class CommonConfig {
 
             builder.pop();
         }
-
     }
 
     public static class EnergyStorageConfig {
-        public ForgeConfigSpec.ConfigValue<List<Boolean>> REGISTER_ENERGY_BLOCK;
-        public ForgeConfigSpec.ConfigValue<List<Integer>> ENERGY_BLOCK_STORAGE;
-        public ForgeConfigSpec.ConfigValue<Integer> LITHIUM_ION_BATTERY_STORAGE;
-        public ForgeConfigSpec.ConfigValue<Integer> QNP_ENERGY_STORAGE;
-        public ForgeConfigSpec.ConfigValue<Integer> LIGHTNING_ROD_CHARGE;
-        public ForgeConfigSpec.ConfigValue<Integer> QNP_ENERGY_PER_BLOCK;
+        public ModConfigSpec.ConfigValue<List<Boolean>> REGISTER_ENERGY_BLOCK;
+        public ModConfigSpec.ConfigValue<List<Integer>> ENERGY_BLOCK_STORAGE;
+        public ModConfigSpec.ConfigValue<Integer> LITHIUM_ION_BATTERY_STORAGE;
+        public ModConfigSpec.ConfigValue<Integer> QNP_ENERGY_STORAGE;
+        public ModConfigSpec.ConfigValue<Integer> LIGHTNING_ROD_CHARGE;
+        public ModConfigSpec.ConfigValue<Integer> QNP_ENERGY_PER_BLOCK;
 
-        public EnergyStorageConfig(ForgeConfigSpec.Builder builder) {
+        public EnergyStorageConfig(ModConfigSpec.Builder builder) {
             builder.push("energy_storage");
 
             LIGHTNING_ROD_CHARGE = builder
@@ -155,7 +152,7 @@ public class CommonConfig {
         }
 
         public int getCapacityFor(String code) {
-            if(code.equals("lithium_ion_cell")) {
+            if (code.equals("lithium_ion_cell")) {
                 return LITHIUM_ION_BATTERY_STORAGE.get();
             }
             return BatteryBlocks.all().get(code).config().getStorage();

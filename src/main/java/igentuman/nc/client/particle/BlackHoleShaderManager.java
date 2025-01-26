@@ -1,27 +1,22 @@
 package igentuman.nc.client.particle;
 
-import com.mojang.blaze3d.shaders.AbstractUniform;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraftforge.client.event.RegisterShadersEvent;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.io.IOException;
 import java.util.function.Supplier;
 
-import static igentuman.nc.NuclearCraft.rl;
-
 public class BlackHoleShaderManager {
 
     public BlackHoleShaderManager() {
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
     }
 
     private static final ShaderTracker tracker = new ShaderTracker();
@@ -74,7 +69,7 @@ public class BlackHoleShaderManager {
             distortionUniform.set(0.5f);
         }
         if (time != null) {
-            time.set((float) (mc.level.getGameTime()/20));
+            time.set((float) (mc.level.getGameTime() / 20));
         }
 
         shader.apply();

@@ -35,20 +35,22 @@ import java.util.List;
 
 import static igentuman.nc.NuclearCraft.MODID;
 import static igentuman.nc.NuclearCraft.rl;
-import static igentuman.nc.compat.GlobalVars.*;
+import static igentuman.nc.compat.GlobalVars.CATALYSTS;
+import static igentuman.nc.compat.GlobalVars.RECIPE_CLASSES;
 import static igentuman.nc.util.ModUtil.isMekanismLoadeed;
 
 @JeiPlugin
-public  class JEIPlugin implements IModPlugin {
+public class JEIPlugin implements IModPlugin {
     public static HashMap<String, RecipeType<? extends NcRecipe>> recipeTypes;
 
-    public static final RecipeType<FissionControllerBE.Recipe> FISSION = new RecipeType<>(new ResourceLocation(MODID, FissionControllerBE.NAME), FissionControllerBE.Recipe.class);
-    public static final RecipeType<FusionCoreBE.Recipe> FUSION = new RecipeType<>(new ResourceLocation(MODID, "fusion_core"), FusionCoreBE.Recipe.class);
-    public static final RecipeType<FusionCoreBE.FusionCoolantRecipe> FUSION_COOLANT = new RecipeType<>(new ResourceLocation(MODID, "fusion_coolant"), FusionCoreBE.FusionCoolantRecipe.class);
-    public static final RecipeType<FissionControllerBE.FissionBoilingRecipe> FISSION_BOILING = new RecipeType<>(new ResourceLocation(MODID, "fission_boiling"), FissionControllerBE.FissionBoilingRecipe.class);
-    public static final RecipeType<TurbineControllerBE.Recipe> TURBINE_CONTROLLER = new RecipeType<>(new ResourceLocation(MODID, TurbineControllerBE.NAME), TurbineControllerBE.Recipe.class);
-    public static final RecipeType<MekChemicalConversionRecipe> CHEMICAL_TO_FLUID = new RecipeType<>(new ResourceLocation(MODID, "mek_chemical_to_fluid"), MekChemicalConversionRecipe.class);;
-    public static final RecipeType<OreVeinRecipe> ORE_VEINS = new RecipeType<>(new ResourceLocation(MODID, "nc_ore_veins"), OreVeinRecipe.class);
+    public static final RecipeType<FissionControllerBE.Recipe> FISSION = new RecipeType<>(ResourceLocation.fromNamespaceAndPath(MODID, FissionControllerBE.NAME), FissionControllerBE.Recipe.class);
+    public static final RecipeType<FusionCoreBE.Recipe> FUSION = new RecipeType<>(ResourceLocation.fromNamespaceAndPath(MODID, "fusion_core"), FusionCoreBE.Recipe.class);
+    public static final RecipeType<FusionCoreBE.FusionCoolantRecipe> FUSION_COOLANT = new RecipeType<>(ResourceLocation.fromNamespaceAndPath(MODID, "fusion_coolant"), FusionCoreBE.FusionCoolantRecipe.class);
+    public static final RecipeType<FissionControllerBE.FissionBoilingRecipe> FISSION_BOILING = new RecipeType<>(ResourceLocation.fromNamespaceAndPath(MODID, "fission_boiling"), FissionControllerBE.FissionBoilingRecipe.class);
+    public static final RecipeType<TurbineControllerBE.Recipe> TURBINE_CONTROLLER = new RecipeType<>(ResourceLocation.fromNamespaceAndPath(MODID, TurbineControllerBE.NAME), TurbineControllerBE.Recipe.class);
+    public static final RecipeType<MekChemicalConversionRecipe> CHEMICAL_TO_FLUID = new RecipeType<>(ResourceLocation.fromNamespaceAndPath(MODID, "mek_chemical_to_fluid"), MekChemicalConversionRecipe.class);
+    ;
+    public static final RecipeType<OreVeinRecipe> ORE_VEINS = new RecipeType<>(ResourceLocation.fromNamespaceAndPath(MODID, "nc_ore_veins"), OreVeinRecipe.class);
 
     private static HashMap<String, RecipeType<? extends NcRecipe>> getRecipeTypes() {
         if (recipeTypes == null) {
@@ -57,7 +59,7 @@ public  class JEIPlugin implements IModPlugin {
                 if (Processors.all().containsKey(name) && !Processors.all().get(name).isRegistered()) {
                     continue;
                 }
-                recipeTypes.put(name, new RecipeType<>(new ResourceLocation(MODID, name), RECIPE_CLASSES.get(name)));
+                recipeTypes.put(name, new RecipeType<>(ResourceLocation.fromNamespaceAndPath(MODID, name), RECIPE_CLASSES.get(name)));
             }
         }
         return recipeTypes;
@@ -65,19 +67,19 @@ public  class JEIPlugin implements IModPlugin {
 
 
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation(MODID, "jei_plugin");
+        return ResourceLocation.fromNamespaceAndPath(MODID, "jei_plugin");
     }
 
     @Override
     public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
         IRecipeManager recipeManager = jeiRuntime.getRecipeManager();
 
-        for(String name: Processors.all().keySet()) {
-            if(Processors.registered().containsKey(name)) {
+        for (String name : Processors.all().keySet()) {
+            if (Processors.registered().containsKey(name)) {
                 continue;
             }
             ResourceLocation categoryToHide = rl(name);
-            if(recipeManager.getRecipeType(categoryToHide).isPresent()) {
+            if (recipeManager.getRecipeType(categoryToHide).isPresent()) {
                 recipeManager.hideRecipeCategory(recipeManager.getRecipeType(categoryToHide).get());
             }
         }
@@ -94,7 +96,7 @@ public  class JEIPlugin implements IModPlugin {
         registration.addRecipeCategories(new FissionBoilingCategoryWrapper<>(registration.getJeiHelpers().getGuiHelper(), FISSION_BOILING));
         registration.addRecipeCategories(new TurbineControllerCategoryWrapper<>(registration.getJeiHelpers().getGuiHelper(), TURBINE_CONTROLLER));
         registration.addRecipeCategories(new FissionCategoryWrapper<>(registration.getJeiHelpers().getGuiHelper(), FISSION));
-        if(isMekanismLoadeed()) {
+        if (isMekanismLoadeed()) {
             registration.addRecipeCategories(new MekChemicalConversionCategoryWrapper<>(registration.getJeiHelpers().getGuiHelper(), CHEMICAL_TO_FLUID));
         }
     }
@@ -111,7 +113,7 @@ public  class JEIPlugin implements IModPlugin {
     public void registerRecipes(IRecipeRegistration registration) {
         try {
             for (String name : getRecipeTypes().keySet()) {
-                if(List.of(
+                if (List.of(
                         "fusion_core", "fusion_coolant",
                         "fission_reactor_controller", "fission_boiling",
                         "nc_ore_veins", "turbine_controller"
@@ -140,7 +142,7 @@ public  class JEIPlugin implements IModPlugin {
             registration.addRecipes(
                     getRecipeType(ORE_VEINS),
                     NcRecipeType.ALL_RECIPES.get("nc_ore_veins").getRecipes(NcClient.tryGetClientWorld()));
-            if(isMekanismLoadeed()) {
+            if (isMekanismLoadeed()) {
                 registration.addRecipes(getRecipeType(CHEMICAL_TO_FLUID), MekChemicalConversionRecipe.getRecipes());
             }
         } catch (IllegalArgumentException ex) {
@@ -149,7 +151,7 @@ public  class JEIPlugin implements IModPlugin {
     }
 
     private <T extends AbstractContainerScreen<?>> void addRecipeClickArea(IGuiHandlerRegistration registration, Class<? extends T> containerScreenClass, int xPos, int yPos, int width, int height, RecipeType<?>... recipeTypes) {
-        if(recipeTypes == null) return;
+        if (recipeTypes == null) return;
         registration.addGuiContainerHandler(containerScreenClass, new IGuiContainerHandler<T>() {
             @Override
             public @NotNull Collection<IGuiClickableArea> getGuiClickableAreas(@NotNull T containerScreen, double mouseX, double mouseY) {
@@ -161,28 +163,28 @@ public  class JEIPlugin implements IModPlugin {
         });
     }
 
-    public  void registerGuiHandlers(@NotNull IGuiHandlerRegistration registration) {
+    public void registerGuiHandlers(@NotNull IGuiHandlerRegistration registration) {
         for (String name : getRecipeTypes().keySet()) {
             if (!Processors.registered().containsKey(name)) continue;
             addRecipeClickArea(registration, NCProcessorScreen.class, 67, 74, 18, 18, getRecipeType(name));
         }
-        registration.addRecipeClickArea(FissionControllerScreen.class,69, 42, 36, 26, FISSION);
+        registration.addRecipeClickArea(FissionControllerScreen.class, 69, 42, 36, 26, FISSION);
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registry) {
-        for(String  name: getRecipeTypes().keySet()) {
-            if(!CATALYSTS.containsKey(name)) continue;
-            for(ItemStack stack: CATALYSTS.get(name)) {
+        for (String name : getRecipeTypes().keySet()) {
+            if (!CATALYSTS.containsKey(name)) continue;
+            for (ItemStack stack : CATALYSTS.get(name)) {
                 registry.addRecipeCatalyst(stack, getRecipeType(name));
             }
         }
 
-        if(CATALYSTS.containsKey(FissionControllerBE.NAME)) {
+        if (CATALYSTS.containsKey(FissionControllerBE.NAME)) {
             registry.addRecipeCatalyst(CATALYSTS.get(FissionControllerBE.NAME).get(0), FISSION);
         }
 
-        if(CATALYSTS.containsKey("nc_ore_veins")) {
+        if (CATALYSTS.containsKey("nc_ore_veins")) {
             registry.addRecipeCatalyst(CATALYSTS.get("nc_ore_veins").get(0), ORE_VEINS);
         }
     }

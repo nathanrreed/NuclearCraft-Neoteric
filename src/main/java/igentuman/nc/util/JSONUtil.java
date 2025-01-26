@@ -3,9 +3,11 @@ package igentuman.nc.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.fml.loading.FMLPaths;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,7 @@ public class JSONUtil {
 
     /**
      * Load all JSON files from a specific subfolder in the config directory.
+     *
      * @param subfolder
      * @return
      */

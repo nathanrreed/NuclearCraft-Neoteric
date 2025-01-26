@@ -1,10 +1,9 @@
 package igentuman.nc.world;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
@@ -20,9 +19,7 @@ import static igentuman.nc.setup.registration.WorldGeneration.VEGETATION_MODIFIE
 public class BiomeFilterNether extends PlacementModifier {
 
     private static final BiomeFilterNether INSTANCE = new BiomeFilterNether();
-    public static Codec<BiomeFilterNether> CODEC = Codec.unit(() -> {
-        return INSTANCE;
-    });
+    public static MapCodec<BiomeFilterNether> CODEC = MapCodec.unit(() -> INSTANCE);
 
     private BiomeFilterNether() {
     }
@@ -35,7 +32,7 @@ public class BiomeFilterNether extends PlacementModifier {
     public @NotNull Stream<BlockPos> getPositions(PlacementContext context, RandomSource randomSource, BlockPos pos) {
         LevelReader level = context.getLevel();
         Holder<Biome> biome = level.getBiome(pos);
-        if(biome.is(Biomes.NETHER_WASTES) || biome.is(Biomes.BASALT_DELTAS) || biome.is(Biomes.WARPED_FOREST)
+        if (biome.is(Biomes.NETHER_WASTES) || biome.is(Biomes.BASALT_DELTAS) || biome.is(Biomes.WARPED_FOREST)
                 || biome.is(Biomes.CRIMSON_FOREST) || biome.is(Biomes.SOUL_SAND_VALLEY)) {
             return Stream.of(pos);
         }

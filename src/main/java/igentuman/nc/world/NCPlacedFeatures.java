@@ -6,10 +6,9 @@ import igentuman.nc.world.ore.OreGenerator;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstapContext;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.VerticalAnchor;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.placement.*;
@@ -17,7 +16,6 @@ import net.minecraft.world.level.levelgen.placement.*;
 import java.util.HashMap;
 import java.util.List;
 
-import static igentuman.nc.NuclearCraft.MODID;
 import static igentuman.nc.NuclearCraft.rl;
 import static igentuman.nc.world.NCConfiguredFeatures.ORE_CONFIGURED_FEATURES;
 
@@ -26,30 +24,30 @@ public class NCPlacedFeatures {
 
     private static HashMap<String, ResourceKey<PlacedFeature>> initPlaceFeatures() {
         HashMap<String, ResourceKey<PlacedFeature>> map = new HashMap<>();
-        for(String name: Ores.all().keySet()) {
+        for (String name : Ores.all().keySet()) {
             map.put(name, registerKey(name + "_placed"));
         }
         map.put("glowing_mushroom", registerKey("glowing_mushroom_placed"));
         return map;
     }
 
-    public static void bootstrap(BootstapContext<PlacedFeature> context) {
+    public static void bootstrap(BootstrapContext<PlacedFeature> context) {
         HolderGetter<ConfiguredFeature<?, ?>> configuredFeatures = context.lookup(Registries.CONFIGURED_FEATURE);
 
-        for(String name: Ores.registered().keySet()) {
+        for (String name : Ores.registered().keySet()) {
             NCOre ore = Ores.all().get(name);
-            if(ore.dimensions.contains(0)) {
+            if (ore.dimensions.contains(0)) {
                 register(context, PLACED_FEATURES.get(name), configuredFeatures.getOrThrow(ORE_CONFIGURED_FEATURES.get(name)),
                         OreGenerator.orePlacement(new OrePlacementModifier(ore.config().veinSize),
                                 HeightRangePlacement.uniform(VerticalAnchor.absolute(ore.config().height[0]), VerticalAnchor.absolute(ore.config().height[1]))));
             }
-            if(ore.dimensions.contains(-1)) {
+            if (ore.dimensions.contains(-1)) {
                 register(context, PLACED_FEATURES.get(name), configuredFeatures.getOrThrow(ORE_CONFIGURED_FEATURES.get(name)),
                         OreGenerator.orePlacement(new OrePlacementModifier(ore.config().veinSize),
                                 HeightRangePlacement.uniform(VerticalAnchor.absolute(ore.config().config().height[0]), VerticalAnchor.absolute(ore.height[1]))));
             }
 
-            if(ore.dimensions.contains(1)) {
+            if (ore.dimensions.contains(1)) {
                 register(context, PLACED_FEATURES.get(name), configuredFeatures.getOrThrow(ORE_CONFIGURED_FEATURES.get(name)),
                         OreGenerator.orePlacement(new OrePlacementModifier(ore.config().veinSize),
                                 HeightRangePlacement.uniform(VerticalAnchor.absolute(ore.config().config().height[0]), VerticalAnchor.absolute(ore.config().height[1]))));
@@ -68,8 +66,7 @@ public class NCPlacedFeatures {
         return ResourceKey.create(Registries.PLACED_FEATURE, rl(name));
     }
 
-    private static void register(BootstapContext<PlacedFeature> context, ResourceKey<PlacedFeature> key, Holder<ConfiguredFeature<?, ?>> configuration,
-                                 List<PlacementModifier> modifiers) {
+    private static void register(BootstrapContext<PlacedFeature> context, ResourceKey<PlacedFeature> key, Holder<ConfiguredFeature<?, ?>> configuration, List<PlacementModifier> modifiers) {
         context.register(key, new PlacedFeature(configuration, List.copyOf(modifiers)));
     }
 }

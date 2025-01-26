@@ -46,8 +46,7 @@ public class ChamberBE extends NuclearCraftBE implements IMultiblockAttachable {
         super(KugelblitzRegistration.KUGELBLITZ_BE.get(name).get(), pPos, pBlockState);
     }
 
-    public void invalidateCache()
-    {
+    public void invalidateCache() {
         refreshCacheFlag = true;
         validationRuns = 0;
     }
@@ -60,16 +59,15 @@ public class ChamberBE extends NuclearCraftBE implements IMultiblockAttachable {
     }
 
     @Override
-    public void setRemoved()
-    {
-        if(controller() != null) controller().invalidateCache();
+    public void setRemoved() {
+        if (controller() != null) controller().invalidateCache();
         super.setRemoved();
     }
 
     public boolean isValidating = false;
 
     public void onNeighborChange(BlockState state, BlockPos pos, BlockPos neighbor) {
-        if(multiblock() != null) {
+        if (multiblock() != null) {
             multiblock().onNeighborChange(state, pos, neighbor);
         }
     }

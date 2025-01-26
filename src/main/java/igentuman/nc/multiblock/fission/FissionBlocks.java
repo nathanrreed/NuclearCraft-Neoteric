@@ -7,7 +7,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import java.util.*;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
 import static igentuman.nc.setup.registration.Tags.blockTag;
 import static igentuman.nc.setup.registration.Tags.itemTag;
 import static igentuman.nc.util.TagUtil.getBlocksByTagKey;
@@ -24,7 +28,7 @@ public class FissionBlocks {
     public static TagKey<Item> CASING_ITEMS = itemTag("fission_reactor_casing");
 
 
-    public static final List<String> reactor =  Arrays.asList(
+    public static final List<String> reactor = Arrays.asList(
             "casing",
             "controller",
             "irradiation_chamber",
@@ -45,7 +49,7 @@ public class FissionBlocks {
     public static HashMap<String, HeatSinkDef> heatsinks() {
         HashMap<String, HeatSinkDef> tmp = new HashMap<>();
         List<JsonArray> data = JSONUtil.loadAllJsonFromConfig("heat_sinks");
-        if(data == null) {
+        if (data == null) {
             return tmp;
         }
         for (JsonArray array : data) {

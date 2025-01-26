@@ -14,29 +14,28 @@ import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegisterEvent;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 import static igentuman.nc.NuclearCraft.MODID;
 import static igentuman.nc.NuclearCraft.rl;
 
 public class WorldGeneration {
-   public static final ResourceKey<Biome> WASTELAND_BIOME = makeKey("wasteland");
+    public static final ResourceKey<Biome> WASTELAND_BIOME = makeKey("wasteland");
 
     public static final DeferredRegister<PlacementModifierType<?>> PLACEMENT_MODIFIERS =
             DeferredRegister.create(Registries.PLACEMENT_MODIFIER_TYPE, MODID);
 
-    public static final RegistryObject<PlacementModifierType<OrePlacementModifier>> NC_ORE_MODIFIER =
-            PLACEMENT_MODIFIERS.register("nc_ore_modifier", () -> () -> OrePlacementModifier.CODEC);
+    public static final DeferredHolder<PlacementModifierType<?>, PlacementModifierType<OrePlacementModifier>> NC_ORE_MODIFIER = PLACEMENT_MODIFIERS.register("nc_ore_modifier", () -> () -> OrePlacementModifier.CODEC);
 
-    public static final RegistryObject<PlacementModifierType<BiomeFilterNether>> VEGETATION_MODIFIER =
-            PLACEMENT_MODIFIERS.register("nc_vegetation_modifier", () -> () -> BiomeFilterNether.CODEC);
+    public static final DeferredHolder<PlacementModifierType<?>, PlacementModifierType<BiomeFilterNether>> VEGETATION_MODIFIER = PLACEMENT_MODIFIERS.register("nc_vegetation_modifier", () -> () -> BiomeFilterNether.CODEC);
 
     private static ResourceKey<Biome> makeKey(String name) {
         return ResourceKey.create(Registries.BIOME, rl(name));
     }
+
     public static void registerExtraStuff(RegisterEvent evt) {
 /*        if (evt.getRegistryKey().equals(Registries.BIOME_SOURCE)) {
             Registry.register(BuiltInRegistries.BIOME_SOURCE, "nuclearcraft_wasteland", WastelandBiomeProvider.CODEC);
@@ -64,7 +63,7 @@ public class WorldGeneration {
     public static class StructurePlacer {
         public static void placeStructure(ServerLevel level, BlockPos pos, String name) {
             // Load the structure
-            ResourceLocation structureLocation = new ResourceLocation(MODID, name);
+            ResourceLocation structureLocation = ResourceLocation.fromNamespaceAndPath(MODID, name);
             StructureTemplate template = StructureLoader.loadStructure(level, structureLocation);
 
             if (template == null) {

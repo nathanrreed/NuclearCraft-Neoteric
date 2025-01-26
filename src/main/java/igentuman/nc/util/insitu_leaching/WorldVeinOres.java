@@ -2,10 +2,13 @@ package igentuman.nc.util.insitu_leaching;
 
 import igentuman.nc.handler.OreVeinProvider;
 import igentuman.nc.recipes.type.OreVeinRecipe;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.HashMap;
 
@@ -18,9 +21,12 @@ public class WorldVeinOres implements IWorldVeinCapability {
     public WorldVeinOres() {
     }
 
-    public static WorldVeinOres deserialize(CompoundTag veins) {
+    public WorldVeinOres(ResourceLocation resourceLocation, Class<?> aClass, Class<?> aClass1) {
+    }
+
+    public static WorldVeinOres deserialize(HolderLookup.Provider provider, CompoundTag veins) {
         WorldVeinOres worldVeins = new WorldVeinOres();
-        worldVeins.deserializeNBT(veins);
+        worldVeins.deserializeNBT(provider, veins);
         return worldVeins;
     }
 
@@ -45,22 +51,22 @@ public class WorldVeinOres implements IWorldVeinCapability {
 
     @Override
     public void mineBlock(int chunkX, int chunkZ) {
-        if(!chunkContainsVein(chunkX, chunkZ)) {
+        if (!chunkContainsVein(chunkX, chunkZ)) {
             return;
         }
         long id = ChunkPos.asLong(chunkX, chunkZ);
         if (chunkVeins.containsKey(id)) {
-            chunkVeins.put(id, chunkVeins.get(id)-1);
+            chunkVeins.put(id, chunkVeins.get(id) - 1);
         } else {
-            chunkVeins.put(id, OreVeinProvider.get(level).getVeinSize(chunkX, chunkZ)-1);
+            chunkVeins.put(id, OreVeinProvider.get(level).getVeinSize(chunkX, chunkZ) - 1);
         }
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
         CompoundTag veinsTag = new CompoundTag();
-        for(long key : chunkVeins.keySet()) {
+        for (long key : chunkVeins.keySet()) {
             veinsTag.putInt(String.valueOf(key), chunkVeins.get(key));
         }
         tag.put("depletion", veinsTag);
@@ -68,16 +74,16 @@ public class WorldVeinOres implements IWorldVeinCapability {
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        CompoundTag veinsTag = nbt.getCompound("depletion");
-        for(String key : veinsTag.getAllKeys()) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag compoundTag) {
+        CompoundTag veinsTag = compoundTag.getCompound("depletion");
+        for (String key : veinsTag.getAllKeys()) {
             chunkVeins.put(Long.parseLong(key), veinsTag.getInt(key));
         }
     }
 
     public ItemStack gatherRandomOre(int x, int z) {
         OreVeinRecipe vein = getVeinForChunk(x, z);
-        if(vein == null) {
+        if (vein == null) {
             return ItemStack.EMPTY;
         }
         return vein.getRandomOre(level, x, z, getBlocksLeft(x, z));

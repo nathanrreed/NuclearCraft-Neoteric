@@ -7,11 +7,12 @@ import igentuman.nc.recipes.type.NcRecipe;
 import igentuman.nc.util.annotation.NBTField;
 import igentuman.nc.util.annotation.NothingNullByDefault;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
+
 import static igentuman.nc.util.TagUtil.getItemsByTagKey;
 
 public class NuclearFurnaceBE extends NCProcessorBE<NuclearFurnaceBE.Recipe> {
@@ -26,7 +27,7 @@ public class NuclearFurnaceBE extends NCProcessorBE<NuclearFurnaceBE.Recipe> {
 
     private List<Item> getFuelItems() {
         if (ingots == null) {
-            ingots = getItemsByTagKey("forge:ingots/uranium");
+            ingots = getItemsByTagKey("c:ingots/uranium");
         }
         return ingots;
     }
@@ -38,7 +39,7 @@ public class NuclearFurnaceBE extends NCProcessorBE<NuclearFurnaceBE.Recipe> {
             boolean hasFuel = getFuelItems().contains(contentHandler.itemHandler.getStackInSlot(1).getItem());
             if (hasFuel) {
                 burnTime = 400;
-                if(getFuelItems().contains(contentHandler.itemHandler.getStackInSlot(1).getItem())) {
+                if (getFuelItems().contains(contentHandler.itemHandler.getStackInSlot(1).getItem())) {
                     contentHandler.itemHandler.extractItem(1, 1, false);
                 }
             }
@@ -59,16 +60,15 @@ public class NuclearFurnaceBE extends NCProcessorBE<NuclearFurnaceBE.Recipe> {
 
     @NothingNullByDefault
     public static class Recipe extends NcRecipe {
-        public Recipe(ResourceLocation id,
-                      ItemStackIngredient[] input, ItemStackIngredient[] output,
+        public Recipe(ItemStackIngredient[] input, ItemStackIngredient[] output,
                       FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids,
                       double timeModifier, double powerModifier, double heatModifier, double rarity) {
-            super(id, input, output, timeModifier, powerModifier, heatModifier, 1);
+            super(input, output, timeModifier, powerModifier, heatModifier, 1);
         }
 
         @Override
-        public String getCodeId() {
-            return Processors.NUCLEAR_FURNACE;
+        public void write(FriendlyByteBuf buffer) {
+            //TODO
         }
     }
 }

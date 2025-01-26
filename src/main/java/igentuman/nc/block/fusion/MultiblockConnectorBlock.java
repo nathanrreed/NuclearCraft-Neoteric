@@ -2,14 +2,14 @@ package igentuman.nc.block.fusion;
 
 import igentuman.nc.block.MultiblockBlock;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
@@ -22,25 +22,25 @@ public class MultiblockConnectorBlock extends MultiblockBlock {
                 .noOcclusion()
                 .requiresCorrectToolForDrops());
     }
+
     public MultiblockConnectorBlock(Properties pProperties) {
         super(pProperties.sound(SoundType.METAL));
         this.registerDefaultState(
                 this.stateDefinition.any()
         );
     }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState();
     }
 
-    public String getCode()
-    {
-        return ForgeRegistries.BLOCKS.getKey(this).getPath();
+    public String getCode() {
+        return BuiltInRegistries.BLOCK.getKey(this).getPath();
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @javax.annotation.Nullable BlockGetter world, List<Component> list, TooltipFlag flag)
-    {
-        list.add(Component.translatable("tooltip.nc.fusion_connector.descr").withStyle(ChatFormatting.YELLOW));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(Component.translatable("tooltip.nc.fusion_connector.descr").withStyle(ChatFormatting.YELLOW));
     }
 }

@@ -1,10 +1,8 @@
 package igentuman.nc.client.gui.element.bar;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import igentuman.nc.client.gui.FusionCoreScreen;
 import igentuman.nc.client.gui.IVerticalBarScreen;
 import igentuman.nc.client.gui.element.NCGuiElement;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
@@ -21,7 +19,7 @@ public class VerticalBar extends NCGuiElement {
     protected int backgroundXoffset = 120;
     IVerticalBarScreen screen;
 
-    public VerticalBar(int x, int y, IVerticalBarScreen screen, long max)  {
+    public VerticalBar(int x, int y, IVerticalBarScreen screen, long max) {
         super(x, y, 8, 88, Component.empty());
         this.x = x;
         this.y = y;
@@ -34,7 +32,7 @@ public class VerticalBar extends NCGuiElement {
     }
 
     public List<Component> getTooltips() {
-        if(hintKey.isEmpty()) return tooltips;
+        if (hintKey.isEmpty()) return tooltips;
         tooltips.add(Component.translatable(hintKey, scaledFormat(barValue), scaledFormat(maxValue)));
         return tooltips;
     }
@@ -42,10 +40,10 @@ public class VerticalBar extends NCGuiElement {
     @Override
     public void draw(GuiGraphics graphics, int mX, int mY, float pTicks) {
         super.draw(graphics, mX, mY, pTicks);
-        int internal = height-2;
-        int stored = (int)Math.min(internal, internal*(barValue/maxValue));
-        graphics.blit(TEXTURE, X(), Y(), backgroundXoffset, 0,  width, height);
-        graphics.blit(TEXTURE, X()+1, Y()+1+internal-stored, xOffset, internal-stored,  width-2, stored);
+        int internal = height - 2;
+        int stored = (int) Math.min(internal, internal * (barValue / maxValue));
+        graphics.blit(TEXTURE, X(), Y(), backgroundXoffset, 0, width, height);
+        graphics.blit(TEXTURE, X() + 1, Y() + 1 + internal - stored, xOffset, internal - stored, width - 2, stored);
 
     }
 
@@ -53,12 +51,13 @@ public class VerticalBar extends NCGuiElement {
         hintKey = s;
     }
 
-    public static class Heat extends VerticalBar{
+    public static class Heat extends VerticalBar {
         public Heat(int x, int y, IVerticalBarScreen screen, int maxHeat) {
             super(x, y, screen, maxHeat);
             xOffset = 102;
             hintKey = "heat.bar.amount";
         }
+
         @Override
         public void draw(GuiGraphics transform, int mX, int mY, float pTicks) {
             barValue = screen.getHeat();
@@ -66,8 +65,9 @@ public class VerticalBar extends NCGuiElement {
         }
     }
 
-    public static class HeatLong extends VerticalBar{
+    public static class HeatLong extends VerticalBar {
         Supplier<Double> heat;
+
         public HeatLong(int x, int y, IVerticalBarScreen screen, long maxHeat) {
             super(x, y, screen, maxHeat);
             xOffset = 134;
@@ -83,7 +83,7 @@ public class VerticalBar extends NCGuiElement {
 
         @Override
         public void draw(GuiGraphics transform, int mX, int mY, float pTicks) {
-            if(heat != null) {
+            if (heat != null) {
                 barValue = heat.get();
             } else {
                 barValue = screen.getHeat();
@@ -93,7 +93,7 @@ public class VerticalBar extends NCGuiElement {
     }
 
     public static class Energy extends VerticalBar {
-        public Energy(int x, int y, IVerticalBarScreen screen,  int maxEnergy) {
+        public Energy(int x, int y, IVerticalBarScreen screen, int maxEnergy) {
             super(x, y, screen, maxEnergy);
             xOffset = 96;
             hintKey = "energy.bar.amount";
@@ -107,7 +107,7 @@ public class VerticalBar extends NCGuiElement {
     }
 
     public static class EnergyLong extends VerticalBar {
-        public EnergyLong(int x, int y, IVerticalBarScreen screen,  int maxEnergy) {
+        public EnergyLong(int x, int y, IVerticalBarScreen screen, int maxEnergy) {
             super(x, y, screen, maxEnergy);
             xOffset = 128;
             height = 97;
@@ -122,6 +122,7 @@ public class VerticalBar extends NCGuiElement {
             super.draw(transform, mX, mY, pTicks);
         }
     }
+
     public static class Coolant extends VerticalBar {
         public Coolant(int x, int y, IVerticalBarScreen screen, int capacity) {
             super(x, y, screen, capacity);

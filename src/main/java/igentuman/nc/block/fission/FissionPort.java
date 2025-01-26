@@ -1,5 +1,7 @@
 package igentuman.nc.block.fission;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import igentuman.nc.block.entity.fission.FissionPortBE;
 import igentuman.nc.container.FissionPortContainer;
 import igentuman.nc.multiblock.MultiblockHandler;
@@ -8,8 +10,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -33,8 +33,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -44,12 +42,14 @@ import static net.minecraft.network.chat.Component.translatable;
 
 public class FissionPort extends HorizontalDirectionalBlock implements EntityBlock {
     public static final DirectionProperty HORIZONTAL_FACING = FACING;
+
     public FissionPort() {
         this(Properties.of()
                 .sound(SoundType.METAL)
                 .strength(2.0f)
                 .requiresCorrectToolForDrops());
     }
+
     public FissionPort(Properties pProperties) {
         super(pProperties.sound(SoundType.METAL));
         this.registerDefaultState(
@@ -57,6 +57,15 @@ public class FissionPort extends HorizontalDirectionalBlock implements EntityBlo
                         .setValue(HORIZONTAL_FACING, Direction.NORTH)
         );
     }
+    public static final MapCodec<FissionPort> CODEC = RecordCodecBuilder.mapCodec(instance ->
+            instance.group(propertiesCodec()).apply(instance, FissionPort::new)
+    );
+
+    @Override
+    protected MapCodec<? extends FissionPort> codec() {
+        return CODEC;
+    }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
@@ -74,12 +83,11 @@ public class FissionPort extends HorizontalDirectionalBlock implements EntityBlo
     }
 
     @Override
-    public @NotNull InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
 
-            if (be instanceof FissionPortBE port)  {
+            if (be instanceof FissionPortBE port) {
                 MenuProvider containerProvider = new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
@@ -91,7 +99,7 @@ public class FissionPort extends HorizontalDirectionalBlock implements EntityBlo
                         return new FissionPortContainer(windowId, pos, playerInventory);
                     }
                 };
-                NetworkHooks.openScreen((ServerPlayer) player, containerProvider, be.getBlockPos());
+                player.openMenu(containerProvider, be.getBlockPos());
             }
         }
         return InteractionResult.SUCCESS;
@@ -107,15 +115,14 @@ public class FissionPort extends HorizontalDirectionalBlock implements EntityBlo
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof FissionPortBE tile) {
                 tile.tickServer();
             }
         };
     }
 
-    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag)
-    {
+    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag) {
         list.add(applyFormat(translatable("fission_port.descr"), ChatFormatting.GOLD));
     }
 
@@ -130,7 +137,7 @@ public class FissionPort extends HorizontalDirectionalBlock implements EntityBlo
     }
 
     @Override
-    public void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor){
+    public void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor) {
         MultiblockHandler.trackBlockChange(pos);
     }
 

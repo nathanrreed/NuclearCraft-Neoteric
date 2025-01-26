@@ -4,16 +4,19 @@ import com.google.gson.*;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import igentuman.nc.util.annotation.NothingNullByDefault;
 import igentuman.nc.util.math.FloatingLong;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -30,7 +33,6 @@ public class SerializerHelper {
      *
      * @param json Json Object.
      * @param key  Key the FloatingLong is stored in.
-     *
      * @return FloatingLong.
      */
     public static FloatingLong getFloatingLong(@NotNull JsonObject json, @NotNull String key) {
@@ -56,30 +58,28 @@ public class SerializerHelper {
             throw new JsonSyntaxException("Expected '" + key + "' to be an object");
         }
     }
-    
-    /**
-     * Helper to get and deserialize an Item Stack from a specific sub-element in a Json Object.
-     *
-     * @param json Parent Json Object
-     * @param key  Key in the Json Object that contains an Item Stack.
-     *
-     * @return Item Stack.
-     */
-    public static ItemStack getItemStack(@NotNull JsonObject json, @NotNull String key) {
-        validateKey(json, key);
-        return ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, key));
-    }
 
-    public static ItemStack getItemStack(@NotNull JsonObject json) {
-        return ShapedRecipe.itemStackFromJson(json);
-    }
+//    /**
+//     * Helper to get and deserialize an Item Stack from a specific sub-element in a Json Object.
+//     *
+//     * @param json Parent Json Object
+//     * @param key  Key in the Json Object that contains an Item Stack.
+//     * @return Item Stack.
+//     */
+//    public static ItemStack getItemStack(@NotNull JsonObject json, @NotNull String key) {
+//        validateKey(json, key);
+//        return ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, key));
+//    }
+//
+//    public static ItemStack getItemStack(@NotNull JsonObject json) {
+//        return ShapedRecipe.itemStackFromJson(json);
+//    }
 
     /**
      * Helper to get and deserialize a Fluid Stack from a specific sub-element in a Json Object.
      *
      * @param json Parent Json Object
      * @param key  Key in the Json Object that contains a Fluid Stack.
-     *
      * @return Fluid Stack.
      */
     public static FluidStack getFluidStack(@NotNull JsonObject json, @NotNull String key) {
@@ -95,7 +95,6 @@ public class SerializerHelper {
      * Helper to deserialize a Json Object into a Fluid Stack.
      *
      * @param json Json object to deserialize.
-     *
      * @return Fluid Stack.
      */
     public static FluidStack deserializeFluid(@NotNull JsonObject json) {
@@ -110,9 +109,9 @@ public class SerializerHelper {
         if (amount < 1) {
             throw new JsonSyntaxException("Expected amount to be greater than zero.");
         }
-        ResourceLocation resourceLocation = new ResourceLocation(GsonHelper.getAsString(json, "fluid"));
-        Fluid fluid = ForgeRegistries.FLUIDS.getValue(resourceLocation);
-        if (fluid == null || fluid == Fluids.EMPTY) {
+        ResourceLocation resourceLocation = ResourceLocation.parse(GsonHelper.getAsString(json, "fluid"));
+        Fluid fluid = BuiltInRegistries.FLUID.get(resourceLocation);
+        if (fluid == Fluids.EMPTY) {
             throw new JsonSyntaxException("Invalid fluid type '" + resourceLocation + "'");
         }
         CompoundTag nbt = null;
@@ -128,25 +127,25 @@ public class SerializerHelper {
                 throw new JsonSyntaxException("Invalid NBT entry for fluid '" + resourceLocation + "'");
             }
         }
-        return new FluidStack(fluid, amount, nbt);
+        return new FluidStack(Holder.direct(fluid), amount, DataComponentPatch.builder().set(DataComponents.CUSTOM_DATA, CustomData.of(nbt)).build());
     }
-
 
     /**
      * Helper to serialize an Item Stack into a Json Object.
      *
      * @param stack Stack to serialize.
-     *
      * @return Json representation.
      */
     public static JsonElement serializeItemStack(@NotNull ItemStack stack) {
         JsonObject json = new JsonObject();
-        json.addProperty("item", ForgeRegistries.ITEMS.getKey(stack.getItem()).toString());
+        json.addProperty("item", BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
         if (stack.getCount() > 1) {
             json.addProperty("count", stack.getCount());
         }
-        if (stack.hasTag()) {
-            json.addProperty("nbt", stack.getTag().toString());
+
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (!tag.isEmpty()) {
+            json.addProperty("nbt", tag.toString());
         }
         return json;
     }
@@ -155,15 +154,16 @@ public class SerializerHelper {
      * Helper to serialize a Fluid Stack into a Json Object.
      *
      * @param stack Stack to serialize.
-     *
      * @return Json representation.
      */
     public static JsonElement serializeFluidStack(@NotNull FluidStack stack) {
         JsonObject json = new JsonObject();
-        json.addProperty("fluid", ForgeRegistries.FLUIDS.getKey(stack.getFluid()).toString());
+        json.addProperty("fluid", BuiltInRegistries.FLUID.getKey(stack.getFluid()).toString());
         json.addProperty("amount", stack.getAmount());
-        if (stack.hasTag()) {
-            json.addProperty("nbt", stack.getTag().toString());
+
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (!tag.isEmpty()) {
+            json.addProperty("nbt", tag.toString());
         }
         return json;
     }

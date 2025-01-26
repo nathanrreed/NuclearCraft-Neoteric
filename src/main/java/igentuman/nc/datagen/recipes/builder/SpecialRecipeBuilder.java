@@ -3,17 +3,15 @@ package igentuman.nc.datagen.recipes.builder;
 import com.google.gson.JsonObject;
 import igentuman.nc.registry.RecipeSerializerRegistryObject;
 import igentuman.nc.util.annotation.NothingNullByDefault;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Consumer;
-
 @NothingNullByDefault
-public class SpecialRecipeBuilder implements FinishedRecipe {
+public class SpecialRecipeBuilder {
 
     private final RecipeSerializer<?> serializer;
 
@@ -21,46 +19,46 @@ public class SpecialRecipeBuilder implements FinishedRecipe {
         this.serializer = serializer;
     }
 
-    public static void build(Consumer<FinishedRecipe> consumer, RecipeSerializerRegistryObject<?> serializer) {
+    public static void build(RecipeOutput consumer, RecipeSerializerRegistryObject<?> serializer) {
         build(consumer, serializer.get());
     }
 
-    public static void build(Consumer<FinishedRecipe> consumer, RecipeSerializer<?> serializer) {
-        consumer.accept(new SpecialRecipeBuilder(serializer));
+    public static void build(RecipeOutput consumer, RecipeSerializer<?> serializer) {
+//        consumer.accept(new SpecialRecipeBuilder(serializer));
     }
 
-    @Override
-    public RecipeSerializer<?> getType() {
-        return serializer;
-    }
+//    @Override
+//    public RecipeSerializer<?> getType() {
+//        return serializer;
+//    }
+//
+//    @Override
+//    public void serializeRecipeData(JsonObject json) {
+//        //NO-OP
+//    }
 
-    @Override
-    public void serializeRecipeData(JsonObject json) {
-        //NO-OP
-    }
-
-    private static <T> ResourceLocation getName(IForgeRegistry<T> registry, T element) {
+    private static <T> ResourceLocation getName(Registry<T> registry, T element) {
         return registry.getKey(element);
     }
 
     public static ResourceLocation getName(RecipeSerializer<?> element) {
-        return getName(ForgeRegistries.RECIPE_SERIALIZERS, element);
+        return getName(BuiltInRegistries.RECIPE_SERIALIZER, element);
     }
 
-    @Override
-    public ResourceLocation getId() {
-        return getName(getType());
-    }
-
-    @Nullable
-    @Override
-    public JsonObject serializeAdvancement() {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getAdvancementId() {
-        return null;
-    }
+//    @Override
+//    public ResourceLocation getId() {
+//        return getName(getType());
+//    }
+//
+//    @Nullable
+//    @Override
+//    public JsonObject serializeAdvancement() {
+//        return null;
+//    }
+//
+//    @Nullable
+//    @Override
+//    public ResourceLocation getAdvancementId() {
+//        return null;
+//    }
 }

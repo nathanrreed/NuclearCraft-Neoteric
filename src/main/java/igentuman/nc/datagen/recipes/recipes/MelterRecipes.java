@@ -1,30 +1,29 @@
 package igentuman.nc.datagen.recipes.recipes;
 
+import igentuman.nc.content.fuel.FuelManager;
+import igentuman.nc.content.materials.Materials;
+import igentuman.nc.content.materials.NCMaterial;
+import igentuman.nc.content.processors.Processors;
 import igentuman.nc.datagen.recipes.builder.NcRecipeBuilder;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
-import igentuman.nc.recipes.ingredient.NcIngredient;
-import igentuman.nc.content.processors.Processors;
 import igentuman.nc.setup.registration.FissionFuel;
-import igentuman.nc.content.materials.Materials;
 import igentuman.nc.setup.registration.NCItems;
-import igentuman.nc.content.fuel.FuelManager;
-import igentuman.nc.content.materials.NCMaterial;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static net.minecraft.world.item.Items.*;
 
 public class MelterRecipes extends AbstractRecipeProvider {
 
-    public static void generate(Consumer<FinishedRecipe> consumer) {
+    public static void generate(RecipeOutput consumer) {
         MelterRecipes.consumer = consumer;
         ID = Processors.MELTER;
-        for(String name: Materials.all().keySet()) {
+        for (String name : Materials.all().keySet()) {
             NCMaterial material = Materials.all().get(name);
-            if(material.fluid && !material.isGas) {
+            if (material.fluid && !material.isGas) {
                 add(dustIngredient(name), fluidIngredient(name, 144));
                 add(ingotIngredient(name), fluidIngredient(name, 144));
                 add(oreIngredient(name), fluidIngredient(name, 288));
@@ -38,28 +37,28 @@ public class MelterRecipes extends AbstractRecipeProvider {
         add(ingredient(GLOWSTONE_DUST), fluidIngredient("glowstone", 144));
 
 
-        for (String name: Materials.isotopes()) {
-            for(String type: new String[] {"", "_ox", "_ni", "_za"}) {
-                String key = name+type;
+        for (String name : Materials.isotopes()) {
+            for (String type : new String[]{"", "_ox", "_ni", "_za"}) {
+                String key = name + type;
                 add(ingredient(FissionFuel.NC_ISOTOPES.get(key).get()), fluidIngredient(key, 144));
             }
         }
 
-        for (String name: FuelManager.all().keySet()) {
-            for(String subType: FuelManager.all().get(name).keySet()) {
-                for (String type : new String[]{"", "za", "ox","ni"}) {
+        for (String name : FuelManager.all().keySet()) {
+            for (String subType : FuelManager.all().get(name).keySet()) {
+                for (String type : new String[]{"", "za", "ox", "ni"}) {
 
                     List<String> key = List.of("fuel", name, subType, type);
 
-                    String keyStr = "fuel_"+name +"_"+ subType;
-                    if(!type.isEmpty()){
+                    String keyStr = "fuel_" + name + "_" + subType;
+                    if (!type.isEmpty()) {
                         keyStr += "_";
                     }
-                    keyStr+= type;
+                    keyStr += type;
                     add(ingredient(FissionFuel.NC_FUEL.get(key).get()), fluidStackIngredient(keyStr, 144));
 
                     key = List.of("depleted", name, subType, type);
-                    keyStr = "depleted_"+keyStr;
+                    keyStr = "depleted_" + keyStr;
                     add(ingredient(FissionFuel.NC_DEPLETED_FUEL.get(key).get()), fluidStackIngredient(keyStr, 144));
                 }
             }
@@ -83,24 +82,24 @@ public class MelterRecipes extends AbstractRecipeProvider {
 
     }
 
-    protected static void add(NcIngredient inputItem, FluidStackIngredient outputFluid, double...modifiers) {
+    protected static void add(Ingredient inputItem, FluidStackIngredient outputFluid, double... modifiers) {
         try {
             itemToFluid(List.of(inputItem), new ArrayList<>(), new ArrayList<>(), List.of(outputFluid), modifiers);
-        } catch(IllegalStateException ignored) {}
+        } catch (IllegalStateException ignored) {
+        }
     }
 
     private static void itemToFluid(
-            List<NcIngredient> inputItems, List<NcIngredient> outputItems,
+            List<Ingredient> inputItems, List<Ingredient> outputItems,
             List<FluidStackIngredient> inputFluids, List<FluidStackIngredient> outputFluids,
-                                       double...params) {
-        double timeModifier = params.length>0 ? params[0] : 1.0;
-        double powerModifier = params.length>1 ? params[1] : 1.0;
-        double radiation = params.length>2 ? params[2] : 1.0;
+            double... params) {
+        double timeModifier = params.length > 0 ? params[0] : 1.0;
+        double powerModifier = params.length > 1 ? params[1] : 1.0;
+        double radiation = params.length > 2 ? params[2] : 1.0;
         NcRecipeBuilder.get(ID)
                 .items(inputItems, outputItems)
                 .fluids(inputFluids, outputFluids)
                 .modifiers(timeModifier, radiation, powerModifier)
                 .build(consumer);
     }
-
 }

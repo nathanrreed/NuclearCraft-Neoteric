@@ -17,7 +17,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,16 +27,15 @@ import static igentuman.nc.NuclearCraft.MODID;
 import static igentuman.nc.util.TextUtils.applyFormat;
 
 public class ChamberTerminalScreen extends AbstractContainerScreen<ChamberTerminalContainer> implements IProgressScreen, IVerticalBarScreen {
-    protected final ResourceLocation GUI = new ResourceLocation(MODID, "textures/gui/kugelblitz/controller.png");
+    protected final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/kugelblitz/controller.png");
     protected int relX;
     protected int relY;
     private int xCenter;
     private FluidTankRenderer coolantTank;
     private FluidTankRenderer steamTank;
 
-    public ChamberTerminalContainer container()
-    {
-        return (ChamberTerminalContainer)menu;
+    public ChamberTerminalContainer container() {
+        return (ChamberTerminalContainer) menu;
     }
 
     public List<NCGuiElement> widgets = new ArrayList<>();
@@ -54,8 +53,7 @@ public class ChamberTerminalScreen extends AbstractContainerScreen<ChamberTermin
         imageHeight = 176;
     }
 
-    protected void updateRelativeCords()
-    {
+    protected void updateRelativeCords() {
         relX = (this.width - this.imageWidth) / 2;
         relY = (this.height - this.imageHeight) / 2;
         NCGuiElement.RELATIVE_X = relX;
@@ -63,8 +61,8 @@ public class ChamberTerminalScreen extends AbstractContainerScreen<ChamberTermin
     }
 
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        for(NCGuiElement widget : widgets) {
-            if(widget.mouseClicked(pMouseX, pMouseY, pButton)) {
+        for (NCGuiElement widget : widgets) {
+            if (widget.mouseClicked(pMouseX, pMouseY, pButton)) {
                 return true;
             }
         }
@@ -76,10 +74,10 @@ public class ChamberTerminalScreen extends AbstractContainerScreen<ChamberTermin
         Minecraft mc = Minecraft.getInstance();
         updateRelativeCords();
         widgets.clear();
-        checkboxCasing = new Checkbox(imageWidth-19, 80, this,  isCasingValid());
-        checkboxInterior =  new Checkbox(imageWidth-32, 80, this,  isInteriorValid());
-        energyBar = new VerticalBar.Energy(17, 16,  this, container().getMaxEnergy());
-        widgets.add(new ProgressBar(74, 35, this,  7));
+        checkboxCasing = new Checkbox(imageWidth - 19, 80, this, isCasingValid());
+        checkboxInterior = new Checkbox(imageWidth - 32, 80, this, isInteriorValid());
+        energyBar = new VerticalBar.Energy(17, 16, this, container().getMaxEnergy());
+        widgets.add(new ProgressBar(74, 35, this, 7));
         modeBtn = new Button.ReactorMode(150, 54, this, menu.getPosition());
         widgets.add(modeBtn);
     }
@@ -89,27 +87,27 @@ public class ChamberTerminalScreen extends AbstractContainerScreen<ChamberTermin
     }
 
     private boolean isInteriorValid() {
-        return  container().isInteriorValid();
+        return container().isInteriorValid();
     }
 
     private boolean isCasingValid() {
-        return  container().isCasingValid();
+        return container().isCasingValid();
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        xCenter = getGuiLeft()-imageWidth/2;
-        this.renderBackground(graphics);
+        xCenter = getGuiLeft() - imageWidth / 2;
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         super.render(graphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(graphics, mouseX, mouseY);
     }
 
     private void renderWidgets(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-        for(NCGuiElement widget: widgets) {
+        for (NCGuiElement widget : widgets) {
             widget.draw(graphics, mouseX, mouseY, partialTicks);
         }
         checkboxCasing.setChecked(isCasingValid()).draw(graphics, mouseX, mouseY, partialTicks);
-        if(isCasingValid()) {
+        if (isCasingValid()) {
             checkboxCasing.setTooltipKey("multiblock.casing.complete");
         } else {
             checkboxCasing.setTooltipKey("multiblock.casing.incomplete");
@@ -117,13 +115,13 @@ public class ChamberTerminalScreen extends AbstractContainerScreen<ChamberTermin
         checkboxCasing.addTooltip(casingTootip);
 
         checkboxInterior.setChecked(isInteriorValid()).draw(graphics, mouseX, mouseY, partialTicks);
-        if(isInteriorValid()) {
+        if (isInteriorValid()) {
             checkboxInterior.setTooltipKey("multiblock.interior.complete");
         } else {
             checkboxInterior.setTooltipKey("multiblock.interior.incomplete");
         }
         checkboxInterior.addTooltip(interiorTootip);
-        if(isInteriorValid()) {
+        if (isInteriorValid()) {
         }
         energyBar.draw(graphics, mouseX, mouseY, partialTicks);
 
@@ -131,17 +129,17 @@ public class ChamberTerminalScreen extends AbstractContainerScreen<ChamberTermin
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawCenteredString(font,  menu.getTitle(), imageWidth/2, titleLabelY, 0xffffff);
-        if(isCasingValid()) {
+        graphics.drawCenteredString(font, menu.getTitle(), imageWidth / 2, titleLabelY, 0xffffff);
+        if (isCasingValid()) {
             casingTootip = applyFormat(Component.translatable("reactor.size", getMultiblockHeight(), getMultiblockWidth(), getMultiblockDepth()), ChatFormatting.GOLD);
         } else {
             casingTootip = applyFormat(Component.translatable(getValidationResultKey(), getValidationResultData()), ChatFormatting.RED);
         }
 
-        if(isCasingValid()) {
+        if (isCasingValid()) {
             if (isInteriorValid()) {
 
-                if(container().hasRecipe() && !container().getEfficiency().equals("NaN")) {
+                if (container().hasRecipe() && !container().getEfficiency().equals("NaN")) {
                     graphics.drawString(font, Component.translatable("fission_reactor.efficiency", container().getEfficiency()), 35, 82, 0x8AFF8A);
                 }
             } else {
@@ -149,7 +147,7 @@ public class ChamberTerminalScreen extends AbstractContainerScreen<ChamberTermin
             }
         }
 
-        renderTooltips(graphics, mouseX-relX, mouseY-relY);
+        renderTooltips(graphics, mouseX - relX, mouseY - relY);
     }
 
     private Object getValidationResultData() {
@@ -181,23 +179,23 @@ public class ChamberTerminalScreen extends AbstractContainerScreen<ChamberTermin
     }
 
     private void renderTooltips(GuiGraphics graphics, int pMouseX, int pMouseY) {
-        for(NCGuiElement widget: widgets) {
-           if(widget.isMouseOver(pMouseX, pMouseY)) {
-               graphics.renderTooltip(font, widget.getTooltips(),
-                       Optional.empty(), pMouseX, pMouseY);
-           }
+        for (NCGuiElement widget : widgets) {
+            if (widget.isMouseOver(pMouseX, pMouseY)) {
+                graphics.renderTooltip(font, widget.getTooltips(),
+                        Optional.empty(), pMouseX, pMouseY);
+            }
         }
-        if(checkboxCasing.isMouseOver(pMouseX, pMouseY)) {
+        if (checkboxCasing.isMouseOver(pMouseX, pMouseY)) {
             graphics.renderTooltip(font, checkboxCasing.getTooltips(),
                     Optional.empty(), pMouseX, pMouseY);
         }
-        if(checkboxInterior.isMouseOver(pMouseX, pMouseY)) {
+        if (checkboxInterior.isMouseOver(pMouseX, pMouseY)) {
             graphics.renderTooltip(font, checkboxInterior.getTooltips(),
                     Optional.empty(), pMouseX, pMouseY);
         }
         energyBar.clearTooltips();
         energyBar.addTooltip(Component.translatable("reactor.forge_energy_per_tick", container().energyPerTick()));
-        if(energyBar.isMouseOver(pMouseX, pMouseY+10)) {
+        if (energyBar.isMouseOver(pMouseX, pMouseY + 10)) {
             graphics.renderTooltip(font, energyBar.getTooltips(),
                     Optional.empty(), pMouseX, pMouseY);
         }

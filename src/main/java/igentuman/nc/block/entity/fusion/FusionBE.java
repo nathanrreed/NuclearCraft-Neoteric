@@ -51,19 +51,18 @@ public class FusionBE extends NuclearCraftBE implements IMultiblockAttachable {
 
     public FusionCoreBE<?> controller() {
 
-       if (NuclearCraft.instance.isNcBeStopped || (!getLevel().isClientSide() && Objects.requireNonNull(getLevel()).getServer() != null && !getLevel().getServer().isRunning())) return null;
+        if (NuclearCraft.instance.isNcBeStopped || (!getLevel().isClientSide() && Objects.requireNonNull(getLevel()).getServer() != null && !getLevel().getServer().isRunning())) return null;
 
-        if(getLevel().isClientSide() && corePos != null) {
+        if (getLevel().isClientSide() && corePos != null) {
             return (FusionCoreBE<?>) getLevel().getBlockEntity(corePos);
         }
-        if(core == null && corePos != null) {
-           core = (FusionCoreBE<?>) getLevel().getBlockEntity(corePos);
+        if (core == null && corePos != null) {
+            core = (FusionCoreBE<?>) getLevel().getBlockEntity(corePos);
         }
         return core;
     }
 
-    public void invalidateCache()
-    {
+    public void invalidateCache() {
         multiblock().refreshInnerCacheFlag = true;
         multiblock().refreshOuterCacheFlag = true;
         multiblock().isFormed = false;
@@ -71,9 +70,8 @@ public class FusionBE extends NuclearCraftBE implements IMultiblockAttachable {
     }
 
     @Override
-    public void setRemoved()
-    {
-        if(canInvalidateCache() && !getLevel().isClientSide()) {
+    public void setRemoved() {
+        if (canInvalidateCache() && !getLevel().isClientSide()) {
             if (controller() != null) controller().invalidateCache();
         }
         super.setRemoved();
@@ -85,13 +83,13 @@ public class FusionBE extends NuclearCraftBE implements IMultiblockAttachable {
     }
 
     public void onNeighborChange(BlockState state, BlockPos pos, BlockPos neighbor) {
-        if(multiblock() != null) {
+        if (multiblock() != null) {
             multiblock().onNeighborChange(state, pos, neighbor);
         }
     }
 
     public void onBlockDestroyed(BlockState state, Level level, BlockPos pos, Explosion explosion) {
-        if(multiblock() != null) {
+        if (multiblock() != null) {
             multiblock().onBlockDestroyed(state, level, pos, explosion);
         }
     }

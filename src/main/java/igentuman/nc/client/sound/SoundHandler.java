@@ -16,12 +16,12 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.client.event.sound.PlaySoundEvent;
-import net.minecraftforge.client.event.sound.SoundEngineLoadEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.ClientHooks;
+import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
+import net.neoforged.neoforge.client.event.sound.SoundEngineLoadEvent;
 
 import java.util.Map;
 import java.util.UUID;
@@ -30,11 +30,12 @@ import java.util.function.Function;
 
 import static igentuman.nc.NuclearCraft.MODID;
 
-@Mod.EventBusSubscriber(modid = MODID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class SoundHandler {
 
     private SoundHandler() {
     }
+
     private static final Long2ObjectMap<SoundInstance> soundMap = new Long2ObjectOpenHashMap<>();
     private static SoundEngine soundEngine;
     private static boolean hadPlayerSounds;
@@ -98,7 +99,6 @@ public class SoundHandler {
             }
         }
     }
-
 
 
     private static boolean playerSoundsEnabled() {
@@ -217,7 +217,7 @@ public class SoundHandler {
                     return;
                 }
                 volume = originalVolume;
-                SoundInstance s = ForgeHooksClient.playSound(soundEngine, this);
+                SoundInstance s = ClientHooks.playSound(soundEngine, this);
 
                 if (s == this) {
                     volume = originalVolume * 1;

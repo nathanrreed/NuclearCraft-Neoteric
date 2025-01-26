@@ -3,8 +3,7 @@ package igentuman.nc.util.functions;
 import java.util.Objects;
 
 @FunctionalInterface
-public interface FourPredicate<T, U, V, Z>
-{
+public interface FourPredicate<T, U, V, Z> {
     boolean test(T t, U u, V v, Z z);
 
     default FourPredicate<T, U, V, Z> and(FourPredicate<? super T, ? super U, ? super V, ? super Z> other) {

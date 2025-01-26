@@ -15,7 +15,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -25,15 +25,14 @@ import java.util.Optional;
 import static igentuman.nc.NuclearCraft.MODID;
 
 public class TurbinePortScreen extends AbstractContainerScreen<TurbinePortContainer> implements IProgressScreen, IVerticalBarScreen {
-    protected final ResourceLocation GUI = new ResourceLocation(MODID, "textures/gui/turbine/port.png");
+    protected final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/turbine/port.png");
     protected int relX;
     protected int relY;
     private int xCenter;
     private Button.ReactorPortRedstoneModeButton redstoneConfigBtn;
 
-    public TurbinePortContainer container()
-    {
-        return (TurbinePortContainer)menu;
+    public TurbinePortContainer container() {
+        return (TurbinePortContainer) menu;
     }
 
     public List<NCGuiElement> widgets = new ArrayList<>();
@@ -47,14 +46,12 @@ public class TurbinePortScreen extends AbstractContainerScreen<TurbinePortContai
         imageHeight = 176;
     }
 
-    protected void addWidget(NCGuiElement widget)
-    {
+    protected void addWidget(NCGuiElement widget) {
         widget.setScreen(this);
         widgets.add(widget);
     }
 
-    protected void updateRelativeCords()
-    {
+    protected void updateRelativeCords() {
         relX = (this.width - this.imageWidth) / 2;
         relY = (this.height - this.imageHeight) / 2;
         NCGuiElement.RELATIVE_X = relX;
@@ -66,8 +63,8 @@ public class TurbinePortScreen extends AbstractContainerScreen<TurbinePortContai
         Minecraft mc = Minecraft.getInstance();
         updateRelativeCords();
         widgets.clear();
-        energyBar = new VerticalBar.Energy(17, 16,  this, container().getMaxEnergy());
-        widgets.add(new ProgressBar(74, 35, this,  7));
+        energyBar = new VerticalBar.Energy(17, 16, this, container().getMaxEnergy());
+        widgets.add(new ProgressBar(74, 35, this, 7));
         redstoneConfigBtn = new Button.ReactorPortRedstoneModeButton(150, 74, this, menu.getPosition());
         widgets.add(redstoneConfigBtn);
         addWidget(FluidTankRenderer.tank(getFluidTank(0)).id(0).size(18, 18).pos(56, 35).canVoid());
@@ -80,8 +77,8 @@ public class TurbinePortScreen extends AbstractContainerScreen<TurbinePortContai
 
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        xCenter = getGuiLeft()-imageWidth/2;
-        this.renderBackground(graphics);
+        xCenter = getGuiLeft() - imageWidth / 2;
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         super.render(graphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(graphics, mouseX, mouseY);
     }
@@ -89,23 +86,23 @@ public class TurbinePortScreen extends AbstractContainerScreen<TurbinePortContai
     private void renderWidgets(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         redstoneConfigBtn.setMode(getMenu().getComparatorMode());
         redstoneConfigBtn.strength = getMenu().getAnalogSignalStrength();
-        for(NCGuiElement widget: widgets) {
+        for (NCGuiElement widget : widgets) {
             widget.draw(graphics, mouseX, mouseY, partialTicks);
         }
-        if(energyBar != null) {
+        if (energyBar != null) {
             energyBar.draw(graphics, mouseX, mouseY, partialTicks);
         }
     }
 
     @Override
     protected void renderLabels(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawCenteredString(font,  menu.getTitle(), imageWidth/2, titleLabelY, 0xffffff);
-        renderTooltips(graphics, mouseX-relX, mouseY-relY);
+        graphics.drawCenteredString(font, menu.getTitle(), imageWidth / 2, titleLabelY, 0xffffff);
+        renderTooltips(graphics, mouseX - relX, mouseY - relY);
     }
 
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        for(NCGuiElement widget : widgets) {
-            if(widget.mouseClicked(pMouseX, pMouseY, pButton)) {
+        for (NCGuiElement widget : widgets) {
+            if (widget.mouseClicked(pMouseX, pMouseY, pButton)) {
                 return true;
             }
         }
@@ -122,17 +119,17 @@ public class TurbinePortScreen extends AbstractContainerScreen<TurbinePortContai
 
     private void renderTooltips(GuiGraphics graphics, int pMouseX, int pMouseY) {
 
-        for(NCGuiElement widget: widgets) {
-           if(widget.isMouseOver(pMouseX, pMouseY)) {
-               graphics.renderTooltip(font, widget.getTooltips(),
-                       Optional.empty(), pMouseX, pMouseY);
-           }
+        for (NCGuiElement widget : widgets) {
+            if (widget.isMouseOver(pMouseX, pMouseY)) {
+                graphics.renderTooltip(font, widget.getTooltips(),
+                        Optional.empty(), pMouseX, pMouseY);
+            }
         }
 
-        if(container().getMaxEnergy() > 0) {
+        if (container().getMaxEnergy() > 0) {
             energyBar.clearTooltips();
             energyBar.addTooltip(Component.translatable("reactor.forge_energy_per_tick", container().energyPerTick()));
-            if(energyBar.isMouseOver(pMouseX, pMouseY)) {
+            if (energyBar.isMouseOver(pMouseX, pMouseY)) {
                 graphics.renderTooltip(font, energyBar.getTooltips(),
                         Optional.empty(), pMouseX, pMouseY);
             }
@@ -164,8 +161,7 @@ public class TurbinePortScreen extends AbstractContainerScreen<TurbinePortContai
         return 0;
     }
 
-    public int getAnalogSignalStrength()
-    {
+    public int getAnalogSignalStrength() {
         return container().getAnalogSignalStrength();
     }
 }

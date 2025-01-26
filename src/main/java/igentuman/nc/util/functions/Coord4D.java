@@ -3,7 +3,6 @@ package igentuman.nc.util.functions;
 import igentuman.nc.util.NBTConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Registry;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -51,7 +50,7 @@ public class Coord4D {
 
     public static Coord4D read(CompoundTag tag) {
         return new Coord4D(tag.getInt(NBTConstants.X), tag.getInt(NBTConstants.Y), tag.getInt(NBTConstants.Z),
-              ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString(NBTConstants.DIMENSION))));
+                ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString(NBTConstants.DIMENSION))));
     }
 
     public static Coord4D read(FriendlyByteBuf dataStream) {

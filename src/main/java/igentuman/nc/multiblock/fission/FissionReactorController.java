@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 
 public class FissionReactorController implements INCMultiblockController {
     protected FissionControllerBE<?> controllerBE;
+
     public FissionReactorController(FissionControllerBE<?> fissionControllerBE) {
         controllerBE = fissionControllerBE;
     }

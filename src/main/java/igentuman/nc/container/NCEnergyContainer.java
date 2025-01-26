@@ -14,12 +14,11 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.Nullable;
 
 import static igentuman.nc.NuclearCraft.MODID;
@@ -38,6 +37,7 @@ public class NCEnergyContainer extends AbstractContainerMenu {
     public int slotIndex = 0;
 
     protected String name;
+
     public NCEnergyContainer(@Nullable MenuType<?> pMenuType, int pContainerId) {
         super(pMenuType, pContainerId);
     }
@@ -55,31 +55,32 @@ public class NCEnergyContainer extends AbstractContainerMenu {
 
     private void processorSlots() {
         int itemIdx = 0;
-        for(int[] pos: processor.getSlotsConfig().getSlotPositions()) {
-            if(processor.getSlotsConfig().getSlotType(itemIdx).contains("item")) {
+        IItemHandler cap = blockEntity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, blockEntity.getBlockPos(), null);
+        for (int[] pos : processor.getSlotsConfig().getSlotPositions()) {
+            if (processor.getSlotsConfig().getSlotType(itemIdx).contains("item")) {
                 int idx = itemIdx;
-                blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
-                    addSlot(new SlotItemHandler(h, idx, pos[0], pos[1]));
-                });
+                if (cap != null) {
+                    addSlot(new SlotItemHandler(cap, idx, pos[0], pos[1]));
+                }
                 itemIdx++;
             }
         }
         int ux = 154;
-        if(getProcessor().supportSpeedUpgrade) {
+        if (getProcessor().supportSpeedUpgrade) {
             int idx = itemIdx;
             int finalUx = ux;
-            blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
-                addSlot(new SlotItemHandler(h, idx, finalUx, 77));
-            });
+            if (cap != null) {
+                addSlot(new SlotItemHandler(cap, idx, finalUx, 77));
+            }
             itemIdx++;
             ux -= 18;
         }
-        if(getProcessor().supportEnergyUpgrade) {
+        if (getProcessor().supportEnergyUpgrade) {
             int idx = itemIdx;
             int finalUx = ux;
-            blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
-                addSlot(new SlotItemHandler(h, idx, finalUx, 77));
-            });
+            if (cap != null) {
+                addSlot(new SlotItemHandler(cap, idx, finalUx, 77));
+            }
         }
     }
 
@@ -96,7 +97,7 @@ public class NCEnergyContainer extends AbstractContainerMenu {
                 }
                 slot.onQuickCraft(stack, itemstack);
             } else {
-                if (ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) > 0) {
+                if (stack.getBurnTime(RecipeType.SMELTING) > 0) {
                     if (!this.moveItemStackTo(stack, 0, 1, false)) {
                         return ItemStack.EMPTY;
                     }
@@ -127,7 +128,7 @@ public class NCEnergyContainer extends AbstractContainerMenu {
 
 
     private void addSlotRange(IItemHandler handler, int x, int y, int amount, int dx) {
-        for (int i = 0 ; i < amount ; i++) {
+        for (int i = 0; i < amount; i++) {
             addSlot(new SlotItemHandler(handler, slotIndex, x, y));
             x += dx;
             slotIndex++;
@@ -135,7 +136,7 @@ public class NCEnergyContainer extends AbstractContainerMenu {
     }
 
     protected void addSlotBox(IItemHandler handler, int x, int y, int horAmount, int dx, int verAmount, int dy) {
-        for (int j = 0 ; j < verAmount ; j++) {
+        for (int j = 0; j < verAmount; j++) {
             addSlotRange(handler, x, y, horAmount, dx);
             y += dy;
         }
@@ -162,11 +163,11 @@ public class NCEnergyContainer extends AbstractContainerMenu {
     }
 
     public Component getTitle() {
-        return Component.translatable("block."+MODID+"."+name);
+        return Component.translatable("block." + MODID + "." + name);
     }
 
     public IEnergyStorage getEnergy() {
-        return (IEnergyStorage) blockEntity.getEnergy().orElse(null);
+        return (IEnergyStorage) blockEntity.getEnergy();
     }
 
     public double getProgress() {

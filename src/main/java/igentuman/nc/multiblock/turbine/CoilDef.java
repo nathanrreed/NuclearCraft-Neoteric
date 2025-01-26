@@ -4,15 +4,15 @@ import igentuman.nc.block.entity.turbine.TurbineCoilBE;
 import igentuman.nc.util.TagUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +24,6 @@ import java.util.stream.Stream;
 
 import static igentuman.nc.NuclearCraft.MODID;
 import static igentuman.nc.handler.config.TurbineConfig.TURBINE_CONFIG;
-import static igentuman.nc.setup.registration.Registries.BLOCK_REGISTRY;
-import static igentuman.nc.setup.registration.Registries.ITEM_REGISTRY;
 
 public class CoilDef {
     public double efficiency = 0;
@@ -33,9 +31,9 @@ public class CoilDef {
     public String[] rules;
 
     public Validator getValidator() {
-        if(validator == null) {
+        if (validator == null) {
             rules = TURBINE_CONFIG.PLACEMENT_RULES.get(name).get()
-                    .toArray(new String[ TURBINE_CONFIG.PLACEMENT_RULES.get(name).get().size()]);
+                    .toArray(new String[TURBINE_CONFIG.PLACEMENT_RULES.get(name).get().size()]);
             initCondition(rules);
         }
         return validator;
@@ -48,8 +46,8 @@ public class CoilDef {
 
     }
 
-    public CoilDef(String name, int h, String...rules) {
-        efficiency = h;
+    public CoilDef(String name, int efficiency, String... rules) {
+        this.efficiency = efficiency;
         this.name = name;
         this.rules = rules;
     }
@@ -57,15 +55,16 @@ public class CoilDef {
     private void initCondition(String[] rules) {
 
         HashMap<String[], List<String>> conditions = new HashMap<>();
-        for(String rule: rules) {
+        for (String rule : rules) {
             int cnt = 1;
             try {
-                cnt = Math.max(Integer.parseInt(rule.substring(rule.length()-1)), 1);
-            } catch (NumberFormatException ignore) {  }
+                cnt = Math.max(Integer.parseInt(rule.substring(rule.length() - 1)), 1);
+            } catch (NumberFormatException ignore) {
+            }
             String[] conditionParts = rule.split("=|-|>|<|\\^");
             String[] blocks = conditionParts[0].split("\\|");
             List<String> actualBlocks = collectBlocks(blocks);
-            conditions.put(new String[] {getConditionFunc(rule), String.valueOf(cnt), rule}, actualBlocks);
+            conditions.put(new String[]{getConditionFunc(rule), String.valueOf(cnt), rule}, actualBlocks);
         }
         validator = new Validator();
         validator.blockLines = conditions;
@@ -79,18 +78,17 @@ public class CoilDef {
         while (matcher.find()) {
             matches.add(matcher.group());
         }
-        if(!matches.isEmpty()) {
+        if (!matches.isEmpty()) {
             funcType = matches.get(0);
         }
         return funcType;
     }
 
-    public List<String> getItemsByTagKey(String key)
-    {
+    public List<String> getItemsByTagKey(String key) {
         List<String> tmp = new ArrayList<>();
-        TagKey<Item> tag = TagKey.create(ITEM_REGISTRY, new ResourceLocation(key));
+        TagKey<Item> tag = ItemTags.create(ResourceLocation.parse(key));
         Ingredient ing = Ingredient.fromValues(Stream.of(new Ingredient.TagValue(tag)));
-        for (ItemStack item: ing.getItems()) {
+        for (ItemStack item : ing.getItems()) {
             tmp.add(item.getItem().toString());
         }
         return tmp;
@@ -98,12 +96,12 @@ public class CoilDef {
 
     private List<String> collectBlocks(String[] blocks) {
         List<String> tmp = new ArrayList<>();
-        for(String block: blocks) {
-            if(block.contains("#")) {
-                tmp.addAll(getItemsByTagKey(block.replace("#","")));
+        for (String block : blocks) {
+            if (block.contains("#")) {
+                tmp.addAll(getItemsByTagKey(block.replace("#", "")));
             } else {
-                if(!block.contains(":")) {
-                    block = MODID+":"+block;
+                if (!block.contains(":")) {
+                    block = MODID + ":" + block;
                 }
                 tmp.add(block);
             }
@@ -115,12 +113,11 @@ public class CoilDef {
         efficiency = i;
     }
 
-    public CoilDef config()
-    {
-        if(!initialized) {
+    public CoilDef config() {
+        if (!initialized) {
             initialized = true;
             int id = TurbineRegistration.coils.keySet().stream().toList().indexOf(name);
-            efficiency =  TURBINE_CONFIG.EFFICIENCY.get().get(id);
+            efficiency = TURBINE_CONFIG.EFFICIENCY.get().get(id);
         }
         return this;
     }
@@ -136,15 +133,14 @@ public class CoilDef {
         private HashMap<String[], List<String>> blockLines = new HashMap<>();
         private HashMap<String[], List<Block>> blocks = new HashMap<>();
 
-        public boolean isValid(TurbineCoilBE be)
-        {
+        public boolean isValid(TurbineCoilBE be) {
             this.be = be;
             boolean result = false;
-            for(String[] condition: blocks().keySet()) {
+            for (String[] condition : blocks().keySet()) {
                 switch (condition[0]) {
                     case ">":
-                       result = isMoreThan(Integer.parseInt(condition[1]), blocks().get(condition));
-                       break;
+                        result = isMoreThan(Integer.parseInt(condition[1]), blocks().get(condition));
+                        break;
                     case "<":
                         result = isLessThan(Integer.parseInt(condition[1]), blocks().get(condition));
                         break;
@@ -158,7 +154,7 @@ public class CoilDef {
                         result = inCorner(Integer.parseInt(condition[1]), blocks().get(condition));
                         break;
                 }
-                if(!result) {
+                if (!result) {
                     return false;
                 }
             }
@@ -172,35 +168,35 @@ public class CoilDef {
             initial = blocks.contains(level.getBlockState(pos.below(1)).getBlock()) ? 1 : initial;
             int[] matches = new int[4];
             int i = 0;
-            for (Direction dir: List.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST)) {
-                if(blocks.contains(level.getBlockState(pos.relative(dir)).getBlock())) {
-                    if(1+initial >= qty) return true;
+            for (Direction dir : List.of(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST)) {
+                if (blocks.contains(level.getBlockState(pos.relative(dir)).getBlock())) {
+                    if (1 + initial >= qty) return true;
                     matches[i] = 1;
                 }
                 i++;
             }
-            for(int k = 0; k < 4; k++) {
-                int next = k+1;
-                if(next > 3) next = 0;
-                if(matches[k] + matches[next] + initial >= qty) return true;
+            for (int k = 0; k < 4; k++) {
+                int next = k + 1;
+                if (next > 3) next = 0;
+                if (matches[k] + matches[next] + initial >= qty) return true;
             }
             return false;
         }
 
         private boolean isExact(int s, List<Block> blocks) {
             int counter = 0;
-            for (Direction dir: Direction.values()) {
-                if(blocks.contains(Objects.requireNonNull(be.getLevel()).getBlockState(be.getBlockPos().relative(dir)).getBlock())) {
+            for (Direction dir : Direction.values()) {
+                if (blocks.contains(Objects.requireNonNull(be.getLevel()).getBlockState(be.getBlockPos().relative(dir)).getBlock())) {
                     counter++;
-                    if(counter > s) return false;
+                    if (counter > s) return false;
                 }
             }
             return counter == s;
         }
 
         private boolean isBetween(int s, List<Block> blocks) {
-            for (Direction dir: Direction.values()) {
-                if(
+            for (Direction dir : Direction.values()) {
+                if (
                         blocks.contains(Objects.requireNonNull(be.getLevel()).getBlockState(be.getBlockPos().relative(dir)).getBlock()) &&
                                 blocks.contains(Objects.requireNonNull(be.getLevel()).getBlockState(be.getBlockPos().relative(dir.getOpposite())).getBlock())
                 ) {
@@ -212,10 +208,10 @@ public class CoilDef {
 
         private boolean isLessThan(int s, List<Block> blocks) {
             int counter = 0;
-            for (Direction dir: Direction.values()) {
-                if(blocks.contains(Objects.requireNonNull(be.getLevel()).getBlockState(be.getBlockPos().relative(dir)).getBlock())) {
+            for (Direction dir : Direction.values()) {
+                if (blocks.contains(Objects.requireNonNull(be.getLevel()).getBlockState(be.getBlockPos().relative(dir)).getBlock())) {
                     counter++;
-                    if(counter >= s) return false;
+                    if (counter >= s) return false;
                 }
             }
             return counter < s;
@@ -223,33 +219,31 @@ public class CoilDef {
 
         private boolean isMoreThan(int s, List<Block> blocks) {
             int counter = 0;
-            for (Direction dir: Direction.values()) {
-                if(blocks.contains(Objects.requireNonNull(be.getLevel()).getBlockState(be.getBlockPos().relative(dir)).getBlock())) {
+            for (Direction dir : Direction.values()) {
+                if (blocks.contains(Objects.requireNonNull(be.getLevel()).getBlockState(be.getBlockPos().relative(dir)).getBlock())) {
                     counter++;
-                    if(counter >= s) return true;
+                    if (counter >= s) return true;
                 }
             }
             return counter >= s;
         }
 
-        public HashMap<String[], List<String>> blockLines()
-        {
+        public HashMap<String[], List<String>> blockLines() {
             return blockLines;
         }
 
-        public HashMap<String[], List<Block>> blocks()
-        {
-            if(blocks.isEmpty()) {
-                for (String[] condition: blockLines().keySet()) {
+        public HashMap<String[], List<Block>> blocks() {
+            if (blocks.isEmpty()) {
+                for (String[] condition : blockLines().keySet()) {
                     List<Block> tmp = new ArrayList<>();
-                    for(String bStr: blockLines().get(condition)) {
-                        if(bStr.contains("#")) {
+                    for (String bStr : blockLines().get(condition)) {
+                        if (bStr.contains("#")) {
                             tmp.addAll(TagUtil.getBlocksByTagKey(bStr));
                         } else {
                             if (!bStr.contains(":")) {
                                 bStr = MODID + ":" + bStr;
                             }
-                            tmp.add(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(bStr)));
+                            tmp.add(BuiltInRegistries.BLOCK.get(ResourceLocation.parse(bStr)));
                         }
                     }
                     blocks.put(condition, tmp);

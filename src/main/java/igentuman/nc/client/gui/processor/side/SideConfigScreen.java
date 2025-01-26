@@ -1,7 +1,6 @@
 package igentuman.nc.client.gui.processor.side;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import igentuman.nc.client.NcClient;
 import igentuman.nc.client.gui.element.NCGuiElement;
 import igentuman.nc.client.gui.element.button.Button;
@@ -17,6 +16,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.neoforge.client.event.ContainerScreenEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ import static igentuman.nc.NuclearCraft.MODID;
 import static igentuman.nc.NuclearCraft.rl;
 
 public class SideConfigScreen<T extends NCProcessorContainer<T>> extends AbstractContainerScreen<T> {
-    protected final ResourceLocation GUI = new ResourceLocation(MODID, "textures/gui/small_window.png");
+    protected final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/small_window.png");
     protected int relX;
     protected int relY;
 
@@ -35,14 +36,14 @@ public class SideConfigScreen<T extends NCProcessorContainer<T>> extends Abstrac
     private int slotId;
 
     public List<NCGuiElement> widgets = new ArrayList<>();
+
     public SideConfigScreen(T container, Inventory inv, Component name) {
         super(container, inv, name);
         imageWidth = 180;
         imageHeight = 180;
     }
 
-    protected void updateRelativeCords()
-    {
+    protected void updateRelativeCords() {
         relX = (this.width - this.imageWidth) / 2;
         relY = (this.height - this.imageHeight) / 2;
         NCGuiElement.RELATIVE_X = relX;
@@ -57,17 +58,17 @@ public class SideConfigScreen<T extends NCProcessorContainer<T>> extends Abstrac
         int y = 20;
         String processor = menu.getProcessor().name;
         widgets.add(new SideConfig(x, y, slotId, this, SidedContentHandler.RelativeDirection.UP.ordinal(), rl("textures/block/processor/top.png")));
-        widgets.add(new SideConfig(x-19, y+19, slotId, this,  SidedContentHandler.RelativeDirection.LEFT.ordinal(), rl("textures/block/processor/side.png")));
-        widgets.add(new SideConfig(x, y+19, slotId, this,  SidedContentHandler.RelativeDirection.FRONT.ordinal(), rl("textures/block/processor/"+processor+".png")));
-        widgets.add(new SideConfig(x+19, y+19, slotId, this,  SidedContentHandler.RelativeDirection.RIGHT.ordinal(), rl("textures/block/processor/side.png")));
-        widgets.add(new SideConfig(x-19, y+38, slotId, this,  SidedContentHandler.RelativeDirection.BACK.ordinal(), rl("textures/block/processor/back.png")));
-        widgets.add(new SideConfig(x, y+38, slotId, this,  SidedContentHandler.RelativeDirection.DOWN.ordinal(), rl("textures/block/processor/bottom.png")));
+        widgets.add(new SideConfig(x - 19, y + 19, slotId, this, SidedContentHandler.RelativeDirection.LEFT.ordinal(), rl("textures/block/processor/side.png")));
+        widgets.add(new SideConfig(x, y + 19, slotId, this, SidedContentHandler.RelativeDirection.FRONT.ordinal(), rl("textures/block/processor/" + processor + ".png")));
+        widgets.add(new SideConfig(x + 19, y + 19, slotId, this, SidedContentHandler.RelativeDirection.RIGHT.ordinal(), rl("textures/block/processor/side.png")));
+        widgets.add(new SideConfig(x - 19, y + 38, slotId, this, SidedContentHandler.RelativeDirection.BACK.ordinal(), rl("textures/block/processor/back.png")));
+        widgets.add(new SideConfig(x, y + 38, slotId, this, SidedContentHandler.RelativeDirection.DOWN.ordinal(), rl("textures/block/processor/bottom.png")));
         widgets.add(new Button.CloseConfig(16, 16, this));
     }
 
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        for(NCGuiElement widget : widgets) {
-            if(widget.mouseClicked(pMouseX, pMouseY, pButton)) {
+        for (NCGuiElement widget : widgets) {
+            if (widget.mouseClicked(pMouseX, pMouseY, pButton)) {
                 return true;
             }
         }
@@ -80,55 +81,54 @@ public class SideConfigScreen<T extends NCProcessorContainer<T>> extends Abstrac
     }
 
     public SideConfigScreen(AbstractContainerScreen parentScreen, int slotId) {
-        this((T)parentScreen.getMenu(), NcClient.tryGetClientPlayer().getInventory(), Component.empty());
+        this((T) parentScreen.getMenu(), NcClient.tryGetClientPlayer().getInventory(), Component.empty());
         this.parentScreen = parentScreen;
         this.slotId = slotId;
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         int i = this.leftPos;
         int j = this.topPos;
         this.renderBg(graphics, partialTicks, mouseX, mouseY);
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS
-                .post(new net.minecraftforge.client.event.ContainerScreenEvent.Render.Background(this, graphics, mouseX, mouseY));
+        NeoForge.EVENT_BUS.post(new ContainerScreenEvent.Render.Background(this, graphics, mouseX, mouseY));
         RenderSystem.disableDepthTest();
-        for(Renderable widget : this.renderables) {
+        for (Renderable widget : this.renderables) {
             widget.render(graphics, mouseX, mouseY, partialTicks);
         }
 
         graphics.pose().pushPose();
-        graphics.pose().translate((double)i, (double)j, 0.0D);
+        graphics.pose().translate((double) i, (double) j, 0.0D);
         RenderSystem.applyModelViewMatrix();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         this.hoveredSlot = null;
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         this.renderLabels(graphics, mouseX, mouseY);
-        renderTooltips(graphics, mouseX-relX, mouseY-relY);
+        renderTooltips(graphics, mouseX - relX, mouseY - relY);
         graphics.pose().popPose();
         RenderSystem.applyModelViewMatrix();
         RenderSystem.enableDepthTest();
-       // this.renderTooltip(graphics, mouseX-relX, mouseY-relY);
+        // this.renderTooltip(graphics, mouseX-relX, mouseY-relY);
     }
 
     private void renderWidgets(GuiGraphics matrix, float partialTicks, int mouseX, int mouseY) {
-        for(NCGuiElement widget: widgets) {
+        for (NCGuiElement widget : widgets) {
             widget.draw(matrix, mouseX, mouseY, partialTicks);
         }
     }
 
     private void renderTooltips(GuiGraphics graphics, int pMouseX, int pMouseY) {
-        for(NCGuiElement widget: widgets) {
-            if(widget.isMouseOver(pMouseX, pMouseY)) {
-                graphics.renderTooltip(font, widget.getTooltips(),Optional.empty(), pMouseX, pMouseY);
+        for (NCGuiElement widget : widgets) {
+            if (widget.isMouseOver(pMouseX, pMouseY)) {
+                graphics.renderTooltip(font, widget.getTooltips(), Optional.empty(), pMouseX, pMouseY);
             }
         }
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawCenteredString(font,  Component.translatable("processor_slot_mode.title"), imageWidth/4, titleLabelY, 0xffffff);
+        graphics.drawCenteredString(font, Component.translatable("processor_slot_mode.title"), imageWidth / 4, titleLabelY, 0xffffff);
     }
 
     @Override

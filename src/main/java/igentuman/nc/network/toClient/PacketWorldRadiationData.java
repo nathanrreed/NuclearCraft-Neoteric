@@ -1,48 +1,25 @@
 package igentuman.nc.network.toClient;
 
-import igentuman.nc.network.INcPacket;
-import igentuman.nc.radiation.client.ClientRadiationData;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import igentuman.nc.NuclearCraft;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public class PacketWorldRadiationData implements INcPacket {
-
-    private final Map<Long, Long> radiation;
-
+public record PacketWorldRadiationData(Map<Long, Long> radiation) implements CustomPacketPayload {
     public PacketWorldRadiationData(long id, Long aLong) {
-        radiation = new HashMap<>();
-        radiation.put(id, aLong);
+        this(Map.of(id, aLong));
     }
 
-    public PacketWorldRadiationData(Map<Long, Long> radiation) {
-        this.radiation = radiation;
-    }
+    public static final CustomPacketPayload.Type<PacketWorldRadiationData> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(NuclearCraft.MODID, "world_radiation_data_to_client"));
+    public static final StreamCodec STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.map(Object2ObjectOpenHashMap::new, ByteBufCodecs.VAR_LONG, ByteBufCodecs.VAR_LONG), PacketWorldRadiationData::radiation, PacketWorldRadiationData::new);
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> {
-            ClientRadiationData.setWorldRadiation(radiation);
-        });
-    }
-
-    @Override
-    public void encode(FriendlyByteBuf buffer) {
-        buffer.writeInt(radiation.size());
-        for(Map.Entry<Long, Long> entry : radiation.entrySet()) {
-            buffer.writeLong(entry.getKey());
-            buffer.writeLong(entry.getValue());
-        }
-    }
-
-    public static PacketWorldRadiationData decode(FriendlyByteBuf buffer) {
-        int size = buffer.readInt();
-        Map<Long, Long> radiation = new HashMap<>();
-        for(int i = 0; i < size; i++) {
-            radiation.put(buffer.readLong(), buffer.readLong());
-        }
-        return new PacketWorldRadiationData(radiation);
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }
+

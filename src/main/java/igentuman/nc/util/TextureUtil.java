@@ -2,8 +2,8 @@ package igentuman.nc.util;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.awt.*;
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class TextureUtil {
 
     @OnlyIn(Dist.CLIENT)
     public static int getAverageColor(String textureLocation) {
-        ResourceLocation resourceLocation = new ResourceLocation(MODID, textureLocation);
+        ResourceLocation resourceLocation = ResourceLocation.fromNamespaceAndPath(MODID, textureLocation);
         int redSum;
         int greenSum;
         int blueSum;
@@ -81,7 +81,7 @@ public class TextureUtil {
             return rgbaToIntHex(new int[]{redAvg, greenAvg, blueAvg, 255});
         } catch (NullPointerException | IOException e) {
 
-            System.out.print("Source texture for auto color not found: " + path+"\n");
+            System.out.print("Source texture for auto color not found: " + path + "\n");
             return rgbaToIntHex(new int[]{0, 0, 0, 0});
         }
     }

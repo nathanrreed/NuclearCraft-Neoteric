@@ -34,17 +34,17 @@ public class RedstoneDimmerBE extends NuclearCraftBE {
         int wasOutput = output;
         int left = getLeftSignal();
         int right = getRightSignal();
-        if(lastLeft == 0 && left > 0) {
+        if (lastLeft == 0 && left > 0) {
             output--;
             output = Math.max(0, output);
         }
-        if(lastRight == 0 && right > 0) {
+        if (lastRight == 0 && right > 0) {
             output++;
             output = Math.min(15, output);
         }
         lastLeft = left;
         lastRight = right;
-        if(wasOutput != output) {
+        if (wasOutput != output) {
             setChanged();
             getLevel().setBlockAndUpdate(getBlockPos(), getBlockState().setValue(LEVEL, output));
             getLevel().updateNeighbourForOutputSignal(getBlockPos(), getBlockState().getBlock());

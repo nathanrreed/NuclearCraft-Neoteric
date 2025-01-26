@@ -1,27 +1,26 @@
 package igentuman.nc.block.fission;
 
 import igentuman.nc.block.MultiblockBlock;
-import igentuman.nc.multiblock.MultiblockHandler;
 import igentuman.nc.multiblock.fission.FissionBlocks;
 import igentuman.nc.multiblock.fission.HeatSinkDef;
 import igentuman.nc.util.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +56,8 @@ public class HeatSinkBlock extends MultiblockBlock {
         heat = def.getHeat();
     }
 
-    public Component getPlacementRule()
-    {
-        if(placementRule == null) {
+    public Component getPlacementRule() {
+        if (placementRule == null) {
             List<String> lines = new ArrayList<>();
             int i = 0;
             if (def.getValidator() instanceof HeatSinkDef.Validator) {
@@ -67,16 +65,16 @@ public class HeatSinkBlock extends MultiblockBlock {
                     if (i > 0) {
                         lines.add(Component.translatable("heat_sink.and").getString());
                     }
-                    String blocksLine = String.join(" "+Component.translatable("heat_sink.or").getString()+" ", getBlockNames(condition[2]));
+                    String blocksLine = String.join(" " + Component.translatable("heat_sink.or").getString() + " ", getBlockNames(condition[2]));
                     switch (condition[0]) {
                         case ">":
-                            lines.add(Component.translatable("heat_sink.atleast"+(condition[1].equals("1") ? "":"s") , condition[1], blocksLine).getString());
+                            lines.add(Component.translatable("heat_sink.atleast" + (condition[1].equals("1") ? "" : "s"), condition[1], blocksLine).getString());
                             break;
                         case "-":
                             lines.add(Component.translatable("heat_sink.between", condition[1], blocksLine).getString());
                             break;
                         case "=":
-                            lines.add(Component.translatable("heat_sink.exact"+(condition[1].equals("1") ? "":"s"), condition[1], blocksLine).getString());
+                            lines.add(Component.translatable("heat_sink.exact" + (condition[1].equals("1") ? "" : "s"), condition[1], blocksLine).getString());
                             break;
                         case "<":
                             lines.add(Component.translatable("heat_sink.less_than", condition[1], blocksLine).getString());
@@ -101,11 +99,11 @@ public class HeatSinkBlock extends MultiblockBlock {
         String[] conditionParts = rawLine.split("=|-|>|<|\\^");
         String[] blocks = conditionParts[0].split("\\|");
 
-        for(String code: blocks) {
+        for (String code : blocks) {
             String id = code;
-            if(!id.contains(":")) {
-                id = MODID+":"+id;
-                Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(id));
+            if (!id.contains(":")) {
+                id = MODID + ":" + id;
+                Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(id));
                 names.add(block.getName().getString());
             } else {
                 names.add(convertToName(id.split(":")[1]));
@@ -115,25 +113,30 @@ public class HeatSinkBlock extends MultiblockBlock {
     }
 
     private void initParams() {
-        Item item = Item.byBlock(this);
-        if(item.toString().isEmpty()) return;
-        if(item.toString().contains("empty")) return;
-        type = item.toString().replace("_heat_sink", "");
+        Item item = this.asItem();
+        if (item.toString().isEmpty()) return;
+        if (item.toString().contains("empty")) return;
+        type = item.toString().replaceAll("nuclearcraft:|_heat_sink", "");
         def = FissionBlocks.heatsinks.get(type);
         heat = def.getHeat();
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
-        if(!player.getItemInHand(hand).isEmpty()) return InteractionResult.FAIL;
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (!player.getItemInHand(hand).isEmpty()) return ItemInteractionResult.FAIL;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             Block block = level.getBlockState(pos).getBlock();
-            if(block instanceof HeatSinkBlock) {
+            if (block instanceof HeatSinkBlock) {
                 int id = level.random.nextInt(10);
-                if(isValid(level, pos)) {
-                    player.sendSystemMessage(Component.translatable("message.heat_sink.valid"+id));
+                if (isValid(level, pos)) {
+                    player.sendSystemMessage(Component.translatable("message.heat_sink.valid" + id));
                 } else {
-                    player.sendSystemMessage(Component.translatable("message.heat_sink.invalid"+id));
+                    player.sendSystemMessage(Component.translatable("message.heat_sink.invalid" + id));
                 }
             }
         }
@@ -141,18 +144,18 @@ public class HeatSinkBlock extends MultiblockBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag) {
-        if(asItem().toString().contains("empty")) return;
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        if (asItem().toString().contains("empty")) return;
         initParams();
-        list.add(TextUtils.applyFormat(Component.translatable("heat_sink.heat.descr", TextUtils.numberFormat(heat)), ChatFormatting.GOLD));
+        tooltipComponents.add(TextUtils.applyFormat(Component.translatable("heat_sink.heat.descr", TextUtils.numberFormat(heat)), ChatFormatting.GOLD));
 
-        if(DESCRIPTIONS_SHOW) {
-            list.add(TextUtils.applyFormat(getPlacementRule(), ChatFormatting.AQUA));
-            if(isActive()) {
-                list.add(TextUtils.applyFormat(Component.translatable("tooltip.active_heatsink"), ChatFormatting.YELLOW));
+        if (DESCRIPTIONS_SHOW) {
+            tooltipComponents.add(TextUtils.applyFormat(getPlacementRule(), ChatFormatting.AQUA));
+            if (isActive()) {
+                tooltipComponents.add(TextUtils.applyFormat(Component.translatable("tooltip.active_heatsink"), ChatFormatting.YELLOW));
             }
         } else {
-            list.add(TextUtils.applyFormat(Component.translatable("tooltip.toggle_description_keys"), ChatFormatting.GRAY));
+            tooltipComponents.add(TextUtils.applyFormat(Component.translatable("tooltip.toggle_description_keys"), ChatFormatting.GRAY));
         }
     }
 

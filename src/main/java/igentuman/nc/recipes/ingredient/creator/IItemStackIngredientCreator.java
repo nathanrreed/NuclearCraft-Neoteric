@@ -2,12 +2,13 @@ package igentuman.nc.recipes.ingredient.creator;
 
 import igentuman.nc.recipes.ingredient.ItemStackIngredient;
 import igentuman.nc.util.annotation.NothingNullByDefault;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.crafting.StrictNBTIngredient;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 
 import java.util.Objects;
 
@@ -25,7 +26,6 @@ public interface IItemStackIngredientCreator extends IIngredientCreator<Item, It
      *
      * @param stack  Item stack to match.
      * @param amount Amount needed.
-     *
      * @apiNote If the amount needed is the same as the stack's size, {@link #from(ItemStack)} can be used instead.
      */
     default ItemStackIngredient from(ItemStack stack, int amount) {
@@ -37,7 +37,9 @@ public interface IItemStackIngredientCreator extends IIngredientCreator<Item, It
         stack = stack.copy();
         //Support NBT that is on the stack in case it matters
         // Note: Only bother making it an NBT ingredient if the stack has NBT, otherwise there is no point in doing the extra checks
-        Ingredient ingredient = stack.hasTag() ? StrictNBTIngredient.of(stack) : Ingredient.of(stack);
+
+
+        Ingredient ingredient = stack.has(DataComponents.CUSTOM_DATA) ? DataComponentIngredient.of(true, stack) : Ingredient.of(stack);
         return from(ingredient, amount);
     }
 
@@ -45,7 +47,6 @@ public interface IItemStackIngredientCreator extends IIngredientCreator<Item, It
      * Creates an Item Stack Ingredient that matches a provided item.
      *
      * @param item Item provider that provides the item to match.
-     *
      * @implNote This wraps via {@link #from(ItemStack)} so if there is any durability or default NBT it will be included in the ingredient. If this is not desired,
      * manually create an ingredient and call {@link #from(Ingredient)}.
      */
@@ -58,7 +59,6 @@ public interface IItemStackIngredientCreator extends IIngredientCreator<Item, It
      *
      * @param item   Item provider that provides the item to match.
      * @param amount Amount needed.
-     *
      * @implNote This wraps via {@link #from(ItemStack, int)} so if there is any durability or default NBT it will be included in the ingredient. If this is not desired,
      * manually create an ingredient and call {@link #from(Ingredient, int)}.
      */

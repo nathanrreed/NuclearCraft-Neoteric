@@ -1,10 +1,9 @@
 package igentuman.nc.handler;
 
 import igentuman.nc.block.entity.processor.NCProcessorBE;
-import igentuman.nc.content.processors.ProcessorPrefab;
 import igentuman.nc.setup.registration.NCItems;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
@@ -25,11 +24,11 @@ public class UpgradesHandler extends ItemStackHandler {
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        if(be.prefab().supportEnergyUpgrade && slot == 0) {
+        if (be.prefab().supportEnergyUpgrade && slot == 0) {
             return stack.getItem().equals(NCItems.NC_ITEMS.get("upgrade_energy").get());
         }
 
-        if(be.prefab().supportSpeedUpgrade && slot == 1) {
+        if (be.prefab().supportSpeedUpgrade && slot == 1) {
             return stack.getItem().equals(NCItems.NC_ITEMS.get("upgrade_speed").get());
         }
 

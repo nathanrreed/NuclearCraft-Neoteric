@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import igentuman.nc.block.ISizeToggable;
 import igentuman.nc.block.entity.NuclearCraftBE;
 import igentuman.nc.block.entity.fusion.FusionCoreBE;
-import igentuman.nc.item.MultitoolItem;
 import igentuman.nc.item.QNP;
 import igentuman.nc.util.NCBlockPos;
 import net.minecraft.client.Camera;
@@ -27,17 +26,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderHighlightEvent;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RenderHighlightEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
@@ -53,28 +50,28 @@ import static igentuman.nc.item.QNP.getMode;
 import static igentuman.nc.util.AreaUtil.getArea;
 import static igentuman.nc.util.StackUtils.isMultiTool;
 
-@Mod.EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = MODID, value = Dist.CLIENT)
 public class BlockOverlayHandler {
 
     public static void register(FMLClientSetupEvent event) {
-        MinecraftForge.EVENT_BUS.addListener(BlockOverlayHandler::blockOverlayEvent);
-        MinecraftForge.EVENT_BUS.addListener(BlockOverlayHandler::onRenderPre);
+        NeoForge.EVENT_BUS.addListener(BlockOverlayHandler::blockOverlayEvent);
+        NeoForge.EVENT_BUS.addListener(BlockOverlayHandler::onRenderPre);
     }
 
     @SubscribeEvent
     public static void onRenderWorldEvent(RenderLevelStageEvent e) {
         final GameRenderer gameRenderer = Minecraft.getInstance().gameRenderer;
         Player player = Minecraft.getInstance().player;
-        if(e.getStage().equals(RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS)) {
-            for(BlockPos pos: fusionReactors) {
-                if(true) continue; //disable for now
+        if (e.getStage().equals(RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS)) {
+            for (BlockPos pos : fusionReactors) {
+                if (true) continue; //disable for now
                 BlockEntity be = player.level().getBlockEntity(pos);
-                if(! (be instanceof FusionCoreBE)) continue;
+                if (!(be instanceof FusionCoreBE)) continue;
                 FusionCoreBE fusionBe = (FusionCoreBE) be;
-                int size = fusionBe.size+2;
+                int size = fusionBe.size + 2;
 
-                AABB box1 = new AABB(-size, 0.01f,-size, size,0.99f, -size+1);
-                AABB box2 = new AABB(-size, 0.01f, size, size,0.99f, size-1);
+                AABB box1 = new AABB(-size, 0.01f, -size, size, 0.99f, -size + 1);
+                AABB box2 = new AABB(-size, 0.01f, size, size, 0.99f, size - 1);
 
                 drawBoundingBoxAtBlockPos(e.getPoseStack(), box1, 1, 0, 0.5f, 1, pos.above(), player.blockPosition());
                 drawBoundingBoxAtBlockPos(e.getPoseStack(), box2, 1, 0, 0.5f, 1, pos.above(), player.blockPosition());
@@ -82,14 +79,13 @@ public class BlockOverlayHandler {
                 // drawBoundingBoxAtBlockPos(e.getPoseStack(), box4, 1, 0, 0.5f, 1, pos.above(), player.blockPosition());
             }
         }
-        if(e.getStage().equals(RenderLevelStageEvent.Stage.AFTER_PARTICLES)) {
+        if (e.getStage().equals(RenderLevelStageEvent.Stage.AFTER_PARTICLES)) {
             gameRenderer.resetProjectionMatrix(e.getProjectionMatrix());
             if (player.level().isClientSide) {
-                for (BlockPos pos: outlineBlocks) {
-                    AABB aabb = new AABB(0, 0,0,1,1,1);
+                for (BlockPos pos : outlineBlocks) {
+                    AABB aabb = new AABB(0, 0, 0, 1, 1, 1);
                     drawBoundingBoxAtBlockPos(e.getPoseStack(), aabb, 1, 0, 0, 1, pos, player.blockPosition());
                 }
-
             }
         }
     }
@@ -110,15 +106,15 @@ public class BlockOverlayHandler {
 
             Level world = Minecraft.getInstance().player.level();
             BlockEntity be = world.getBlockEntity(blockPos);
-            if(! (be instanceof NuclearCraftBE)) return;
+            if (!(be instanceof NuclearCraftBE)) return;
             NuclearCraftBE ncBe = (NuclearCraftBE) be;
-            if(ncBe.sideConfig.isEmpty()) return;
+            if (ncBe.sideConfig.isEmpty()) return;
             Direction hitSide = blockRayTraceResult.getDirection();
-            if(Minecraft.getInstance().player.isShiftKeyDown()) {
+            if (Minecraft.getInstance().player.isShiftKeyDown()) {
                 hitSide = hitSide.getOpposite();
             }
             ISizeToggable.SideMode mode = ncBe.sideConfig.get(hitSide.ordinal());
-            if(mode == null) return;
+            if (mode == null) return;
             float[] color = new float[]{0, 1, 0};
             switch (mode) {
                 case DEFAULT -> color = new float[]{0, 1, 0};
@@ -139,7 +135,7 @@ public class BlockOverlayHandler {
             AABB bounds = shape.bounds();
             switch (hitSide) {
                 case DOWN -> bounds = bounds.setMaxY(0.01);
-                case UP ->  bounds = bounds.setMinY(0.99);
+                case UP -> bounds = bounds.setMinY(0.99);
                 case NORTH -> bounds = bounds.setMaxZ(0.01);
                 case SOUTH -> bounds = bounds.setMinZ(0.99);
                 case WEST -> bounds = bounds.setMaxX(0.01);
@@ -157,7 +153,7 @@ public class BlockOverlayHandler {
             event.setCanceled(true);
             QNP.Mode mode = getMode(stackItem);
             Level world = Minecraft.getInstance().player.level();
-            Pair<BlockPos, BlockPos> area = getArea(blockRayTraceResult.getBlockPos(), blockRayTraceResult.getDirection(),  mode.radius, mode.depth);
+            Pair<BlockPos, BlockPos> area = getArea(blockRayTraceResult.getBlockPos(), blockRayTraceResult.getDirection(), mode.radius, mode.depth);
 
             PoseStack stack = new PoseStack();
             stack.pushPose();
@@ -170,7 +166,7 @@ public class BlockOverlayHandler {
             VertexConsumer builder = Minecraft.getInstance().renderBuffers().outlineBufferSource().getBuffer(RenderType.lines());
             BlockPos.betweenClosed(area.getLeft(), area.getRight()).forEach(blockPos -> {
                 VoxelShape shape = world.getBlockState(blockPos).getShape(world, blockPos);
-                if (shape != null && !shape.isEmpty() && !world.isEmptyBlock(blockPos) && world.getBlockState(blockPos).getDestroySpeed(world, blockPos) >= 0 && !(world.getBlockState(blockPos).getBlock() instanceof IFluidBlock) && !(world.getBlockState(blockPos).getBlock() instanceof LiquidBlock)) {
+                if (shape != null && !shape.isEmpty() && !world.isEmptyBlock(blockPos) && world.getBlockState(blockPos).getDestroySpeed(world, blockPos) >= 0 && !(world.getBlockState(blockPos).getBlock() instanceof LiquidBlock) && !(world.getBlockState(blockPos).getBlock() instanceof LiquidBlock)) {
                     LevelRenderer.renderLineBox(stack, builder, shape.bounds().move(blockPos.getX() - d0, blockPos.getY() - d1, blockPos.getZ() - d2), 0, 0, 0, 0.35F);
                 }
             });
@@ -210,64 +206,56 @@ public class BlockOverlayHandler {
         MultiBufferSource.BufferSource renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
         VertexConsumer bufferIn = renderTypeBuffer.getBuffer(RenderType.lines());
         voxelShape.forAllEdges((x0, y0, z0, x1, y1, z1) -> {
-            if (!pos.equals(aimed)){
-                bufferIn.vertex(pose.pose(), (float) (x0 + originX), (float) (y0 + originY), (float) (z0 + originZ))
-                        .color(red, green, blue, alpha)
-                        .normal(pose.normal(), (float) (x1-x0), (float) (y1-y0), (float) (z1-z0))
-                        .endVertex();
-                bufferIn.vertex(pose.pose(), (float) (x1 + originX), (float) (y1 + originY), (float) (z1 + originZ))
-                        .color(red, green, blue, alpha)
-                        .normal(pose.normal(), (float) (x1-x0), (float) (y1-y0), (float) (z1-z0))
-                        .endVertex();
-            }
+            if (!pos.equals(aimed)) {
+                bufferIn.addVertex(pose.pose(), (float) (x0 + originX), (float) (y0 + originY), (float) (z0 + originZ))
+                        .setColor(red, green, blue, alpha)
+                        .setNormal(pose, (float) (x1 - x0), (float) (y1 - y0), (float) (z1 - z0));
 
+                bufferIn.addVertex(pose.pose(), (float) (x1 + originX), (float) (y1 + originY), (float) (z1 + originZ))
+                        .setColor(red, green, blue, alpha)
+                        .setNormal(pose, (float) (x1 - x0), (float) (y1 - y0), (float) (z1 - z0));
+            }
         });
 
         renderTypeBuffer.endBatch(RenderType.lines());
     }
 
-    public void addQuad(Matrix4f matrixPos, Matrix3f matrixNormal, VertexConsumer renderBuffer,
-                        Vector3f blpos, Vector3f brpos, Vector3f trpos, Vector3f tlpos,
-                        Vec2 blUVpos, Vec2 brUVpos, Vec2 trUVpos, Vec2 tlUVpos,
-                        Vector3f normalVector, Color color, int lightmapValue) {
+    public void addQuad(Matrix4f matrixPos, PoseStack.Pose matrixNormal, VertexConsumer renderBuffer, Vector3f blpos, Vector3f brpos, Vector3f trpos, Vector3f tlpos, Vec2 blUVpos, Vec2 brUVpos, Vec2 trUVpos, Vec2 tlUVpos, Vector3f normalVector, Color color, int lightmapValue) {
         addQuadVertex(matrixPos, matrixNormal, renderBuffer, blpos, blUVpos, normalVector, color, lightmapValue);
         addQuadVertex(matrixPos, matrixNormal, renderBuffer, brpos, brUVpos, normalVector, color, lightmapValue);
         addQuadVertex(matrixPos, matrixNormal, renderBuffer, trpos, trUVpos, normalVector, color, lightmapValue);
         addQuadVertex(matrixPos, matrixNormal, renderBuffer, tlpos, tlUVpos, normalVector, color, lightmapValue);
     }
 
-    static void addQuadVertex(Matrix4f matrixPos, Matrix3f matrixNormal, VertexConsumer renderBuffer,
-                              Vector3f pos, Vec2 texUV,
-                              Vector3f normalVector, Color color, int lightmapValue) {
-        renderBuffer.vertex(matrixPos, pos.x(), pos.y(), pos.z()) // position coordinate
-                .color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha())        // color
-                .uv(texUV.x, texUV.y)                     // texel coordinate
-                .overlayCoords(OverlayTexture.NO_OVERLAY)  // only relevant for rendering Entities (Living)
-                .uv2(lightmapValue)         			    // lightmap with full brightness
-                .normal(matrixNormal, normalVector.x(), normalVector.y(), normalVector.z())
-                .endVertex();
+    static void addQuadVertex(Matrix4f matrixPos, PoseStack.Pose matrixNormal, VertexConsumer renderBuffer, Vector3f pos, Vec2 texUV, Vector3f normalVector, Color color, int lightmapValue) {
+        renderBuffer.addVertex(matrixPos, pos.x(), pos.y(), pos.z()) // position coordinate
+                .setColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha())        // color
+                .setUv(texUV.x, texUV.y)                     // texel coordinate
+                .setOverlay(OverlayTexture.NO_OVERLAY)  // only relevant for rendering Entities (Living)
+                .setUv2(lightmapValue, lightmapValue)                        // lightmap with full brightness
+                .setNormal(matrixNormal, normalVector.x(), normalVector.y(), normalVector.z());
     }
 
     public static void addFusionReactor(BlockPos pos) {
-        if(!fusionReactors.contains(pos)) {
+        if (!fusionReactors.contains(pos)) {
             fusionReactors.add(pos);
         }
     }
 
     public static void removeFusionReactor(BlockPos pos) {
-        if(fusionReactors.contains(pos)) {
+        if (fusionReactors.contains(pos)) {
             fusionReactors.remove(pos);
         }
     }
 
     public static void addToOutline(NCBlockPos ncBlockPos) {
-        if(!outlineBlocks.contains(ncBlockPos)) {
+        if (!outlineBlocks.contains(ncBlockPos)) {
             outlineBlocks.add(ncBlockPos);
         }
     }
 
     public static void removeFromOutline(NCBlockPos ncBlockPos) {
-        if(outlineBlocks.contains(ncBlockPos)) {
+        if (outlineBlocks.contains(ncBlockPos)) {
             outlineBlocks.remove(ncBlockPos);
         }
     }

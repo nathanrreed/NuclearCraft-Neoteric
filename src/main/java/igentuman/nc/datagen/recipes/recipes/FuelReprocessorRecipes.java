@@ -1,16 +1,15 @@
 package igentuman.nc.datagen.recipes.recipes;
 
-import igentuman.nc.recipes.ingredient.NcIngredient;
-import igentuman.nc.content.processors.Processors;
 import igentuman.nc.content.materials.Materials;
-import net.minecraft.data.recipes.FinishedRecipe;
+import igentuman.nc.content.processors.Processors;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class FuelReprocessorRecipes extends AbstractRecipeProvider {
 
-    public static void generate(Consumer<FinishedRecipe> consumer) {
+    public static void generate(RecipeOutput consumer) {
         FuelReprocessorRecipes.consumer = consumer;
         ID = Processors.FUEL_REPROCESSOR;
 
@@ -21,7 +20,7 @@ public class FuelReprocessorRecipes extends AbstractRecipeProvider {
                 ), 4.5D
         );
 
-        for (String type: List.of("", "tr")) {
+        for (String type : List.of("", "tr")) {
             add(
                     fuelIngredient(List.of("depleted", "americium", "hea-242", type), 1),
                     List.of(
@@ -264,13 +263,12 @@ public class FuelReprocessorRecipes extends AbstractRecipeProvider {
 
     }
 
-    private static void addString(NcIngredient input, List<String> output, double...modifiers) {
+    private static void addString(Ingredient input, List<String> output, double... modifiers) {
         itemsToItemsString(List.of(input), output, modifiers);
     }
 
 
-    private static void add(NcIngredient input, List<NcIngredient> output, double...modifiers) {
+    private static void add(Ingredient input, List<Ingredient> output, double... modifiers) {
         itemsToItems(List.of(input), output, modifiers);
     }
-
 }

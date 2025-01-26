@@ -2,7 +2,6 @@ package igentuman.nc.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Position;
 import net.minecraft.core.Vec3i;
 
 /**
@@ -18,7 +17,7 @@ public class NCBlockPos extends BlockPos {
     public final int origZ;
 
     public static NCBlockPos of(BlockPos pos) {
-        if(pos instanceof NCBlockPos)
+        if (pos instanceof NCBlockPos)
             return (NCBlockPos) pos;
 
         return new NCBlockPos(pos.getX(), pos.getY(), pos.getZ());
@@ -38,19 +37,18 @@ public class NCBlockPos extends BlockPos {
         origZ = pos.getZ();
     }
 
-    public NCBlockPos revert()
-    {
+    public NCBlockPos revert() {
         this.setX(origX);
         this.setY(origY);
         this.setZ(origZ);
         return this;
     }
-    
+
     @Override
     public NCBlockPos relative(Direction direction, int distance) {
-        setX(getX()+direction.getStepX() * distance);
-        setY(getY()+direction.getStepY() * distance);
-        setZ(getZ()+direction.getStepZ() * distance);
+        setX(getX() + direction.getStepX() * distance);
+        setY(getY() + direction.getStepY() * distance);
+        setZ(getZ() + direction.getStepZ() * distance);
         return this;
     }
 
@@ -61,9 +59,9 @@ public class NCBlockPos extends BlockPos {
 
     @Override
     public NCBlockPos offset(int x, int y, int z) {
-        setX(getX()+x);
-        setY(getY()+y);
-        setZ(getZ()+z);
+        setX(getX() + x);
+        setY(getY() + y);
+        setZ(getZ() + z);
         return this;
     }
 

@@ -1,36 +1,32 @@
 package igentuman.nc.datagen.recipes.builder;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import igentuman.nc.datagen.recipes.NCRecipes;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.CriterionTriggerInstance;
-import net.minecraft.advancements.RequirementsStrategy;
+import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.conditions.ICondition;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static igentuman.nc.NuclearCraft.MODID;
 
 public abstract class RecipeBuilder<BUILDER extends RecipeBuilder<BUILDER>> {
 
     protected static ResourceLocation ncSerializer(String name) {
-        return new ResourceLocation(MODID, name);
+        return ResourceLocation.fromNamespaceAndPath(MODID, name);
     }
 
     protected final List<ICondition> conditions = new ArrayList<>();
@@ -41,14 +37,14 @@ public abstract class RecipeBuilder<BUILDER extends RecipeBuilder<BUILDER>> {
         this.serializerName = serializerName;
     }
 
-    /**
-     * Adds a criterion to this recipe.
-     *
-     * @param criterion Criterion to add.
-     */
-    public BUILDER addCriterion(RecipeCriterion criterion) {
-        return addCriterion(criterion.name(), criterion.criterion());
-    }
+//    /**
+//     * Adds a criterion to this recipe.
+//     *
+//     * @param criterion Criterion to add.
+//     */
+//    public BUILDER addCriterion(RecipeCriterion criterion) {
+//        return addCriterion(criterion.name(), criterion.criterion());
+//    }
 
     /**
      * Adds a criterion to this recipe.
@@ -56,7 +52,7 @@ public abstract class RecipeBuilder<BUILDER extends RecipeBuilder<BUILDER>> {
      * @param name      Name of the criterion.
      * @param criterion Criterion to add.
      */
-    public BUILDER addCriterion(String name, CriterionTriggerInstance criterion) {
+    public BUILDER addCriterion(String name, Criterion<RecipeUnlockedTrigger.TriggerInstance> criterion) {
         advancementBuilder.addCriterion(name, criterion);
         return (BUILDER) this;
     }
@@ -71,14 +67,14 @@ public abstract class RecipeBuilder<BUILDER extends RecipeBuilder<BUILDER>> {
         return (BUILDER) this;
     }
 
-    /**
-     * Checks if this recipe has any criteria.
-     *
-     * @return {@code true} if this recipe has any criteria.
-     */
-    protected boolean hasCriteria() {
-        return !advancementBuilder.getCriteria().isEmpty();
-    }
+//    /**
+//     * Checks if this recipe has any criteria.
+//     *
+//     * @return {@code true} if this recipe has any criteria.
+//     */
+//    protected boolean hasCriteria() {
+//        return !advancementBuilder.getCriteria().isEmpty();
+//    }
 
     /**
      * Gets a recipe result object.
@@ -101,25 +97,27 @@ public abstract class RecipeBuilder<BUILDER extends RecipeBuilder<BUILDER>> {
      * @param consumer Finished Recipe Consumer.
      * @param id       Name of the recipe being built.
      */
-    public void build(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
+    public void build(RecipeOutput consumer, ResourceLocation id) {
         validate(id);
-        if (hasCriteria()) {
-            //If there is a way to "unlock" this recipe then add an advancement with the criteria
-            advancementBuilder.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
-                  .rewards(AdvancementRewards.Builder.recipe(id)).requirements(RequirementsStrategy.OR);
-        }
-        consumer.accept(getResult(id));
+//        if (hasCriteria()) {
+        //If there is a way to "unlock" this recipe then add an advancement with the criteria
+        advancementBuilder.addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
+                .rewards(AdvancementRewards.Builder.recipe(id)).requirements(AdvancementRequirements.Strategy.OR);
+//        }
+
+//        NCRecipe recipe = NC(this.inputItem, this.result, this.power, this.processingTime); //TODO
+//        consumer.accept(id, recipe, build(id.withPrefix("recipes/");
     }
 
     /**
      * Builds this recipe basing the name on the output item.
      *
      * @param consumer Finished Recipe Consumer.
-     * @param output       Output to base the recipe name off of.
+     * @param output   Output to base the recipe name off of.
      */
-    protected void build(Consumer<FinishedRecipe> consumer, ItemLike... output) {
-        ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(output[0].asItem());
-        if (registryName == null) {
+    protected void build(RecipeOutput consumer, ItemLike... output) {
+        ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(output[0].asItem());
+        if (registryName == BuiltInRegistries.ITEM.getDefaultKey()) {
             throw new IllegalStateException("Could not retrieve registry name for output.");
         }
         build(consumer, registryName);
@@ -128,7 +126,7 @@ public abstract class RecipeBuilder<BUILDER extends RecipeBuilder<BUILDER>> {
     /**
      * Base recipe result.
      */
-    protected abstract class RecipeResult implements FinishedRecipe {
+    protected abstract class RecipeResult implements RecipeOutput {
 
         private final ResourceLocation id;
 
@@ -136,81 +134,83 @@ public abstract class RecipeBuilder<BUILDER extends RecipeBuilder<BUILDER>> {
             this.id = id;
         }
 
-        @Override
-        public JsonObject serializeRecipe() {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("type", serializerName.toString());
-            if (!conditions.isEmpty()) {
-                JsonArray conditionsArray = new JsonArray();
-                for (ICondition condition : conditions) {
-                    conditionsArray.add(CraftingHelper.serialize(condition));
-                }
-                jsonObject.add("conditions", conditionsArray);
-            }
-            this.serializeRecipeData(jsonObject);
-            return jsonObject;
-        }
+//        @Override
+//        public JsonObject serializeRecipe() {
+//            JsonObject jsonObject = new JsonObject();
+//            jsonObject.addProperty("type", serializerName.toString());
+//            if (!conditions.isEmpty()) {
+//                JsonArray conditionsArray = new JsonArray();
+//                for (ICondition condition : conditions) {
+//                    conditionsArray.add(CraftingHelper.serialize(condition));
+//                }
+//                jsonObject.add("conditions", conditionsArray);
+//            }
+//            this.serializeRecipeData(jsonObject);
+//            return jsonObject;
+//        }
 
-        @NotNull
-        @Override
-        public RecipeSerializer<?> getType() {
-            return ForgeRegistries.RECIPE_SERIALIZERS.getValue(serializerName);
-        }
+//        @NotNull
+//        @Override
+//        public RecipeSerializer<?> getType() {
+//            return BuiltInRegistries.RECIPE_SERIALIZER.get(serializerName);
+//        }
+//
+//        @NotNull
+//        @Override
+//        public ResourceLocation getId() {
+//            return this.id;
+//        }
 
-        @NotNull
-        @Override
-        public ResourceLocation getId() {
-            return this.id;
-        }
+//        @Nullable
+//        @Override
+//        public JsonObject serializeAdvancement() {
+//            return hasCriteria() ? advancementBuilder.serializeToJson() : null;
+//        }
 
-        @Nullable
-        @Override
-        public JsonObject serializeAdvancement() {
-            return hasCriteria() ? advancementBuilder.serializeToJson() : null;
-        }
-
-        @Nullable
-        @Override
-        public ResourceLocation getAdvancementId() {
-            return new ResourceLocation(id.getNamespace(), "recipes/" + id.getPath());
-        }
+//        @Nullable
+//        @Override
+//        public ResourceLocation getAdvancementId() {
+//            return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "recipes/" + id.getPath());
+//        }
     }
+
     public static JsonElement serializeItemStack(@NotNull ItemStack stack) {
         JsonObject json = new JsonObject();
-        json.addProperty("item", ForgeRegistries.ITEMS.getKey(stack.getItem()).toString());
+        json.addProperty("item", BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
         if (stack.getCount() > 1) {
             json.addProperty("count", stack.getCount());
         }
-        if (stack.hasTag()) {
-            if(stack.getTag().contains("Damage")) {
-                if(stack.getTag().getInt("Damage") == 0) {
-                    stack.getTag().remove("Damage");
+
+        stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, customData -> customData.update(compoundTag -> {
+            if (compoundTag.contains("Damage")) {
+                if (compoundTag.getInt("Damage") == 0) {
+                    compoundTag.remove("Damage");
                 }
             }
-            if(!stack.getTag().getAllKeys().isEmpty())
-            json.addProperty("nbt", stack.getTag().toString());
-        }
+            if (!compoundTag.getAllKeys().isEmpty())
+                json.addProperty("nbt", compoundTag.toString());
+        }));
         return json;
     }
 
-    public static JsonElement serializeIngredient(@NotNull Ingredient ingredient) {
-        return ingredient.toJson();
-    }
+//    public static JsonElement serializeIngredient(@NotNull Ingredient ingredient) {
+//        return ingredient.toJson();
+//    }
 
 
-    public static JsonElement serializeFluidStack(@NotNull FluidStack fluidStack) {
-        JsonObject json = new JsonObject();
-        json.addProperty("fluid", ForgeRegistries.FLUIDS.getKey(fluidStack.getFluid()).toString());
-        json.addProperty("amount", fluidStack.getAmount());
-        if (fluidStack.hasTag()) {
-            if(fluidStack.getTag().contains("Damage")) {
-                if(fluidStack.getTag().getInt("Damage") == 0) {
-                    fluidStack.getTag().remove("Damage");
-                }
-            }
-            if(!fluidStack.getTag().getAllKeys().isEmpty())
-            json.addProperty("nbt", fluidStack.getTag().toString());
-        }
-        return json;
-    }
+//    public static JsonElement serializeFluidStack(@NotNull FluidStack fluidStack) {
+//        JsonObject json = new JsonObject();
+//        json.addProperty("fluid", BuiltInRegistries.FLUID.getKey(fluidStack.getFluid()).toString());
+//        json.addProperty("amount", fluidStack.getAmount());
+//        if (fluidStack.hasTag()) {
+//            if (fluidStack.getTag().contains("Damage")) {
+//                if (fluidStack.getTag().getInt("Damage") == 0) {
+//                    fluidStack.getTag().remove("Damage");
+//                }
+//            }
+//            if (!fluidStack.getTag().getAllKeys().isEmpty())
+//                json.addProperty("nbt", fluidStack.getTag().toString());
+//        }
+//        return json;
+//    }
 }

@@ -1,89 +1,45 @@
 package igentuman.nc.content;
 
+import net.minecraft.Util;
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.LazyLoadedValue;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.registries.DeferredHolder;
+
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
 import java.util.function.Supplier;
 
-import static igentuman.nc.NuclearCraft.MODID;
-import static igentuman.nc.setup.registration.NCItems.*;
-import static igentuman.nc.setup.registration.Tags.forgeIngot;
+import static igentuman.nc.setup.registration.NCItems.NC_PARTS;
+import static igentuman.nc.setup.registration.Registries.ARMOR_MATERIALS;
 
-public enum ArmorMaterials implements ArmorMaterial {
-   HAZMAT(MODID+":hazmat", 5, new int[]{1, 2, 3, 1}, 15, SoundEvents.ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, () -> {
-      return Ingredient.of(NC_PARTS.get("bioplastic").get());
-   }),
-   TOUGH(MODID+":tough", 33, new int[]{3, 6, 8, 3}, 15, SoundEvents.ARMOR_EQUIP_DIAMOND, 3.5F, 0.2F, () -> {
-      return Ingredient.of(forgeIngot("tough_alloy"));
-   }),
-   HEV(MODID+":hev", 37, new int[]{3, 5, 7, 3}, 25, SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, 0.3F, () -> {
-      return Ingredient.of(NC_SHIELDING.get("dps").get());
-   });
+public class ArmorMaterials {
 
-   private static final int[] HEALTH_PER_SLOT = new int[]{13, 15, 16, 11};
-   private final String name;
-   private final int durabilityMultiplier;
-   private final int[] slotProtections;
-   private final int enchantmentValue;
-   private final SoundEvent sound;
-   private final float toughness;
-   private final float knockbackResistance;
-   private final LazyLoadedValue<Ingredient> repairIngredient;
+    private static final int[] HEALTH_PER_SLOT = new int[]{13, 15, 16, 11};
+    private static final HashMap<String, Integer> durabilityMultiplier = new HashMap<>();
 
-   private ArmorMaterials(String pName, int pDurabilityMultiplier, int[] pSlotProtections, int pEnchantmentValue, SoundEvent pSound, float pToughness, float pKnockbackResistance, Supplier<Ingredient> pRepairIngredient) {
-      this.name = pName;
-      this.durabilityMultiplier = pDurabilityMultiplier;
-      this.slotProtections = pSlotProtections;
-      this.enchantmentValue = pEnchantmentValue;
-      this.sound = pSound;
-      this.toughness = pToughness;
-      this.knockbackResistance = pKnockbackResistance;
-      this.repairIngredient = new LazyLoadedValue<>(pRepairIngredient);
-   }
+    //TODO throwing NPE Trying to access unbound value: ResourceKey[minecraft:armor_material / nuclearcraft:hazmat]
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> HAZMAT = register("hazmat", 5, List.of(1, 2, 3, 1, 3), 15, SoundEvents.ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, () -> Ingredient.of(NC_PARTS.get("bioplastic").get()));
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TOUGH = register("tough", 33, List.of(3, 6, 8, 3, 11), 15, SoundEvents.ARMOR_EQUIP_DIAMOND, 3.5F, 0.2F, () -> Ingredient.of(NC_PARTS.get("tough_alloy").get()));
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> HEV = register("hev", 37, List.of(3, 5, 7, 3, 11), 25, SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, 0.3F, () -> Ingredient.of(NC_PARTS.get("dps").get()));
 
-   public int getDurabilityForSlot(EquipmentSlot pSlot) {
-      return HEALTH_PER_SLOT[pSlot.getIndex()] * this.durabilityMultiplier;
-   }
+    public static DeferredHolder<ArmorMaterial, ArmorMaterial> register(String name, int pDurabilityMultiplier, List<Integer> pSlotProtections, int pEnchantmentValue, Holder<SoundEvent> pSound, float pToughness, float pKnockbackResistance, Supplier<Ingredient> pRepairIngredient) {
+        durabilityMultiplier.put(name, pDurabilityMultiplier);
+        return ARMOR_MATERIALS.register(name, () -> new ArmorMaterial(Util.make(new EnumMap<>(ArmorItem.Type.class), (map) -> {
+            map.put(ArmorItem.Type.BOOTS, pSlotProtections.get(0));
+            map.put(ArmorItem.Type.LEGGINGS, pSlotProtections.get(1));
+            map.put(ArmorItem.Type.CHESTPLATE, pSlotProtections.get(2));
+            map.put(ArmorItem.Type.HELMET, pSlotProtections.get(3));
+            map.put(ArmorItem.Type.BODY, pSlotProtections.get(4));
+        }), pEnchantmentValue, SoundEvents.ARMOR_EQUIP_LEATHER, pRepairIngredient, List.of(), pToughness, pKnockbackResistance));
+    }
 
-   public int getDefenseForSlot(EquipmentSlot pSlot) {
-      return this.slotProtections[pSlot.getIndex()];
-   }
-
-   @Override
-   public int getDurabilityForType(ArmorItem.Type type) {
-      return 3;
-   }
-
-   @Override
-   public int getDefenseForType(ArmorItem.Type type) {
-      return 3;
-   }
-
-   public int getEnchantmentValue() {
-      return this.enchantmentValue;
-   }
-
-   public SoundEvent getEquipSound() {
-      return this.sound;
-   }
-
-   public Ingredient getRepairIngredient() {
-      return this.repairIngredient.get();
-   }
-
-   public String getName() {
-      return this.name;
-   }
-
-   public float getToughness() {
-      return this.toughness;
-   }
-
-   public float getKnockbackResistance() {
-      return this.knockbackResistance;
-   }
+    public static int getDurabilityForSlot(EquipmentSlot pSlot, String name) {
+        return HEALTH_PER_SLOT[pSlot.getIndex()] * durabilityMultiplier.get(name);
+    }
 }

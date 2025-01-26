@@ -1,12 +1,12 @@
 package igentuman.nc.block.turbine;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import igentuman.nc.block.entity.turbine.TurbineControllerBE;
 import igentuman.nc.container.TurbineControllerContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -27,7 +27,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,12 +36,14 @@ public class TurbineControllerBlock extends HorizontalDirectionalBlock implement
     public static final DirectionProperty HORIZONTAL_FACING = FACING;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final String NAME = "turbine_controller";
+
     public TurbineControllerBlock() {
         this(Properties.of()
                 .sound(SoundType.METAL)
                 .strength(2.0f)
                 .requiresCorrectToolForDrops());
     }
+
     public TurbineControllerBlock(Properties pProperties) {
         super(pProperties.sound(SoundType.METAL));
         this.registerDefaultState(
@@ -51,6 +52,16 @@ public class TurbineControllerBlock extends HorizontalDirectionalBlock implement
                         .setValue(POWERED, false)
         );
     }
+
+    public static final MapCodec<TurbineControllerBlock> CODEC = RecordCodecBuilder.mapCodec(instance ->
+            instance.group(propertiesCodec()).apply(instance, TurbineControllerBlock::new)
+    );
+
+    @Override
+    protected MapCodec<? extends TurbineControllerBlock> codec() {
+        return CODEC;
+    }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
@@ -69,12 +80,11 @@ public class TurbineControllerBlock extends HorizontalDirectionalBlock implement
     }
 
     @Override
-    public InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, InteractionHand hand, BlockHitResult result) {
-
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
 
-            if (be instanceof TurbineControllerBE<?>)  {
+            if (be instanceof TurbineControllerBE<?>) {
                 MenuProvider containerProvider = new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
@@ -83,10 +93,10 @@ public class TurbineControllerBlock extends HorizontalDirectionalBlock implement
 
                     @Override
                     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player playerEntity) {
-                            return new TurbineControllerContainer(windowId, pos, playerInventory);
+                        return new TurbineControllerContainer(windowId, pos, playerInventory);
                     }
                 };
-                NetworkHooks.openScreen((ServerPlayer) player, containerProvider, be.getBlockPos());
+                player.openMenu(containerProvider, be.getBlockPos());
             }
         }
         return InteractionResult.SUCCESS;
@@ -103,7 +113,7 @@ public class TurbineControllerBlock extends HorizontalDirectionalBlock implement
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof TurbineControllerBE<?> tile) {
                 tile.tickServer();
             }

@@ -13,8 +13,8 @@ public class ClientRadiationData {
     protected static long playerRadiation = 0;
 
     public static void setWorldRadiation(Map<Long, Long> radiation) {
-        for(long id: radiation.keySet()) {
-            if(radiationData.containsKey(id)) {
+        for (long id : radiation.keySet()) {
+            if (radiationData.containsKey(id)) {
                 radiationData.replace(id, radiation.get(id));
             } else {
                 radiationData.put(id, radiation.get(id));
@@ -28,7 +28,7 @@ public class ClientRadiationData {
 
     public static void setCurrentChunk(int x, int z) {
         long id = pack(x, z);
-        if(radiationData.containsKey(id)) {
+        if (radiationData.containsKey(id)) {
             currentRadiation = unpackX(radiationData.get(id));
         } else {
             currentRadiation = 0;

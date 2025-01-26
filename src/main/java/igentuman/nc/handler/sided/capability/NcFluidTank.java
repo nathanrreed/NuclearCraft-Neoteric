@@ -1,8 +1,9 @@
 package igentuman.nc.handler.sided.capability;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 public class NcFluidTank extends FluidTank {
 
@@ -11,18 +12,17 @@ public class NcFluidTank extends FluidTank {
     }
 
     @Override
-    public NcFluidTank readFromNBT(CompoundTag nbt) {
-        FluidStack fluid = FluidStack.loadFluidStackFromNBT(nbt);
+    public FluidTank readFromNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
+        FluidStack fluid = FluidStack.parseOptional(lookupProvider, nbt);
         setFluid(fluid);
         capacity = nbt.getInt("Capacity");
         return this;
     }
 
     @Override
-    public CompoundTag writeToNBT(CompoundTag nbt) {
-        fluid.writeToNBT(nbt);
+    public CompoundTag writeToNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
+        fluid.save(lookupProvider, nbt);
         nbt.putInt("Capacity", capacity);
         return nbt;
     }
-
 }

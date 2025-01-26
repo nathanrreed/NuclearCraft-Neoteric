@@ -15,21 +15,21 @@ public class RFAmplifier {
     private static HashMap<String, RFAmplifierPrefab> registered = new HashMap<>();
 
     public static HashMap<String, RFAmplifierPrefab> all() {
-        if(all.isEmpty()) {
-            all.put("basic_rf_amplifier", new RFAmplifierPrefab("basic_rf_amplifier",250, 300, 500000, 350000, 75));
-            all.put("magnesium_diboride_rf_amplifier", new RFAmplifierPrefab("magnesium_diboride_rf_amplifier",500, 500, 1000000, 39000, 80));
-            all.put("niobium_tin_rf_amplifier", new RFAmplifierPrefab("niobium_tin_rf_amplifier",750, 1140, 2000000, 18000, 90));
-            all.put("niobium_titanium_rf_amplifier", new RFAmplifierPrefab("niobium_titanium_rf_amplifier",1500, 2260, 3000000, 10000, 95));
-            all.put("bscco_rf_amplifier", new RFAmplifierPrefab("bscco_rf_amplifier",2500, 4500, 4000000, 104000, 99));
+        if (all.isEmpty()) {
+            all.put("basic_rf_amplifier", new RFAmplifierPrefab("basic_rf_amplifier", 250, 300, 500000, 350000, 75));
+            all.put("magnesium_diboride_rf_amplifier", new RFAmplifierPrefab("magnesium_diboride_rf_amplifier", 500, 500, 1000000, 39000, 80));
+            all.put("niobium_tin_rf_amplifier", new RFAmplifierPrefab("niobium_tin_rf_amplifier", 750, 1140, 2000000, 18000, 90));
+            all.put("niobium_titanium_rf_amplifier", new RFAmplifierPrefab("niobium_titanium_rf_amplifier", 1500, 2260, 3000000, 10000, 95));
+            all.put("bscco_rf_amplifier", new RFAmplifierPrefab("bscco_rf_amplifier", 2500, 4500, 4000000, 104000, 99));
         }
         return all;
     }
 
     public static HashMap<String, RFAmplifierPrefab> registered() {
-        if(registered.isEmpty()) {
-            for(String name: all().keySet()) {
+        if (registered.isEmpty()) {
+            for (String name : all().keySet()) {
                 if (all().get(name).config().isRegistered())
-                    registered.put(name,all().get(name));
+                    registered.put(name, all().get(name));
             }
         }
         return registered;
@@ -37,7 +37,7 @@ public class RFAmplifier {
 
     public static List<Boolean> initialRegistered() {
         List<Boolean> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(true);
         }
         return tmp;
@@ -45,7 +45,7 @@ public class RFAmplifier {
 
     public static List<Integer> initialPower() {
         List<Integer> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(all().get(name).getPower());
         }
         return tmp;
@@ -53,7 +53,7 @@ public class RFAmplifier {
 
     public static Collection<Integer> initialMagneticField() {
         List<Integer> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(all().get(name).getVoltage());
         }
         return tmp;
@@ -61,7 +61,7 @@ public class RFAmplifier {
 
     public static Collection<Integer> initialHeat() {
         List<Integer> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(all().get(name).getHeat());
         }
         return tmp;
@@ -69,7 +69,7 @@ public class RFAmplifier {
 
     public static Collection<Integer> initialVoltage() {
         List<Integer> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(all().get(name).getVoltage());
         }
         return tmp;
@@ -80,7 +80,7 @@ public class RFAmplifier {
         private boolean initialized = false;
         private String name;
         protected int power = 0;
-        protected int  voltage = 0;
+        protected int voltage = 0;
         protected int heat = 0;
         protected int maxTemp = 0;
         protected int efficiency = 0;
@@ -111,10 +111,9 @@ public class RFAmplifier {
             return this;
         }
 
-        public RFAmplifierPrefab config()
-        {
-            if(!initialized) {
-                if(!CommonConfig.isLoaded()) {
+        public RFAmplifierPrefab config() {
+            if (!initialized) {
+                if (!CommonConfig.isLoaded()) {
                     return this;
                 }
                 int id = RFAmplifier.all().keySet().stream().toList().indexOf(name);
@@ -126,8 +125,9 @@ public class RFAmplifier {
             }
             return this;
         }
+
         public boolean isRegistered() {
-            return  registered;
+            return registered;
         }
 
         public int getVoltage() {

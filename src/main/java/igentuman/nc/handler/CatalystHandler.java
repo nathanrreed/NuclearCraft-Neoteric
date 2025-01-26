@@ -1,8 +1,10 @@
 package igentuman.nc.handler;
 
 import igentuman.nc.block.entity.processor.NCProcessorBE;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraft.world.item.component.CustomData;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
@@ -23,9 +25,9 @@ public class CatalystHandler extends ItemStackHandler {
 
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        for(Object item: be.getAllowedCatalysts()) {
-            if(stack.getItem().equals(item)) {
-                return stack.getOrCreateTag().contains("is_nc_analyzed");
+        for (Object item : be.getAllowedCatalysts()) {
+            if (stack.getItem().equals(item)) {
+                return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).contains("is_nc_analyzed");
             }
         }
         return false;

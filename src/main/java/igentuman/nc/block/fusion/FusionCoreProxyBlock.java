@@ -1,15 +1,13 @@
 package igentuman.nc.block.fusion;
 
-import igentuman.nc.block.entity.fission.FissionPortBE;
 import igentuman.nc.block.entity.fusion.FusionBE;
 import igentuman.nc.block.entity.fusion.FusionCoreBE;
 import igentuman.nc.block.entity.fusion.FusionCoreProxyBE;
 import igentuman.nc.container.FusionCoreContainer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -24,8 +22,6 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import static igentuman.nc.multiblock.fusion.FusionReactor.FUSION_CORE_PROXY_BE;
@@ -50,9 +46,8 @@ public class FusionCoreProxyBlock extends FusionBeBlock {
         return FUSION_CORE_PROXY_BE.get().create(pPos, pState);
     }
 
-    public String getCode()
-    {
-        return ForgeRegistries.BLOCKS.getKey(this).getPath();
+    public String getCode() {
+        return BuiltInRegistries.BLOCK.getKey(this).getPath();
     }
 
     @Override
@@ -64,12 +59,12 @@ public class FusionCoreProxyBlock extends FusionBeBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             FusionCoreProxyBE proxy = (FusionCoreProxyBE) be;
 
-            if (proxy.getCoreBE() instanceof FusionCoreBE)  {
+            if (proxy.getCoreBE() instanceof FusionCoreBE) {
                 MenuProvider containerProvider = new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
@@ -81,7 +76,7 @@ public class FusionCoreProxyBlock extends FusionBeBlock {
                         return new FusionCoreContainer(windowId, proxy.getCorePos(), playerInventory);
                     }
                 };
-                NetworkHooks.openScreen((ServerPlayer) player, containerProvider, proxy.getCorePos());
+                player.openMenu(containerProvider, proxy.getCorePos());
             }
         }
         return InteractionResult.SUCCESS;
@@ -103,7 +98,7 @@ public class FusionCoreProxyBlock extends FusionBeBlock {
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof FusionBE tile) {
                 tile.tickServer();
             }

@@ -2,7 +2,6 @@ package igentuman.nc.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import igentuman.nc.container.RedstoneDImmerContainer;
-import igentuman.nc.container.StorageContainerContainer;
 import igentuman.nc.util.annotation.NothingNullByDefault;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -24,7 +23,7 @@ public class RedstoneDimmerScreen extends AbstractContainerScreen<RedstoneDImmer
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         super.render(graphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(graphics, mouseX, mouseY);
     }

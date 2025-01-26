@@ -1,10 +1,13 @@
 package igentuman.nc.util;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.world.item.component.CustomData;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,7 +23,7 @@ public final class ItemDataUtils {
 
     @NotNull
     public static CompoundTag getDataMap(ItemStack stack) {
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         if (tag.contains(NBTConstants.NC_DATA, Tag.TAG_COMPOUND)) {
             return tag.getCompound(NBTConstants.NC_DATA);
         }
@@ -31,8 +34,8 @@ public final class ItemDataUtils {
 
     @Nullable
     public static CompoundTag getDataMapIfPresent(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains(NBTConstants.NC_DATA, Tag.TAG_COMPOUND)) {
+        CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (tag.contains(NBTConstants.NC_DATA, Tag.TAG_COMPOUND)) {
             return tag.getCompound(NBTConstants.NC_DATA);
         }
         return null;
@@ -50,7 +53,8 @@ public final class ItemDataUtils {
             if (dataMap.isEmpty()) {
                 //If our data map no longer has any elements after removing a piece of stored data
                 // then remove the data tag to make the stack nice and clean again
-                stack.removeTagKey(NBTConstants.NC_DATA);
+
+                stack.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, customData -> customData.update(compoundTag -> compoundTag.remove(NBTConstants.NC_DATA)));
             }
         }
     }
@@ -190,15 +194,15 @@ public final class ItemDataUtils {
         }
     }
 
-    public static void readContainers(ItemStack stack, String containerKey, List<? extends INBTSerializable<CompoundTag>> containers) {
+    public static void readContainers(ItemStack stack, String containerKey, List<? extends INBTSerializable<CompoundTag>> containers, HolderLookup.Provider registries) {
         if (!stack.isEmpty()) {
-            DataHandlerUtils.readContainers(containers, getList(stack, containerKey));
+            DataHandlerUtils.readContainers(containers, getList(stack, containerKey), registries);
         }
     }
 
-    public static void writeContainers(ItemStack stack, String containerKey, List<? extends INBTSerializable<CompoundTag>> containers) {
+    public static void writeContainers(ItemStack stack, String containerKey, List<? extends INBTSerializable<CompoundTag>> containers, HolderLookup.Provider registries) {
         if (!stack.isEmpty()) {
-            setListOrRemove(stack, containerKey, DataHandlerUtils.writeContainers(containers));
+            setListOrRemove(stack, containerKey, DataHandlerUtils.writeContainers(containers, registries));
         }
     }
 }

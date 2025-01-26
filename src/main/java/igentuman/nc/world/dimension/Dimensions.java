@@ -9,7 +9,7 @@ import static igentuman.nc.NuclearCraft.MODID;
 
 public class Dimensions {
 
-    public static final ResourceKey<Level> WASTELAND = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(MODID, "wasteland"));
+    public static final ResourceKey<Level> WASTELAND = ResourceKey.create(Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath(MODID, "wasteland"));
     public static int WASTELAIND_ID = -4848;
 
     public static void register() {

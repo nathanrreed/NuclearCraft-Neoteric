@@ -4,8 +4,8 @@ import igentuman.nc.block.ElectromagnetBlock;
 import igentuman.nc.block.RFAmplifierBlock;
 import igentuman.nc.block.entity.fusion.FusionCoreBE;
 import igentuman.nc.block.fusion.MultiblockConnectorBlock;
-import igentuman.nc.multiblock.MultiblockHandler;
 import igentuman.nc.multiblock.AbstractNCMultiblock;
+import igentuman.nc.multiblock.MultiblockHandler;
 import igentuman.nc.multiblock.ValidationResult;
 import igentuman.nc.util.NCBlockPos;
 import net.minecraft.core.BlockPos;
@@ -40,8 +40,7 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
     protected boolean needToCollectFunctionalBlocks = true;
     public boolean needToRecalculateCharacteristics = true;
 
-    public boolean isReadyToProcess()
-    {
+    public boolean isReadyToProcess() {
         return isFormed && outerValid && innerValid && !needToRecalculateCharacteristics && !needToCollectFunctionalBlocks;
     }
 
@@ -53,7 +52,7 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
                 getBlocksByTagKey(FusionReactor.CASING_BLOCKS.location().toString()),
                 List.of(AIR));
         controllerBE = core;
-        id = "fusion_reactor_"+controllerBE.getBlockPos().toShortString();
+        id = "fusion_reactor_" + controllerBE.getBlockPos().toShortString();
         MultiblockHandler.addMultiblock(this);
         controller = new FusionReactorController(controllerBE);
     }
@@ -118,8 +117,8 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
         validateConnectors();
         validateRing();
         outerValid = ringValid && connectorsValid;
-        if(outerValid) {
-            validationResult =  ValidationResult.VALID;
+        if (outerValid) {
+            validationResult = ValidationResult.VALID;
         }
     }
 
@@ -131,7 +130,7 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
 
     @Override
     public void onBlockDestroyed(BlockState state, Level level, BlockPos pos, Explosion explosion) {
-        if(controllerBE.plasmaTemperature > 100000) {
+        if (controllerBE.plasmaTemperature > 100000) {
           /*  level.explode(null,
                     pos.getX(), pos.getY(), pos.getZ(),
                     1, true, Explosion.BlockInteraction.KEEP);*/
@@ -140,19 +139,18 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
     }
 
     private Block getBlock(BlockPos pos) {
-        if(level() == null) {
+        if (level() == null) {
             return AIR;
         }
         return level().getBlockState(pos).getBlock();
     }
 
-    private void processFunctionalBlock(NCBlockPos pos)
-    {
-        if(getBlock(pos) instanceof ElectromagnetBlock magnet) {
+    private void processFunctionalBlock(NCBlockPos pos) {
+        if (getBlock(pos) instanceof ElectromagnetBlock magnet) {
             electromagnets.put(pos.copy(), magnet);
             allBlocks.add(pos.copy());
             updateDimensions(pos);
-        } else if(getBlock(pos) instanceof RFAmplifierBlock amplifier) {
+        } else if (getBlock(pos) instanceof RFAmplifierBlock amplifier) {
             amplifiers.put(pos.copy(), amplifier);
             allBlocks.add(pos.copy());
             updateDimensions(pos);
@@ -163,10 +161,10 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
         electromagnets.clear();
         amplifiers.clear();
         NCBlockPos pos = new NCBlockPos(controllerBE.getBlockPos());
-        for(Direction side: List.of(NORTH, EAST, SOUTH, WEST)) {
+        for (Direction side : List.of(NORTH, EAST, SOUTH, WEST)) {
             Direction dir = side;
-            int steps = length*2+3;
-            int shift = length+1;
+            int steps = length * 2 + 3;
+            int shift = length + 1;
             NCBlockPos startPosInnerWall = null;
             NCBlockPos startPosOuterWall = null;
             //position to left corner of the ring
@@ -174,34 +172,34 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
                 case NORTH -> {
                     dir = EAST;
                     startPosInnerWall = new NCBlockPos(pos.revert().relative(NORTH, shift).relative(WEST, shift));
-                    startPosOuterWall = new NCBlockPos(pos.revert().relative(NORTH, 2+shift).relative(WEST, 1+shift));
+                    startPosOuterWall = new NCBlockPos(pos.revert().relative(NORTH, 2 + shift).relative(WEST, 1 + shift));
                 }
                 case SOUTH -> {
                     dir = WEST;
                     startPosInnerWall = new NCBlockPos(pos.revert().relative(SOUTH, shift).relative(EAST, shift));
-                    startPosOuterWall = new NCBlockPos(pos.revert().relative(SOUTH, 2+shift).relative(EAST, 1+shift));
+                    startPosOuterWall = new NCBlockPos(pos.revert().relative(SOUTH, 2 + shift).relative(EAST, 1 + shift));
                 }
                 case WEST -> {
                     dir = SOUTH;
                     startPosInnerWall = new NCBlockPos(pos.revert().relative(WEST, shift).relative(NORTH, shift));
-                    startPosOuterWall = new NCBlockPos(pos.revert().relative(WEST, 2+shift).relative(NORTH, 1+shift));
+                    startPosOuterWall = new NCBlockPos(pos.revert().relative(WEST, 2 + shift).relative(NORTH, 1 + shift));
                 }
                 case EAST -> {
                     dir = NORTH;
                     startPosInnerWall = new NCBlockPos(pos.revert().relative(EAST, shift).relative(SOUTH, shift));
-                    startPosOuterWall = new NCBlockPos(pos.revert().relative(EAST, 2+shift).relative(SOUTH, 1+shift));
+                    startPosOuterWall = new NCBlockPos(pos.revert().relative(EAST, 2 + shift).relative(SOUTH, 1 + shift));
                 }
             }
-            if(startPosInnerWall == null || startPosOuterWall == null) {
+            if (startPosInnerWall == null || startPosOuterWall == null) {
                 return;
             }
             //inner
-            for(int i = 0; i < steps; i++) {
+            for (int i = 0; i < steps; i++) {
                 processFunctionalBlock(startPosInnerWall.revert().relative(dir, i));
                 processFunctionalBlock(startPosInnerWall.revert().relative(UP, 2).relative(dir, i));
             }
             //outer
-            for(int i = 0; i < steps+2; i++) {
+            for (int i = 0; i < steps + 2; i++) {
                 processFunctionalBlock(startPosOuterWall.revert().relative(dir, i));
                 processFunctionalBlock(startPosOuterWall.revert().relative(UP, 2).relative(dir, i));
             }
@@ -211,10 +209,10 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
     private void validateRing() {
         NCBlockPos pos = new NCBlockPos(controllerBE.getBlockPos().relative(UP));
         ringValid = true;
-        for(Direction side: List.of(NORTH, EAST, SOUTH, WEST)) {
+        for (Direction side : List.of(NORTH, EAST, SOUTH, WEST)) {
             Direction dir = side;
-            int steps = length*2+3;
-            int shift = length+1;
+            int steps = length * 2 + 3;
+            int shift = length + 1;
             NCBlockPos startPosInnerWall = null;
             NCBlockPos startPosOuterWall = null;
             NCBlockPos startPosBottomWall = null;
@@ -225,36 +223,36 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
                 case NORTH -> {
                     dir = EAST;
                     startPosInnerWall = new NCBlockPos(pos.revert().relative(NORTH, shift).relative(WEST, shift));
-                    startPosOuterWall = new NCBlockPos(pos.revert().relative(NORTH, 2+shift).relative(WEST, 1+shift));
-                    startPosBottomWall = new NCBlockPos(pos.revert().relative(NORTH, 1+shift).relative(WEST, 1+shift).relative(DOWN));
-                    startPosTopWall = new NCBlockPos(pos.revert().relative(NORTH, 1+shift).relative(WEST, 1+shift).relative(UP));
+                    startPosOuterWall = new NCBlockPos(pos.revert().relative(NORTH, 2 + shift).relative(WEST, 1 + shift));
+                    startPosBottomWall = new NCBlockPos(pos.revert().relative(NORTH, 1 + shift).relative(WEST, 1 + shift).relative(DOWN));
+                    startPosTopWall = new NCBlockPos(pos.revert().relative(NORTH, 1 + shift).relative(WEST, 1 + shift).relative(UP));
                 }
                 case SOUTH -> {
                     dir = WEST;
                     startPosInnerWall = new NCBlockPos(pos.revert().relative(SOUTH, shift).relative(EAST, shift));
-                    startPosOuterWall = new NCBlockPos(pos.revert().relative(SOUTH, 2+shift).relative(EAST, 1+shift));
-                    startPosBottomWall = new NCBlockPos(pos.revert().relative(SOUTH, 1+shift).relative(EAST, 1+shift).relative(DOWN));
-                    startPosTopWall = new NCBlockPos(pos.revert().relative(SOUTH, 1+shift).relative(EAST, 1+shift).relative(UP));
+                    startPosOuterWall = new NCBlockPos(pos.revert().relative(SOUTH, 2 + shift).relative(EAST, 1 + shift));
+                    startPosBottomWall = new NCBlockPos(pos.revert().relative(SOUTH, 1 + shift).relative(EAST, 1 + shift).relative(DOWN));
+                    startPosTopWall = new NCBlockPos(pos.revert().relative(SOUTH, 1 + shift).relative(EAST, 1 + shift).relative(UP));
                 }
                 case WEST -> {
                     dir = SOUTH;
                     startPosInnerWall = new NCBlockPos(pos.revert().relative(WEST, shift).relative(NORTH, shift));
-                    startPosOuterWall = new NCBlockPos(pos.revert().relative(WEST, 2+shift).relative(NORTH, 1+shift));
-                    startPosBottomWall = new NCBlockPos(pos.revert().relative(WEST, 1+shift).relative(NORTH, 1+shift).relative(DOWN));
-                    startPosTopWall = new NCBlockPos(pos.revert().relative(WEST, 1+shift).relative(NORTH, 1+shift).relative(UP));
+                    startPosOuterWall = new NCBlockPos(pos.revert().relative(WEST, 2 + shift).relative(NORTH, 1 + shift));
+                    startPosBottomWall = new NCBlockPos(pos.revert().relative(WEST, 1 + shift).relative(NORTH, 1 + shift).relative(DOWN));
+                    startPosTopWall = new NCBlockPos(pos.revert().relative(WEST, 1 + shift).relative(NORTH, 1 + shift).relative(UP));
                 }
                 case EAST -> {
                     dir = NORTH;
                     startPosInnerWall = new NCBlockPos(pos.revert().relative(EAST, shift).relative(SOUTH, shift));
-                    startPosOuterWall = new NCBlockPos(pos.revert().relative(EAST, 2+shift).relative(SOUTH, 1+shift));
-                    startPosBottomWall = new NCBlockPos(pos.revert().relative(EAST, 1+shift).relative(SOUTH, 1+shift).relative(DOWN));
-                    startPosTopWall = new NCBlockPos(pos.revert().relative(EAST, 1+shift).relative(SOUTH, 1+shift).relative(UP));
+                    startPosOuterWall = new NCBlockPos(pos.revert().relative(EAST, 2 + shift).relative(SOUTH, 1 + shift));
+                    startPosBottomWall = new NCBlockPos(pos.revert().relative(EAST, 1 + shift).relative(SOUTH, 1 + shift).relative(DOWN));
+                    startPosTopWall = new NCBlockPos(pos.revert().relative(EAST, 1 + shift).relative(SOUTH, 1 + shift).relative(UP));
                 }
             }
             //inner wall
-            for(int i = 0; i < steps; i++) {
+            for (int i = 0; i < steps; i++) {
                 assert startPosInnerWall != null;
-                if(isValidForOuter(startPosInnerWall.revert().relative(dir, i))) {
+                if (isValidForOuter(startPosInnerWall.revert().relative(dir, i))) {
                     allBlocks.add(new NCBlockPos(startPosInnerWall));
                 } else {
                     ringValid = false;
@@ -264,9 +262,9 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
                 }
             }
             //outer, bottom, top walls
-            for(int i = 0; i < steps+2; i++) {
+            for (int i = 0; i < steps + 2; i++) {
                 assert startPosOuterWall != null;
-                if(isValidForOuter(startPosOuterWall.revert().relative(dir, i))) {
+                if (isValidForOuter(startPosOuterWall.revert().relative(dir, i))) {
                     allBlocks.add(new NCBlockPos(startPosOuterWall));
                 } else {
                     ringValid = false;
@@ -275,7 +273,7 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
                     return;
                 }
                 assert startPosBottomWall != null;
-                if(isValidForOuter(startPosBottomWall.revert().relative(dir, i))) {
+                if (isValidForOuter(startPosBottomWall.revert().relative(dir, i))) {
                     allBlocks.add(new NCBlockPos(startPosBottomWall));
                 } else {
                     ringValid = false;
@@ -284,7 +282,7 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
                     return;
                 }
                 assert startPosTopWall != null;
-                if(isValidForOuter(startPosTopWall.revert().relative(dir, i))) {
+                if (isValidForOuter(startPosTopWall.revert().relative(dir, i))) {
                     allBlocks.add(new NCBlockPos(startPosTopWall));
                 } else {
                     ringValid = false;
@@ -301,15 +299,15 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
 
         length = 1;
         connectorsValid = true;
-        for(int i = 2; i <= maxWidth()/2+1; i++) {
+        for (int i = 2; i <= maxWidth() / 2 + 1; i++) {
             int connectors = 0;
-            for(Direction side: List.of(NORTH, EAST, Direction.SOUTH, Direction.WEST)) {
-                if(getBlockState(pos.revert().relative(side, i)).getBlock() instanceof MultiblockConnectorBlock) {
+            for (Direction side : List.of(NORTH, EAST, Direction.SOUTH, Direction.WEST)) {
+                if (getBlockState(pos.revert().relative(side, i)).getBlock() instanceof MultiblockConnectorBlock) {
                     allBlocks.add(new NCBlockPos(pos));
                     connectors++;
                 }
             }
-            if(connectors == 4) {
+            if (connectors == 4) {
                 length++;
             } else {
                 if (connectors != 0) {
@@ -326,13 +324,13 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
 
     @Override
     public void validateInner() {
-        if(!outerValid) return;
+        if (!outerValid) return;
         NCBlockPos pos = new NCBlockPos(controllerBE.getBlockPos().relative(UP));
         innerValid = true;
-        for(Direction side: List.of(NORTH, EAST, SOUTH, WEST)) {
+        for (Direction side : List.of(NORTH, EAST, SOUTH, WEST)) {
             Direction dir = side;
-            int steps = length*2+3;
-            int shift = length+2;
+            int steps = length * 2 + 3;
+            int shift = length + 2;
             NCBlockPos innerRingStartPos = null;
             Level level = controllerBE.getLevel();
             //position to left corner of the ring
@@ -354,9 +352,9 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
                     innerRingStartPos = new NCBlockPos(pos.revert().relative(EAST, shift).relative(SOUTH, shift));
                 }
             }
-            for(int i = 0; i < steps; i++) {
+            for (int i = 0; i < steps; i++) {
                 assert innerRingStartPos != null;
-                if(!processInnerBlock(innerRingStartPos.revert().relative(dir, i))) {
+                if (!processInnerBlock(innerRingStartPos.revert().relative(dir, i))) {
                     innerValid = false;
                     validationResult = ValidationResult.WRONG_INNER;
                     controller().addErroredBlock(innerRingStartPos);
@@ -364,7 +362,7 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
                 }
             }
         }
-        validationResult =  ValidationResult.VALID;
+        validationResult = ValidationResult.VALID;
     }
 
     @Override
@@ -373,7 +371,7 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
     }
 
     private Level level() {
-        if(controllerBE == null) {
+        if (controllerBE == null) {
             return null;
         }
         return controllerBE.getLevel();
@@ -394,12 +392,12 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
 
     public void tick() {
         super.tick();
-        if(isFormed) {
-            if(needToCollectFunctionalBlocks) {
+        if (isFormed) {
+            if (needToCollectFunctionalBlocks) {
                 collectFunctionalParts();
                 needToCollectFunctionalBlocks = false;
                 needToRecalculateCharacteristics = true;
-            } else if(needToRecalculateCharacteristics){
+            } else if (needToRecalculateCharacteristics) {
                 recalculateCharacteristics();
                 needToRecalculateCharacteristics = false;
             }
@@ -415,20 +413,20 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
         maxRFAmplifiersTemp = 1000000;
         double mEfficiency = 0;
         double rEfficiency = 0;
-        for(ElectromagnetBlock magnet: electromagnets.values()) {
+        for (ElectromagnetBlock magnet : electromagnets.values()) {
             magneticFieldStrength += magnet.getStrength();
             mEfficiency += (int) magnet.getEfficiency();
             magnetsPower += magnet.getPower();
-            if(magnet.getMaxTemperature() < maxMagnetsTemp) {
+            if (magnet.getMaxTemperature() < maxMagnetsTemp) {
                 maxMagnetsTemp = magnet.getMaxTemperature();
             }
         }
         magnetsEfficiency = (int) (mEfficiency / electromagnets.size());
-        for(RFAmplifierBlock amplifier: amplifiers.values()) {
+        for (RFAmplifierBlock amplifier : amplifiers.values()) {
             rfAmplification += amplifier.getAmplification();
             rfAmplifiersPower += amplifier.getPower();
             rEfficiency += (int) amplifier.getEfficiency();
-            if(amplifier.getMaxTemperature() < maxRFAmplifiersTemp) {
+            if (amplifier.getMaxTemperature() < maxRFAmplifiersTemp) {
                 maxRFAmplifiersTemp = amplifier.getMaxTemperature();
             }
         }
@@ -438,21 +436,21 @@ public class FusionReactorMultiblock extends AbstractNCMultiblock {
     @Override
     public void onNeighborChange(BlockState state, BlockPos pos, BlockPos neighbor) {
         super.onNeighborChange(state, pos, neighbor);
-        if(!hasToRefresh && componentChanged(neighbor)) {
+        if (!hasToRefresh && componentChanged(neighbor)) {
             needToCollectFunctionalBlocks = true;
         }
     }
 
     private boolean componentChanged(BlockPos neighbor) {
         //known component changed
-        if(electromagnets.containsKey(neighbor) || amplifiers.containsKey(neighbor)) {
+        if (electromagnets.containsKey(neighbor) || amplifiers.containsKey(neighbor)) {
             return true;
         }
         Block changedBlock = level().getBlockState(neighbor).getBlock();
         //new added
-        if(
+        if (
                 changedBlock instanceof ElectromagnetBlock
-                || changedBlock instanceof RFAmplifierBlock
+                        || changedBlock instanceof RFAmplifierBlock
         ) {
             return true;
         }

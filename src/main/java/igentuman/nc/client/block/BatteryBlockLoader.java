@@ -3,41 +3,40 @@ package igentuman.nc.client.block;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.*;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
+import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
-import net.minecraftforge.client.model.geometry.IGeometryLoader;
-import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
+import net.neoforged.neoforge.client.ClientHooks;
+import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
+import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
 import static igentuman.nc.NuclearCraft.MODID;
 
 public class BatteryBlockLoader implements IGeometryLoader<BatteryBlockLoader.BatteryModelGeometry> {
 
-    public static final ResourceLocation BATTERY_LOADER = new ResourceLocation(MODID, "battery_loader");
+    public static final ResourceLocation BATTERY_LOADER = ResourceLocation.fromNamespaceAndPath(MODID, "battery_loader");
 
     @Override
     public BatteryModelGeometry read(JsonObject jsonObject, JsonDeserializationContext deserializationContext) throws JsonParseException {
         String side = jsonObject.get("textures").getAsJsonObject().get("down").getAsString();
         String up = jsonObject.get("textures").getAsJsonObject().get("up").getAsString();
 
-        Material sideDefault = ForgeHooksClient.getBlockMaterial(new ResourceLocation(side));
-        Material sideIn = ForgeHooksClient.getBlockMaterial(new ResourceLocation(side+ "_in"));
-        Material sideOut = ForgeHooksClient.getBlockMaterial(new ResourceLocation(side+ "_out"));
-        Material sideNone = ForgeHooksClient.getBlockMaterial(new ResourceLocation(side+ "_non"));
+        Material sideDefault = ClientHooks.getBlockMaterial(ResourceLocation.parse(side));
+        Material sideIn = ClientHooks.getBlockMaterial(ResourceLocation.parse(side + "_in"));
+        Material sideOut = ClientHooks.getBlockMaterial(ResourceLocation.parse(side + "_out"));
+        Material sideNone = ClientHooks.getBlockMaterial(ResourceLocation.parse(side + "_non"));
 
-        Material topDefault = ForgeHooksClient.getBlockMaterial(new ResourceLocation(up));
-        Material topIn = ForgeHooksClient.getBlockMaterial(new ResourceLocation(up+ "_in"));
-        Material topOut = ForgeHooksClient.getBlockMaterial(new ResourceLocation(up+ "_out"));
-        Material topNone = ForgeHooksClient.getBlockMaterial(new ResourceLocation(up+ "_non"));
+        Material topDefault = ClientHooks.getBlockMaterial(ResourceLocation.parse(up));
+        Material topIn = ClientHooks.getBlockMaterial(ResourceLocation.parse(up + "_in"));
+        Material topOut = ClientHooks.getBlockMaterial(ResourceLocation.parse(up + "_out"));
+        Material topNone = ClientHooks.getBlockMaterial(ResourceLocation.parse(up + "_non"));
 
         return new BatteryModelGeometry(sideDefault, sideIn, sideOut, sideNone, topDefault, topIn, topOut, topNone);
     }
@@ -65,8 +64,8 @@ public class BatteryBlockLoader implements IGeometryLoader<BatteryBlockLoader.Ba
         }
 
         @Override
-        public BakedModel bake(IGeometryBakingContext iGeometryBakingContext, ModelBaker modelBaker, Function<Material, TextureAtlasSprite> function, ModelState modelState, ItemOverrides itemOverrides, ResourceLocation resourceLocation) {
-             return new BatteryBlockBakedModel(modelState, function, itemOverrides, iGeometryBakingContext.getTransforms(), this);
+        public BakedModel bake(IGeometryBakingContext iGeometryBakingContext, ModelBaker modelBaker, Function<Material, TextureAtlasSprite> function, ModelState modelState, ItemOverrides itemOverrides) {
+            return new BatteryBlockBakedModel(modelState, function, itemOverrides, iGeometryBakingContext.getTransforms(), this);
         }
     }
 }

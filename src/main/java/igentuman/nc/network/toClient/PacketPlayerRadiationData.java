@@ -1,32 +1,17 @@
 package igentuman.nc.network.toClient;
 
-import igentuman.nc.network.INcPacket;
-import igentuman.nc.radiation.client.ClientRadiationData;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
+import igentuman.nc.NuclearCraft;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-public class PacketPlayerRadiationData implements INcPacket {
-
-    private final long playerRadiation;
-
-    public PacketPlayerRadiationData(long playerRadiation) {
-        this.playerRadiation = playerRadiation;
-    }
+public record PacketPlayerRadiationData(long playerRadiation) implements CustomPacketPayload {
+    public static final Type<PacketPlayerRadiationData> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(NuclearCraft.MODID, "player_radiation_data_to_client"));
+    public static final StreamCodec STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.VAR_LONG, PacketPlayerRadiationData::playerRadiation, PacketPlayerRadiationData::new);
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        context.enqueueWork(() -> {
-            ClientRadiationData.setPlayerRadiation(playerRadiation);
-        });
-    }
-
-    @Override
-    public void encode(FriendlyByteBuf buffer) {
-        buffer.writeLong(playerRadiation);
-    }
-
-    public static PacketPlayerRadiationData decode(FriendlyByteBuf buffer) {
-        int playerRadiation = buffer.readInt();
-        return new PacketPlayerRadiationData(playerRadiation);
+    public Type<? extends CustomPacketPayload> type() {
+        return null;
     }
 }

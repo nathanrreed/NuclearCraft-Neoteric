@@ -1,7 +1,6 @@
 package igentuman.nc.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import igentuman.nc.container.StorageContainerContainer;
 import igentuman.nc.util.annotation.NothingNullByDefault;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,9 +18,9 @@ public class StorageContainerScreen extends AbstractContainerScreen<StorageConta
 
     public StorageContainerScreen(StorageContainerContainer container, Inventory inv, Component name) {
         super(container, inv, name);
-        GUI = rl("textures/gui/storage/"+container.getTier()+".png");
-        imageWidth = getColls()*18+20;
-        imageHeight = (getRows()+4)*18+20;
+        GUI = rl("textures/gui/storage/" + container.getTier() + ".png");
+        imageWidth = getColls() * 18 + 20;
+        imageHeight = (getRows() + 4) * 18 + 20;
     }
 
     private int getRows() {
@@ -34,7 +33,7 @@ public class StorageContainerScreen extends AbstractContainerScreen<StorageConta
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         super.render(graphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(graphics, mouseX, mouseY);
     }

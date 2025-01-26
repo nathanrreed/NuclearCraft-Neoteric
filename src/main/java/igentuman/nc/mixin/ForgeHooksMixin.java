@@ -1,20 +1,9 @@
 package igentuman.nc.mixin;
 
-import igentuman.nc.content.materials.Ores;
-import net.minecraft.resources.ResourceKey;
-import net.minecraftforge.common.ForgeHooks;
+import net.neoforged.neoforge.common.CommonHooks;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static igentuman.nc.NuclearCraft.MODID;
-
-@Mixin(ForgeHooks.class)
+@Mixin(CommonHooks.class)
 public abstract class ForgeHooksMixin {
 
 /*    @Inject(method = "filterThunks", at = @At("TAIL"), remap = false, cancellable = true)

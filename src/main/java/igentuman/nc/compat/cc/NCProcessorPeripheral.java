@@ -9,22 +9,18 @@ import javax.annotation.Nonnull;
 public class NCProcessorPeripheral implements IPeripheral {
     private final NCProcessorBE<?> processorBE;
 
-    public NCProcessorPeripheral(NCProcessorBE<?> processorBE)
-    {
+    public NCProcessorPeripheral(NCProcessorBE<?> processorBE) {
         this.processorBE = processorBE;
     }
 
     @Nonnull
     @Override
-    public String getType()
-    {
+    public String getType() {
         return "nc_processor";
     }
 
-
     @Override
-    public boolean equals( IPeripheral other )
-    {
+    public boolean equals(IPeripheral other) {
         return this == other || other instanceof NCProcessorPeripheral && ((NCProcessorPeripheral) other).processorBE == processorBE;
     }
 
@@ -39,39 +35,32 @@ public class NCProcessorPeripheral implements IPeripheral {
     }
 
     @LuaFunction
-    public final int getRecipeProgress()
-    {
+    public final int getRecipeProgress() {
         return processorBE.getRecipeProgress();
     }
 
     @LuaFunction
-    public final int toggleSlotMode(int slotId, int direction)
-    {
+    public final int toggleSlotMode(int slotId, int direction) {
         return processorBE.toggleSideConfig(slotId, direction);
     }
 
     @LuaFunction
-    public final int getSlotMode(int slotId, int direction)
-    {
+    public final int getSlotMode(int slotId, int direction) {
         return processorBE.getSlotMode(slotId, direction).ordinal();
     }
 
     @LuaFunction
-    public final int getSlotsCount()
-    {
+    public final int getSlotsCount() {
         return processorBE.getSlotsCount();
     }
 
     @LuaFunction
-    public final void voidSlotContent(int id)
-    {
+    public final void voidSlotContent(int id) {
         processorBE.voidSlotContent(id);
     }
 
     @LuaFunction
-    public final Object[] getSlotContent(int id)
-    {
+    public final Object[] getSlotContent(int id) {
         return processorBE.getSlotContent(id);
     }
-
 }

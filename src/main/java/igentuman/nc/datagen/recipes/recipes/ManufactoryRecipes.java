@@ -1,12 +1,9 @@
 package igentuman.nc.datagen.recipes.recipes;
 
-import com.google.common.collect.Lists;
-import igentuman.nc.content.processors.Processors;
 import igentuman.nc.content.materials.Materials;
+import igentuman.nc.content.processors.Processors;
 import igentuman.nc.setup.registration.NCItems;
-import net.minecraft.data.recipes.FinishedRecipe;
-
-import java.util.function.Consumer;
+import net.minecraft.data.recipes.RecipeOutput;
 
 import static igentuman.nc.setup.registration.NCItems.ALL_NC_ITEMS;
 import static igentuman.nc.setup.registration.Tags.GEMS_TAG;
@@ -15,16 +12,16 @@ import static net.minecraft.world.item.Items.*;
 
 public class ManufactoryRecipes extends AbstractRecipeProvider {
 
-    public static void generate(Consumer<FinishedRecipe> consumer) {
+    public static void generate(RecipeOutput consumer) {
         ManufactoryRecipes.consumer = consumer;
         ID = Processors.MANUFACTORY;
-        for(String name: Materials.all().keySet()) {
-            if(NCItems.NC_DUSTS.containsKey(name) && INGOTS_TAG.containsKey(name)) {
+        for (String name : Materials.all().keySet()) {
+            if (NCItems.NC_DUSTS.containsKey(name) && INGOTS_TAG.containsKey(name)) {
                 itemToItem(ingotIngredient(name), dustIngredient(name));
                 continue;
             }
-            if(GEMS_TAG.containsKey(name) && NCItems.NC_DUSTS.containsKey(name)) {
-                if(Materials.villiaumite.equals(name) || Materials.carobbiite.equals(name)) continue;
+            if (GEMS_TAG.containsKey(name) && NCItems.NC_DUSTS.containsKey(name)) {
+                if (Materials.villiaumite.equals(name) || Materials.carobbiite.equals(name)) continue;
                 itemToItem(gemIngredient(name), dustIngredient(name), 1.5D);
             }
         }

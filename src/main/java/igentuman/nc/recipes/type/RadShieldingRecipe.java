@@ -3,41 +3,41 @@ package igentuman.nc.recipes.type;
 import igentuman.nc.item.RadShieldingItem;
 import igentuman.nc.recipes.NcRecipeSerializers;
 import igentuman.nc.util.annotation.NothingNullByDefault;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 
 @NothingNullByDefault
 public class RadShieldingRecipe extends CustomRecipe {
 
-    public RadShieldingRecipe(ResourceLocation id, CraftingBookCategory category) {
-        super(id, CraftingBookCategory.EQUIPMENT);
+    public RadShieldingRecipe(CraftingBookCategory category) {
+        super(CraftingBookCategory.EQUIPMENT);
     }
 
-
     @Override
-    public boolean matches(CraftingContainer inv, Level world) {
+    public boolean matches(CraftingInput inv, Level level) {
         ItemStack shielding = ItemStack.EMPTY;
         ItemStack armor = ItemStack.EMPTY;
-        for (int i = 0; i < inv.getContainerSize(); ++i) {
-            if(inv.getItem(i).getItem() instanceof RadShieldingItem) {
+        for (int i = 0; i < inv.size(); ++i) {
+            if (inv.getItem(i).getItem() instanceof RadShieldingItem) {
                 shielding = inv.getItem(i);
                 continue;
             }
-            if(inv.getItem(i).getItem() instanceof ArmorItem) {
+            if (inv.getItem(i).getItem() instanceof ArmorItem) {
                 armor = inv.getItem(i);
                 continue;
             }
-            if(!shielding.isEmpty() && !armor.isEmpty() && !inv.getItem(i).isEmpty()) {
+            if (!shielding.isEmpty() && !armor.isEmpty() && !inv.getItem(i).isEmpty()) {
                 return false;
             }
         }
@@ -49,19 +49,20 @@ public class RadShieldingRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv, RegistryAccess access) {
+    public ItemStack assemble(CraftingInput inv, HolderLookup.Provider provider) {
         ItemStack shielding = ItemStack.EMPTY;
         ItemStack armor = ItemStack.EMPTY;
-        for (int i = 0; i < inv.getContainerSize(); ++i) {
-            if(inv.getItem(i).getItem() instanceof RadShieldingItem) {
+
+        for (int i = 0; i < inv.size(); ++i) {
+            if (inv.getItem(i).getItem() instanceof RadShieldingItem) {
                 shielding = inv.getItem(i);
                 continue;
             }
-            if(inv.getItem(i).getItem() instanceof ArmorItem) {
+            if (inv.getItem(i).getItem() instanceof ArmorItem) {
                 armor = inv.getItem(i);
                 continue;
             }
-            if(!shielding.isEmpty() && !armor.isEmpty() && !inv.getItem(i).isEmpty()) {
+            if (!shielding.isEmpty() && !armor.isEmpty() && !inv.getItem(i).isEmpty()) {
                 return ItemStack.EMPTY;
             }
         }
@@ -71,7 +72,9 @@ public class RadShieldingRecipe extends CustomRecipe {
         }
         ItemStack result = armor.copy();
         result.setCount(1);
-        result.getOrCreateTag().putInt("rad_shielding", ((RadShieldingItem)shielding.getItem()).getRadiationShieldingLevel());
+        ItemStack finalShielding = shielding;
+        result.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, (customData -> customData.update(compoundTag -> compoundTag.putInt("rad_shielding", ((RadShieldingItem) finalShielding.getItem()).getRadiationShieldingLevel()))));
+
         return result;
     }
 
@@ -84,6 +87,7 @@ public class RadShieldingRecipe extends CustomRecipe {
     public RecipeSerializer<?> getSerializer() {
         return NcRecipeSerializers.SHIELDING.get();
     }
+
 
     @SubscribeEvent
     public static void onCrafting(PlayerEvent.ItemCraftedEvent event) {

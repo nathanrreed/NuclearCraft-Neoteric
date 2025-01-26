@@ -10,11 +10,9 @@ public enum ValidationResult {
     NO_CONTROLLER(false, 6, "validation.structure.no_controller"),
     NO_PORT(false, 7, "validation.structure.no_port"),
     VALID(true, 8, "validation.structure.valid"),
-    WRONG_PROPORTIONS(false,9, "validation.structure.wrong_proportions"),
-    WRONG_CORNER(false,10, "validation.structure.wrong_corner"),
-    WRONG_BLADES(false,11, "validation.structure.wrong_blades");
-
-
+    WRONG_PROPORTIONS(false, 9, "validation.structure.wrong_proportions"),
+    WRONG_CORNER(false, 10, "validation.structure.wrong_corner"),
+    WRONG_BLADES(false, 11, "validation.structure.wrong_blades");
 
     public boolean isValid;
     public int id;
@@ -26,10 +24,9 @@ public enum ValidationResult {
         this.messageKey = messageKey;
     }
 
-    public static ValidationResult byId(int id)
-    {
-        for(ValidationResult res: ValidationResult.values()) {
-            if(res.id == id) return res;
+    public static ValidationResult byId(int id) {
+        for (ValidationResult res : ValidationResult.values()) {
+            if (res.id == id) return res;
         }
         return ValidationResult.VALID;
     }

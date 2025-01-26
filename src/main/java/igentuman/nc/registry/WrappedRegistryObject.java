@@ -1,16 +1,15 @@
 package igentuman.nc.registry;
 
 import igentuman.nc.util.annotation.NothingNullByDefault;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
 @NothingNullByDefault
 public class WrappedRegistryObject<T> implements Supplier<T>, INamedEntry {
 
-    protected RegistryObject<T> registryObject;
+    protected Supplier<T> registryObject;
 
-    protected WrappedRegistryObject(RegistryObject<T> registryObject) {
+    protected WrappedRegistryObject(Supplier<T> registryObject) {
         this.registryObject = registryObject;
     }
 
@@ -21,6 +20,6 @@ public class WrappedRegistryObject<T> implements Supplier<T>, INamedEntry {
 
     @Override
     public String getInternalRegistryName() {
-        return registryObject.getId().getPath();
+        return registryObject.get().toString(); //TODO FIX
     }
 }

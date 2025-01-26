@@ -2,11 +2,10 @@ package igentuman.nc.registry;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.RegistryBuilder;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -20,7 +19,7 @@ public class WrappedDeferredRegister<T> {
         this.internal = internal;
     }
 
-    protected WrappedDeferredRegister(String modid, IForgeRegistry<T> registry) {
+    protected WrappedDeferredRegister(String modid, Registry<T> registry) {
         this(DeferredRegister.create(registry, modid));
     }
 
@@ -31,7 +30,7 @@ public class WrappedDeferredRegister<T> {
         this(DeferredRegister.create(registryName, modid));
     }
 
-    protected <I extends T, W extends WrappedRegistryObject<I>> W register(String name, Supplier<? extends I> sup, Function<RegistryObject<I>, W> objectWrapper) {
+    protected <I extends T, W extends WrappedRegistryObject<I>> W register(String name, Supplier<? extends I> sup, Function<Supplier<I>, W> objectWrapper) {
         return objectWrapper.apply(internal.register(name, sup));
     }
 
@@ -39,18 +38,18 @@ public class WrappedDeferredRegister<T> {
         internal.register(bus);
     }
 
-    /**
-     * Only call this from nuclearcraft and for custom registries
-     */
-    public void createAndRegister(IEventBus bus) {
-        createAndRegister(bus, UnaryOperator.identity());
-    }
-
-    /**
-     * Only call this from nuclearcraft and for custom registries
-     */
-    public void createAndRegister(IEventBus bus, UnaryOperator<RegistryBuilder<T>> builder) {
-        internal.makeRegistry(() -> builder.apply(new RegistryBuilder<>()));
-        register(bus);
-    }
+//    /**
+//     * Only call this from nuclearcraft and for custom registries
+//     */
+//    public void createAndRegister(IEventBus bus) {
+//        createAndRegister(bus, UnaryOperator.identity());
+//    }
+//
+//    /**
+//     * Only call this from nuclearcraft and for custom registries
+//     */
+//    public void createAndRegister(IEventBus bus, UnaryOperator<RegistryBuilder<T>> builder) {
+//        internal.makeRegistry(() -> builder.apply(new RegistryBuilder<>()));
+//        register(bus);
+//    }
 }

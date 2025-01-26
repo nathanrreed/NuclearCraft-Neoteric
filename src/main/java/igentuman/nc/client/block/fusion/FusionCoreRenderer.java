@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.*;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -29,6 +29,7 @@ public class FusionCoreRenderer implements BlockEntityRenderer<BlockEntity> {
     public FusionCoreRenderer(BlockEntityRendererProvider.Context manager) {
         context = manager;
     }
+
     public float lastAngle = 0;
     public float x = -0.25f;
     public float y = -0.2f;
@@ -36,6 +37,7 @@ public class FusionCoreRenderer implements BlockEntityRenderer<BlockEntity> {
     public float sy = 1.25f;
     public float dx = 0.5f;
     public float dz = 0.5f;
+
     @Override
     public void render(BlockEntity pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource buffer, int packedLight, int combinedOverlay) {
         BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
@@ -48,12 +50,12 @@ public class FusionCoreRenderer implements BlockEntityRenderer<BlockEntity> {
         pPoseStack.pushPose();
         long time = Util.getMillis();
         float step = -0.08f;
-        if(coreBe.isRunning() && coreBe.efficiency > 0.5) {
+        if (coreBe.isRunning() && coreBe.efficiency > 0.5) {
             step = -0.15f;
         }
         float angel = time * step;
 
-        if(!coreBe.isRunning() || coreBe.efficiency < 0.1) {
+        if (!coreBe.isRunning() || coreBe.efficiency < 0.1) {
             angel = 45f;
         }
         angel %= 360;

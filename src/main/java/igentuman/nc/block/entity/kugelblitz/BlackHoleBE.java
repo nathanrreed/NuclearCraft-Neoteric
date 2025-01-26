@@ -13,7 +13,6 @@ public class BlackHoleBE extends NuclearCraftBE {
     }
 
     public void tickClient() {
-
     }
 
     public void tickServer() {

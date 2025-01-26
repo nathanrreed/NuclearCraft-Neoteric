@@ -22,36 +22,33 @@ public class NCOre {
     public boolean registered = true;
 
     public int[] height;
+
     private NCOre(String name) {
         this.name = name;
     }
 
-    public NCOre vein(int size, int amount)
-    {
+    public NCOre vein(int size, int amount) {
         veinSize = size;
         veinAmount = amount;
         return this;
     }
 
-    public NCOre height(int min, int max)
-    {
+    public NCOre height(int min, int max) {
         height = new int[]{min, max};
         return this;
     }
 
-    public static NCOre get(String name)
-    {
+    public static NCOre get(String name) {
         return new NCOre(name);
     }
 
-    public NCOre dim(Integer ...dim) {
+    public NCOre dim(Integer... dim) {
         dimensions = List.of(dim);
         return this;
     }
 
-    public NCOre config()
-    {
-        if(!initialized) {
+    public NCOre config() {
+        if (!initialized) {
             try {
                 int id = Ores.all().keySet().stream().toList().indexOf(name);
                 registered = (boolean) ORE_CONFIG.ORES.get(name).register.get();
@@ -72,12 +69,11 @@ public class NCOre {
     }
 
     public boolean isRegistered() {
-
-        return  registered;
+        return registered;
     }
 
     public Block block(String suffix) {
-        return ORE_BLOCKS.get(name+suffix).get();
+        return ORE_BLOCKS.get(name + suffix).get();
     }
 
     public Block block() {

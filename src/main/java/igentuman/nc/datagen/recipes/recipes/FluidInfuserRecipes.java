@@ -4,13 +4,12 @@ import igentuman.nc.content.fuel.FuelManager;
 import igentuman.nc.content.materials.Materials;
 import igentuman.nc.content.processors.Processors;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
-import igentuman.nc.recipes.ingredient.NcIngredient;
 import igentuman.nc.setup.registration.FissionFuel;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static igentuman.nc.setup.registration.NCItems.ALL_NC_ITEMS;
 import static net.minecraft.world.item.Items.ICE;
@@ -18,15 +17,15 @@ import static net.minecraft.world.item.Items.ICE;
 
 public class FluidInfuserRecipes extends AbstractRecipeProvider {
 
-    public static void generate(Consumer<FinishedRecipe> consumer) {
+    public static void generate(RecipeOutput consumer) {
         FluidInfuserRecipes.consumer = consumer;
         ID = Processors.FLUID_INFUSER;
 
 
-        for(String gas: List.of("oxygen", "nitrogen", Materials.zircaloy)) {
+        for (String gas : List.of("oxygen", "nitrogen", Materials.zircaloy)) {
             String type = gas.substring(0, 2).replace("zi", "za");
             for (String name : Materials.isotopes()) {
-                String key = name + "_"+type;
+                String key = name + "_" + type;
                 add(
                         fluidIngredient(gas, 100),
                         ingredient(FissionFuel.NC_ISOTOPES.get(name).get()),
@@ -133,7 +132,7 @@ public class FluidInfuserRecipes extends AbstractRecipeProvider {
 
     }
 
-    protected static void add(FluidStackIngredient inputFluid, NcIngredient inputItem, NcIngredient output, double...modifiers) {
+    protected static void add(FluidStackIngredient inputFluid, Ingredient inputItem, Ingredient output, double... modifiers) {
         itemsAndFluids(List.of(inputItem), List.of(output), List.of(inputFluid), new ArrayList<>(), modifiers);
     }
 }

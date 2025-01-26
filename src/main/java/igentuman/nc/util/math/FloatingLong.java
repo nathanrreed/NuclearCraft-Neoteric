@@ -57,9 +57,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Creates a mutable {@link FloatingLong} from a given primitive double.
      *
      * @param value The value to represent as a {@link FloatingLong}
-     *
      * @return A mutable {@link FloatingLong} from a given primitive double.
-     *
      * @apiNote If this method is called with negative numbers it will be clamped to {@link #ZERO}. If this is called with a value larger than {@link #MAX_VALUE}, it will
      * instead be clamped to {@link #MAX_VALUE}.
      * @implNote Does not round double value, and instead just drops any trailing digits
@@ -79,7 +77,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Creates a mutable {@link FloatingLong} from a given primitive unsigned long.
      *
      * @param value The value to use for the whole number portion of the {@link FloatingLong}
-     *
      * @return A mutable {@link FloatingLong} from a given primitive long.
      */
     public static FloatingLong create(long value) {
@@ -91,9 +88,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      *
      * @param value   The value to use for the whole number portion of the {@link FloatingLong}
      * @param decimal The short value to use for the decimal portion of the {@link FloatingLong}
-     *
      * @return A mutable {@link FloatingLong} from a given primitive long, and short.
-     *
      * @apiNote If this method is called with negative numbers for {@code decimal} it will be clamped to zero.
      */
     public static FloatingLong create(long value, short decimal) {
@@ -104,9 +99,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Creates a constant {@link FloatingLong} from a given primitive double.
      *
      * @param value The value to represent as a {@link FloatingLong}
-     *
      * @return A constant {@link FloatingLong} from a given primitive double.
-     *
      * @apiNote If this method is called with negative numbers it will be clamped to {@link #ZERO}. If this is called with a value larger than {@link #MAX_VALUE}, it will
      * instead be clamped to {@link #MAX_VALUE}.
      * @implNote Does not round double value, and instead just drops any trailing digits
@@ -126,7 +119,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Creates a constant {@link FloatingLong} from a given primitive unsigned long.
      *
      * @param value The value to use for the whole number portion of the {@link FloatingLong}
-     *
      * @return A constant {@link FloatingLong} from a given primitive long.
      */
     public static FloatingLong createConst(long value) {
@@ -138,9 +130,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      *
      * @param value   The value to use for the whole number portion of the {@link FloatingLong}
      * @param decimal The short value to use for the decimal portion of the {@link FloatingLong}
-     *
      * @return A constant {@link FloatingLong} from a given primitive long, and short.
-     *
      * @apiNote If this method is called with negative numbers for {@code decimal} it will be clamped to zero.
      */
     public static FloatingLong createConst(long value, short decimal) {
@@ -151,7 +141,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Reads a mutable {@link FloatingLong} from a buffer
      *
      * @param buffer The {@link FriendlyByteBuf} to read from
-     *
      * @return A mutable {@link FloatingLong}
      */
     public static FloatingLong readFromBuffer(FriendlyByteBuf buffer) {
@@ -189,7 +178,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      *
      * @param value   The whole number value to set
      * @param decimal The decimal value to set
-     *
      * @return If this {@link FloatingLong} is constant, it returns a new object otherwise it returns this {@link FloatingLong} after updating the internal values.
      */
     private FloatingLong setAndClampValues(long value, short decimal) {
@@ -234,9 +222,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * in a new object. This gets clamped at the upper bound of {@link FloatingLong#MAX_VALUE} rather than overflowing.
      *
      * @param toAdd The {@link FloatingLong} to add.
-     *
      * @return The {@link FloatingLong} representing the value of adding the given {@link FloatingLong} to this {@link FloatingLong}.
-     *
      * @apiNote It is recommended to set this to itself to reduce the chance of accidental calls if calling this on a constant {@link FloatingLong}
      * <br>
      * {@code value = value.plusEqual(toAdd)}
@@ -266,9 +252,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * result in a new object. This gets clamped at the lower bound of {@link FloatingLong#ZERO} rather than becoming negative.
      *
      * @param toSubtract The {@link FloatingLong} to subtract.
-     *
      * @return The {@link FloatingLong} representing the value of subtracting the given {@link FloatingLong} from this {@link FloatingLong}.
-     *
      * @apiNote It is recommended to set this to itself to reduce the chance of accidental calls if calling this on a constant {@link FloatingLong}
      * <br>
      * {@code value = value.minusEqual(toSubtract)}
@@ -295,9 +279,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * result in a new object. This gets clamped at the upper bound of {@link FloatingLong#MAX_VALUE} rather than overflowing.
      *
      * @param toMultiply The {@link FloatingLong} to multiply by.
-     *
      * @return The {@link FloatingLong} representing the value of multiplying the given {@link FloatingLong} with this {@link FloatingLong}.
-     *
      * @apiNote It is recommended to set this to itself to reduce the chance of accidental calls if calling this on a constant {@link FloatingLong}
      * <br>
      * {@code value = value.timesEqual(toMultiply)}
@@ -327,9 +309,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * result in a new object. This gets clamped at the upper bound of {@link FloatingLong#MAX_VALUE} rather than overflowing.
      *
      * @param toDivide The {@link FloatingLong} to divide by.
-     *
      * @return The {@link FloatingLong} representing the value of dividing this {@link FloatingLong} by the given {@link FloatingLong}.
-     *
      * @throws ArithmeticException if {@code toDivide} is zero.
      * @apiNote It is recommended to set this to itself to reduce the chance of accidental calls if calling this on a constant {@link FloatingLong}
      * <br>
@@ -355,9 +335,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * result in a new object. Rounds to the nearest 0.0001
      *
      * @param toDivide The value to divide by represented as an unsigned long.
-     *
      * @return The {@link FloatingLong} representing the value of dividing this {@link FloatingLong} by the given unsigned long.
-     *
      * @throws ArithmeticException if {@code toDivide} is zero.
      * @apiNote It is recommended to set this to itself to reduce the chance of accidental calls if calling this on a constant {@link FloatingLong}
      * <br>
@@ -400,9 +378,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Divides this {@link FloatingLong} by the given {@link FloatingLong} rounded down to an unsigned long.
      *
      * @param toDivide The {@link FloatingLong} to divide by.
-     *
      * @return An unsigned long representing the value of dividing this {@link FloatingLong} by the given {@link FloatingLong}.
-     *
      * @throws ArithmeticException if {@code toDivide} is zero.
      */
     public long divideToUnsignedLong(FloatingLong toDivide) {
@@ -439,8 +415,8 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
         //In this case, we're really multiplying (definitely need to account for decimal as well)
         if (Long.compareUnsigned(this.value, MAX_LONG_SHIFT) >= 0) {
             return Long.divideUnsigned(this.value, toDivide.decimal) * MAX_DECIMAL //lose some precision here, have to add modulus
-                   + Long.divideUnsigned(Long.remainderUnsigned(this.value, toDivide.decimal) * MAX_DECIMAL, toDivide.decimal)
-                   + (long) this.decimal * MAX_DECIMAL / toDivide.decimal;
+                    + Long.divideUnsigned(Long.remainderUnsigned(this.value, toDivide.decimal) * MAX_DECIMAL, toDivide.decimal)
+                    + (long) this.decimal * MAX_DECIMAL / toDivide.decimal;
         }
         long d = this.value * MAX_DECIMAL;
         //Note: We don't care about modulus since we're returning integers
@@ -452,9 +428,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * rather than overflowing.
      *
      * @param toDivide The {@link FloatingLong} to divide by.
-     *
      * @return A long representing the value of dividing this {@link FloatingLong} by the given {@link FloatingLong}.
-     *
      * @throws ArithmeticException if {@code toDivide} is zero.
      */
     public long divideToLong(FloatingLong toDivide) {
@@ -466,9 +440,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Integer#MAX_VALUE} rather than overflowing.
      *
      * @param toDivide The {@link FloatingLong} to divide by.
-     *
      * @return An int representing the value of dividing this {@link FloatingLong} by the given {@link FloatingLong}.
-     *
      * @throws ArithmeticException if {@code toDivide} is zero.
      */
     public int divideToInt(FloatingLong toDivide) {
@@ -480,7 +452,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * FloatingLong#MAX_VALUE} rather than overflowing.
      *
      * @param toAdd The {@link FloatingLong} to add.
-     *
      * @return The {@link FloatingLong} representing the value of adding the given {@link FloatingLong} to this {@link FloatingLong}.
      */
     public FloatingLong add(FloatingLong toAdd) {
@@ -492,7 +463,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * FloatingLong#MAX_VALUE} rather than overflowing.
      *
      * @param toAdd The value to add represented as an unsigned long.
-     *
      * @return The {@link FloatingLong} representing the value of adding the given unsigned long to this {@link FloatingLong}.
      */
     public FloatingLong add(long toAdd) {
@@ -504,9 +474,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * FloatingLong#MAX_VALUE} rather than overflowing.
      *
      * @param toAdd The value to add, must be greater than or equal to zero.
-     *
      * @return The {@link FloatingLong} representing the value of adding the given double to this {@link FloatingLong}.
-     *
      * @throws IllegalArgumentException if {@code toAdd} is negative.
      */
     public FloatingLong add(double toAdd) {
@@ -521,7 +489,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * FloatingLong#ZERO} rather than becoming negative.
      *
      * @param toSubtract The {@link FloatingLong} to subtract.
-     *
      * @return The {@link FloatingLong} representing the value of subtracting the given {@link FloatingLong} from this {@link FloatingLong}.
      */
     public FloatingLong subtract(FloatingLong toSubtract) {
@@ -533,7 +500,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * {@link FloatingLong#ZERO} rather than becoming negative.
      *
      * @param toSubtract The value to subtract represented as an unsigned long.
-     *
      * @return The {@link FloatingLong} representing the value of subtracting the given unsigned long from this {@link FloatingLong}.
      */
     public FloatingLong subtract(long toSubtract) {
@@ -545,9 +511,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * FloatingLong#ZERO} rather than becoming negative.
      *
      * @param toSubtract The value to subtract, must be greater than or equal to zero.
-     *
      * @return The {@link FloatingLong} representing the value of subtracting the given double from this {@link FloatingLong}.
-     *
      * @throws IllegalArgumentException if {@code toSubtract} is negative.
      */
     public FloatingLong subtract(double toSubtract) {
@@ -562,7 +526,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * FloatingLong#MAX_VALUE} rather than overflowing.
      *
      * @param toMultiply The {@link FloatingLong} to multiply by.
-     *
      * @return The {@link FloatingLong} representing the value of multiplying the given {@link FloatingLong} with this {@link FloatingLong}.
      */
     public FloatingLong multiply(FloatingLong toMultiply) {
@@ -574,7 +537,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * {@link FloatingLong#MAX_VALUE} rather than overflowing.
      *
      * @param toMultiply The value to multiply by represented as an unsigned long.
-     *
      * @return The {@link FloatingLong} representing the value of multiplying the given unsigned long with this {@link FloatingLong}.
      */
     public FloatingLong multiply(long toMultiply) {
@@ -586,9 +548,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * FloatingLong#MAX_VALUE} rather than overflowing.
      *
      * @param toMultiply The value to multiply by, must be greater than or equal to zero.
-     *
      * @return The {@link FloatingLong} representing the value of multiplying the given double with this {@link FloatingLong}.
-     *
      * @throws IllegalArgumentException if {@code toMultiply} is negative.
      */
     public FloatingLong multiply(double toMultiply) {
@@ -603,9 +563,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * FloatingLong#MAX_VALUE} rather than overflowing.
      *
      * @param toDivide The {@link FloatingLong} to divide by.
-     *
      * @return The {@link FloatingLong} representing the value of dividing this {@link FloatingLong} by the given {@link FloatingLong}.
-     *
      * @throws ArithmeticException if {@code toDivide} is zero.
      */
     public FloatingLong divide(FloatingLong toDivide) {
@@ -617,9 +575,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * {@link FloatingLong#MAX_VALUE} rather than overflowing.
      *
      * @param toDivide The value to divide by represented as an unsigned long. Must not be zero
-     *
      * @return The {@link FloatingLong} representing the value of dividing this {@link FloatingLong} by the given unsigned long.
-     *
      * @throws ArithmeticException if {@code toDivide} is zero.
      */
     public FloatingLong divide(long toDivide) {
@@ -631,9 +587,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * FloatingLong#MAX_VALUE} rather than overflowing.
      *
      * @param toDivide The value to divide by, must be greater than zero.
-     *
      * @return The {@link FloatingLong} representing the value of dividing this {@link FloatingLong} by the given double.
-     *
      * @throws ArithmeticException      if {@code toDivide} is zero.
      * @throws IllegalArgumentException if {@code toDivide} is negative.
      */
@@ -649,10 +603,8 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * FloatingLong#MAX_VALUE} rather than overflowing. Additionally, if the value to divide by is zero, this returns {@code 1}
      *
      * @param toDivide The {@link FloatingLong} to divide by.
-     *
      * @return A double representing the value of dividing this {@link FloatingLong} by the given {@link FloatingLong}, or {@code 1} if the given {@link FloatingLong} is
      * {@code 0}.
-     *
      * @implNote This caps the returned value at {@code 1}
      */
     public double divideToLevel(FloatingLong toDivide) {
@@ -662,9 +614,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
 
     /**
      * @param other The {@link FloatingLong} to compare to
-     *
      * @return this {@link FloatingLong} if it is greater than equal to the given {@link FloatingLong}, otherwise returns the given {@link FloatingLong}
-     *
      * @implNote This method does not copy the value that is returned, so it is on the caller to keep track of mutability.
      */
     public FloatingLong max(FloatingLong other) {
@@ -673,9 +623,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
 
     /**
      * @param other The {@link FloatingLong} to compare to
-     *
      * @return this {@link FloatingLong} if it is smaller than equal to the given {@link FloatingLong}, otherwise returns the given {@link FloatingLong}
-     *
      * @implNote This method does not copy the value that is returned, so it is on the caller to keep track of mutability.
      */
     public FloatingLong min(FloatingLong other) {
@@ -686,7 +634,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Returns the smallest {@link FloatingLong} that is greater than or equal to this {@link FloatingLong}, and is equal to a mathematical unsigned long.
      *
      * @return the smallest {@link FloatingLong} that is greater than or equal to this {@link FloatingLong}, and is equal to a mathematical unsigned long.
-     *
      * @implNote If this {@link FloatingLong} is already equal to a mathematical unsigned long, then the result is the same as the argument. Additionally, if this {@link
      * FloatingLong} is larger than the maximum unsigned long, this instead returns a {@link FloatingLong} representing the maximum unsigned long.
      */
@@ -705,7 +652,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Returns the largest {@link FloatingLong} that is less than or equal to this {@link FloatingLong}, and is equal to a mathematical unsigned long.
      *
      * @return the largest {@link FloatingLong} that is less than or equal to this {@link FloatingLong}, and is equal to a mathematical unsigned long.
-     *
      * @implNote If this {@link FloatingLong} is already equal to a mathematical unsigned long, then the result is the same as the argument.
      */
     public FloatingLong floor() {
@@ -716,7 +662,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Helper method to check if a given {@link FloatingLong} is smaller than this {@link FloatingLong}
      *
      * @param toCompare The {@link FloatingLong} to compare to
-     *
      * @return {@code true} if this {@link FloatingLong} is smaller, {@code false} otherwise.
      */
     public boolean smallerThan(FloatingLong toCompare) {
@@ -727,7 +672,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Helper method to check if a given {@link FloatingLong} is smaller than or equal to this {@link FloatingLong}
      *
      * @param toCompare The {@link FloatingLong} to compare to
-     *
      * @return {@code true} if this {@link FloatingLong} is smaller or equal, {@code false} otherwise.
      */
     public boolean smallerOrEqual(FloatingLong toCompare) {
@@ -738,7 +682,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Helper method to check if a given {@link FloatingLong} is greater than this {@link FloatingLong}
      *
      * @param toCompare The {@link FloatingLong} to compare to
-     *
      * @return {@code true} if this {@link FloatingLong} is larger, {@code false} otherwise.
      */
     public boolean greaterThan(FloatingLong toCompare) {
@@ -749,7 +692,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Helper method to check if a given {@link FloatingLong} is greater than or equal to this {@link FloatingLong}
      *
      * @param toCompare The {@link FloatingLong} to compare to
-     *
      * @return {@code true} if this {@link FloatingLong} is larger or equal, {@code false} otherwise.
      */
     public boolean greaterOrEqual(FloatingLong toCompare) {
@@ -790,7 +732,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Specialization of {@link #equals(Object)} for comparing two {@link FloatingLong}s
      *
      * @param other The {@link FloatingLong} to compare to
-     *
      * @return {@code true} if this {@link FloatingLong} is equal in value to the given {@link FloatingLong}, {@code false} otherwise.
      */
     public boolean equals(FloatingLong other) {
@@ -857,7 +798,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Converts the unsigned long portion to a float in the same way Guava's UnsignedLong does, and then adds our decimal portion
      */
     @Override
@@ -867,7 +808,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Converts the unsigned long portion to a double in the same way Guava's UnsignedLong does, and then adds our decimal portion
      */
     @Override
@@ -879,7 +820,6 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * Returns the absolute value of the difference between two Floating Long values.
      *
      * @param other comparing FloatingLong
-     *
      * @return the difference between values
      */
     public FloatingLong absDifference(FloatingLong other) {
@@ -937,9 +877,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * convey where the decimal starts.
      *
      * @param string a {@code String} containing the {@link FloatingLong} representation to be parsed
-     *
      * @return the {@link FloatingLong} represented by the argument in decimal.
-     *
      * @throws NumberFormatException if the string does not contain a parsable {@link FloatingLong}.
      */
     public static FloatingLong parseFloatingLong(String string) {
@@ -952,9 +890,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      *
      * @param string     a {@code String} containing the {@link FloatingLong} representation to be parsed
      * @param isConstant Specifies if a constant floating long should be returned or a modifiable floating long
-     *
      * @return the {@link FloatingLong} represented by the argument in decimal.
-     *
      * @throws NumberFormatException if the string does not contain a parsable {@link FloatingLong}.
      */
     public static FloatingLong parseFloatingLong(String string, boolean isConstant) {
@@ -974,9 +910,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      * being valid to convey where the decimal starts.
      *
      * @param string a {@code String} containing the decimal to be parsed
-     *
      * @return the decimal represented as a short.
-     *
      * @throws NumberFormatException if the string does not contain a parsable {@link Short}.
      */
     private static short parseDecimal(String string) {
@@ -989,9 +923,7 @@ public class FloatingLong extends Number implements Comparable<FloatingLong> {
      *
      * @param string a {@code String} containing the decimal to be parsed
      * @param index  The index of the decimal
-     *
      * @return the decimal represented as a short.
-     *
      * @throws NumberFormatException if the string does not contain a parsable {@link Short}.
      */
     private static short parseDecimal(String string, int index) {

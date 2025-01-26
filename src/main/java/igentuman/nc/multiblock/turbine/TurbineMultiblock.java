@@ -1,11 +1,14 @@
 package igentuman.nc.multiblock.turbine;
 
-import igentuman.nc.block.entity.turbine.*;
+import igentuman.nc.block.entity.turbine.TurbineBladeBE;
+import igentuman.nc.block.entity.turbine.TurbineCoilBE;
+import igentuman.nc.block.entity.turbine.TurbineControllerBE;
+import igentuman.nc.block.entity.turbine.TurbineRotorBE;
 import igentuman.nc.block.turbine.TurbineBearingBlock;
 import igentuman.nc.block.turbine.TurbineBladeBlock;
 import igentuman.nc.block.turbine.TurbineRotorBlock;
-import igentuman.nc.multiblock.MultiblockHandler;
 import igentuman.nc.multiblock.AbstractNCMultiblock;
+import igentuman.nc.multiblock.MultiblockHandler;
 import igentuman.nc.multiblock.ValidationResult;
 import igentuman.nc.util.NCBlockPos;
 import net.minecraft.core.BlockPos;
@@ -54,17 +57,21 @@ public class TurbineMultiblock extends AbstractNCMultiblock {
     }
 
     @Override
-    public int minWidth() {return TURBINE_CONFIG.MIN_SIZE.get(); }
+    public int minWidth() {
+        return TURBINE_CONFIG.MIN_SIZE.get();
+    }
 
     @Override
-    public int minDepth() { return TURBINE_CONFIG.MIN_SIZE.get(); }
+    public int minDepth() {
+        return TURBINE_CONFIG.MIN_SIZE.get();
+    }
 
     public TurbineMultiblock(TurbineControllerBE<?> turbineControllerBE) {
         super(
                 getBlocksByTagKey(CASING_BLOCKS.location().toString()),
                 getBlocksByTagKey(INNER_TURBINE_BLOCKS.location().toString())
         );
-        id = "turbine_"+turbineControllerBE.getBlockPos().toShortString();
+        id = "turbine_" + turbineControllerBE.getBlockPos().toShortString();
         MultiblockHandler.addMultiblock(this);
         controller = new TurbineController(turbineControllerBE);
     }
@@ -74,24 +81,23 @@ public class TurbineMultiblock extends AbstractNCMultiblock {
     }
 
     public void validateInner() {
-        if(!outerValid) return;
+        if (!outerValid) return;
         super.validateInner();
         detectOrientation();
         isRotorValid = validateRotor();
-        if(!isRotorValid) {
-            validationResult =  ValidationResult.WRONG_INNER;
+        if (!isRotorValid) {
+            validationResult = ValidationResult.WRONG_INNER;
         }
     }
 
     @Override
-    public void validate()
-    {
+    public void validate() {
         coilPositions.clear();
         rotorPositions.clear();
         bearingPositions.clear();
         bladePositions.clear();
         super.validate();
-        if(!validateProportions()) {
+        if (!validateProportions()) {
             validationResult = ValidationResult.WRONG_PROPORTIONS;
             innerValid = false;
             outerValid = false;
@@ -99,7 +105,7 @@ public class TurbineMultiblock extends AbstractNCMultiblock {
         } else {
             countCoils();
             countBlades();
-            if(blades % 4 != 0) {
+            if (blades % 4 != 0) {
                 validationResult = ValidationResult.WRONG_BLADES;
                 innerValid = false;
                 outerValid = false;
@@ -111,10 +117,10 @@ public class TurbineMultiblock extends AbstractNCMultiblock {
     private void countBlades() {
         flow = 0;
         blades = 0;
-        for(BlockPos pos : bladePositions) {
+        for (BlockPos pos : bladePositions) {
             BlockEntity be = getBlockEntity(pos);
-            if(be instanceof TurbineBladeBE blade) {
-                if(blade.isValid()) {
+            if (be instanceof TurbineBladeBE blade) {
+                if (blade.isValid()) {
                     flow += blade.getFlow();
                     blades++;
                 }
@@ -123,7 +129,7 @@ public class TurbineMultiblock extends AbstractNCMultiblock {
     }
 
     private void detectOrientation() {
-        if(rotorPositions.isEmpty()) return;
+        if (rotorPositions.isEmpty()) return;
         BlockPos rotorPos = rotorPositions.get(0);
         BlockState st = getBlockState(rotorPos);
         turbineDirection = st.getValue(TurbineRotorBlock.FACING);
@@ -138,12 +144,12 @@ public class TurbineMultiblock extends AbstractNCMultiblock {
     @Override
     protected boolean processInnerBlock(BlockPos toCheck) {
         BlockState bs = getBlockState(toCheck);
-        if(bs.isAir()) return true;
+        if (bs.isAir()) return true;
         super.processInnerBlock(new NCBlockPos(toCheck));
-        if(bs.getBlock() instanceof TurbineRotorBlock) {
+        if (bs.getBlock() instanceof TurbineRotorBlock) {
             rotorPositions.add(new NCBlockPos(toCheck));
         }
-        if(bs.getBlock() instanceof TurbineBladeBlock) {
+        if (bs.getBlock() instanceof TurbineBladeBlock) {
             bladePositions.add(new NCBlockPos(toCheck));
         }
         return true;
@@ -153,48 +159,46 @@ public class TurbineMultiblock extends AbstractNCMultiblock {
         super.processOuterBlock(pos);
         BlockEntity be = getBlockEntity(pos);
         BlockState bs = getBlockState(pos);
-        if(bs.getBlock() instanceof TurbineBearingBlock) {
+        if (bs.getBlock() instanceof TurbineBearingBlock) {
             bearingPositions.add(new NCBlockPos(pos));
         }
-        if(be instanceof TurbineCoilBE) {
+        if (be instanceof TurbineCoilBE) {
             coilPositions.add(new NCBlockPos(pos));
         }
     }
 
 
-
     public void countCoils() {
         activeCoils = 0;
         coilsEfficiency = 0;
-        for(BlockPos pos : coilPositions) {
+        for (BlockPos pos : coilPositions) {
             BlockEntity be = getBlockEntity(pos);
-            if(be instanceof TurbineCoilBE coil) {
+            if (be instanceof TurbineCoilBE coil) {
                 coil.validatePlacement();
-                if(coilsEfficiency == 0) {
+                if (coilsEfficiency == 0) {
                     coilsEfficiency = coil.getRealEfficiency();
                 }
-                coilsEfficiency = (coilsEfficiency+coil.getRealEfficiency())/2;
+                coilsEfficiency = (coilsEfficiency + coil.getRealEfficiency()) / 2;
                 activeCoils += coil.isValid() ? 1 : 0;
             }
         }
     }
 
-    public boolean validateProportions()
-    {
-        if(turbineDirection == null || bearingPositions.size() != 2) return false;
+    public boolean validateProportions() {
+        if (turbineDirection == null || bearingPositions.size() != 2) return false;
         switch (turbineDirection) {
             case UP:
             case DOWN:
                 return width() == depth() && width() % 2 != 0;
             case NORTH:
             case SOUTH:
-                if(getFacing().getAxis().equals(Direction.Axis.Z)) {
+                if (getFacing().getAxis().equals(Direction.Axis.Z)) {
                     return height() == width() && height() % 2 != 0;
                 }
                 return depth() == height() && height() % 2 != 0;
             case EAST:
             case WEST:
-                if(getFacing().getAxis().equals(Direction.Axis.X)) {
+                if (getFacing().getAxis().equals(Direction.Axis.X)) {
                     return height() == width() && height() % 2 != 0;
                 }
                 return height() == depth() && height() % 2 != 0;
@@ -203,42 +207,42 @@ public class TurbineMultiblock extends AbstractNCMultiblock {
     }
 
     public boolean validateRotor() {
-        if(rotorPositions.isEmpty()) return false;
+        if (rotorPositions.isEmpty()) return false;
         boolean bearingConnected = true;
         Direction dir = turbineDirection;
-        for(BlockPos pos : rotorPositions) {
+        for (BlockPos pos : rotorPositions) {
             BlockState bs = getBlockState(pos);
-            if(!(bs.getBlock() instanceof TurbineRotorBlock)) {
+            if (!(bs.getBlock() instanceof TurbineRotorBlock)) {
                 return false;
             }
-            if(bs.getValue(TurbineRotorBlock.FACING) != dir) {
+            if (bs.getValue(TurbineRotorBlock.FACING) != dir) {
                 return false;
             }
             switch (dir) {
                 case UP:
                 case DOWN:
-                    if(pos.getZ() != rotorPositions.get(0).getZ()
-                    || pos.getX() != rotorPositions.get(0).getX()) {
+                    if (pos.getZ() != rotorPositions.get(0).getZ()
+                            || pos.getX() != rotorPositions.get(0).getX()) {
                         return false;
                     }
                     break;
                 case NORTH:
                 case SOUTH:
-                    if(pos.getY() != rotorPositions.get(0).getY()
-                    || pos.getX() != rotorPositions.get(0).getX()) {
+                    if (pos.getY() != rotorPositions.get(0).getY()
+                            || pos.getX() != rotorPositions.get(0).getX()) {
                         return false;
                     }
                     break;
                 case EAST:
                 case WEST:
-                    if(pos.getY() != rotorPositions.get(0).getY()
-                    || pos.getZ() != rotorPositions.get(0).getZ()) {
+                    if (pos.getY() != rotorPositions.get(0).getY()
+                            || pos.getZ() != rotorPositions.get(0).getZ()) {
                         return false;
                     }
                     break;
             }
             BlockEntity be = getBlockEntity(pos);
-            if(!(be instanceof TurbineRotorBE rotorBE)) {
+            if (!(be instanceof TurbineRotorBE rotorBE)) {
                 return false;
             }
             rotorBE.updateBearingConnection();
@@ -248,13 +252,12 @@ public class TurbineMultiblock extends AbstractNCMultiblock {
     }
 
 
-    public void invalidateStats()
-    {
+    public void invalidateStats() {
         controller().clearStats();
     }
 
     protected Direction getFacing() {
-        return ((TurbineControllerBE<?>)controller().controllerBE()).getFacing();
+        return ((TurbineControllerBE<?>) controller().controllerBE()).getFacing();
     }
 
 }

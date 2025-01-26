@@ -3,82 +3,36 @@ package igentuman.nc.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.authlib.GameProfile;
 import igentuman.nc.NuclearCraft;
 import igentuman.nc.util.math.FloatingLong;
-import it.unimi.dsi.fastutil.longs.Long2DoubleArrayMap;
-import it.unimi.dsi.fastutil.longs.Long2DoubleMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.BubbleColumnBlock;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.UsernameCache;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fluids.IFluidBlock;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.util.thread.EffectiveSide;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 import static igentuman.nc.multiblock.fission.FissionReactor.FISSION_BLOCKS;
-import static igentuman.nc.multiblock.fission.FissionReactor.FISSION_BLOCK_ITEMS;
 import static igentuman.nc.multiblock.fusion.FusionReactor.FUSION_BLOCKS;
 import static igentuman.nc.multiblock.turbine.TurbineRegistration.TURBINE_BLOCKS;
-import static igentuman.nc.setup.registration.NCBlocks.*;
+import static igentuman.nc.setup.registration.NCBlocks.NC_BLOCKS;
+import static igentuman.nc.setup.registration.NCBlocks.ORE_BLOCKS;
 import static igentuman.nc.setup.registration.NCEnergyBlocks.ENERGY_BLOCKS;
 import static igentuman.nc.setup.registration.NCItems.*;
 import static igentuman.nc.setup.registration.NCProcessors.PROCESSORS;
@@ -90,26 +44,27 @@ public final class NcUtils {
     private static final List<UUID> warnedFails = new ArrayList<>();
 
     public static ResourceLocation getName(ParticleType<?> element) {
-        return getName(ForgeRegistries.PARTICLE_TYPES, element);
+        return getName(BuiltInRegistries.PARTICLE_TYPE, element);
     }
 
     public static ResourceLocation getName(Item element) {
-        return getName(ForgeRegistries.ITEMS, element);
+        return getName(BuiltInRegistries.ITEM, element);
     }
 
     public static ResourceLocation getName(Fluid element) {
-        return getName(ForgeRegistries.FLUIDS, element);
+        return getName(BuiltInRegistries.FLUID, element);
     }
 
-    private static <T> ResourceLocation getName(IForgeRegistry<T> registry, T element) {
+    private static <T> ResourceLocation getName(Registry<T> registry, T element) {
         return registry.getKey(element);
     }
+
     public static String getPath(Item element) {
         return getName(element).getPath();
     }
 
     public static ResourceLocation getName(Block element) {
-        return getName(ForgeRegistries.BLOCKS, element);
+        return getName(BuiltInRegistries.BLOCK, element);
     }
 
     public static String getNamespace(Block element) {
@@ -117,8 +72,9 @@ public final class NcUtils {
     }
 
     public static ResourceLocation getName(MenuType<?> element) {
-        return getName(ForgeRegistries.MENU_TYPES, element);
+        return getName(BuiltInRegistries.MENU, element);
     }
+
     /**
      * Gets the creator's modid if it exists, or falls back to the registry name.
      *
@@ -142,9 +98,9 @@ public final class NcUtils {
     @NotNull
     public static String getModId(@NotNull FluidStack stack) {
         Fluid fluid = stack.getFluid();
-        String modid = "";
+        String modid;
         try {
-            modid = ForgeRegistries.FLUIDS.getKey(fluid).getNamespace();
+            modid = BuiltInRegistries.FLUID.getKey(fluid).getNamespace();
         } catch (Exception e) {
             //todo find workaround
             return "";
@@ -179,7 +135,6 @@ public final class NcUtils {
      *
      * @param amount   Amount currently stored
      * @param capacity Total amount that can be stored.
-     *
      * @return A redstone level based on the percentage of the amount stored.
      */
     public static int redstoneLevelFromContents(FloatingLong amount, FloatingLong capacity) {
@@ -194,7 +149,6 @@ public final class NcUtils {
      * Checks whether the player is in creative or spectator mode.
      *
      * @param player the player to check.
-     *
      * @return true if the player is neither in creative mode, nor in spectator mode.
      */
     public static boolean isPlayingMode(Player player) {
@@ -224,7 +178,8 @@ public final class NcUtils {
         }
         return Collections.emptyList();
     }
-    public static List<HashMap<String, RegistryObject<Item>>> ALL_ITEMS = List.of(
+
+    public static List<HashMap<String, DeferredItem<Item>>> ALL_ITEMS = List.of(
             NC_ITEMS,
             NC_PARTS,
             NC_GEMS,
@@ -233,7 +188,8 @@ public final class NcUtils {
             NC_NUGGETS,
             ALL_NC_ITEMS
     );
-    public static List<HashMap<String, RegistryObject<Block>>> ALL_BLOCKS = List.of(
+
+    public static List<HashMap<String, DeferredBlock<Block>>> ALL_BLOCKS = List.of(
             NC_BLOCKS,
             FISSION_BLOCKS,
             FUSION_BLOCKS,
@@ -242,10 +198,10 @@ public final class NcUtils {
             ORE_BLOCKS,
             TURBINE_BLOCKS
     );
-    public static Block getNCBlock(String name)
-    {
-        for(HashMap<String, RegistryObject<Block>> map: ALL_BLOCKS) {
-            if(map.containsKey(name)) {
+
+    public static Block getNCBlock(String name) {
+        for (HashMap<String, DeferredBlock<Block>> map : ALL_BLOCKS) {
+            if (map.containsKey(name)) {
                 return map.get(name).get();
             }
         }
@@ -253,10 +209,9 @@ public final class NcUtils {
         return Blocks.AIR;
     }
 
-    public static Item getNCItem(String name)
-    {
-        for(HashMap<String, RegistryObject<Item>> map: ALL_ITEMS) {
-            if(map.containsKey(name)) {
+    public static Item getNCItem(String name) {
+        for (HashMap<String, DeferredItem<Item>> map : ALL_ITEMS) {
+            if (map.containsKey(name)) {
                 return map.get(name).get();
             }
         }

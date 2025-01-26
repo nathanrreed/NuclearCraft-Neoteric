@@ -6,9 +6,6 @@ import li.cil.oc2r.api.bus.device.object.Callback;
 import li.cil.oc2r.api.bus.device.object.NamedDevice;
 import li.cil.oc2r.api.bus.device.object.ObjectDevice;
 import li.cil.oc2r.api.bus.device.rpc.RPCDevice;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -17,8 +14,8 @@ import static java.util.Collections.singletonList;
 
 public class NCTurbineDevice {
 
-    public static final Capability<Device> DEVICE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
-    });
+//    public static final Capability<Device> DEVICE_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {
+//    });
 
     public static RPCDevice createDevice(TurbineControllerBE<?> blockEntity) {
         return new ObjectDevice(new NCFTurbineDeviceRecord(blockEntity));

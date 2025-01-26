@@ -9,22 +9,18 @@ import javax.annotation.Nonnull;
 public class KugelblitzPeripheral implements IPeripheral {
     private final ChamberTerminalBE<?> controller;
 
-    public KugelblitzPeripheral(ChamberTerminalBE<?> controller)
-    {
+    public KugelblitzPeripheral(ChamberTerminalBE<?> controller) {
         this.controller = controller;
     }
 
     @Nonnull
     @Override
-    public String getType()
-    {
+    public String getType() {
         return "nc_kugelblitz";
     }
 
-
     @Override
-    public boolean equals( IPeripheral other )
-    {
+    public boolean equals(IPeripheral other) {
         return this == other || other instanceof KugelblitzPeripheral && ((KugelblitzPeripheral) other).controller == controller;
     }
 
@@ -39,27 +35,23 @@ public class KugelblitzPeripheral implements IPeripheral {
     }
 
     @LuaFunction
-    public final void enablecontroller()
-    {
+    public final void enablecontroller() {
         controller.disableForceShutdown();
     }
 
     @LuaFunction
-    public final void disablecontroller()
-    {
+    public final void disablecontroller() {
         controller.forceShutdown();
     }
 
     @LuaFunction
-    public final int getEnergyPerTick()
-    {
+    public final int getEnergyPerTick() {
         return controller.energyPerTick;
     }
 
 
     @LuaFunction
-    public final int getEnergyStored()
-    {
+    public final int getEnergyStored() {
         return controller.energyStorage.getEnergyStored();
     }
 

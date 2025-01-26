@@ -5,7 +5,6 @@ import com.mojang.math.Transformation;
 import igentuman.nc.block.entity.turbine.TurbineRotorBE;
 import igentuman.nc.block.turbine.TurbineRotorBlock;
 import igentuman.nc.util.annotation.NothingNullByDefault;
-import mekanism.common.lib.math.Quaternion;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -53,6 +52,7 @@ public class TurbineRotorRenderer implements BlockEntityRenderer<BlockEntity> {
         horizontalBladeModel = blockRenderer.getBlockModel(bladeHorizontal);
         northBladeModel = blockRenderer.getBlockModel(bladeNorth);
     }
+
     public float lastAngle = 0;
     public float x = -0.25f;
     public float y = -0.2f;
@@ -61,6 +61,7 @@ public class TurbineRotorRenderer implements BlockEntityRenderer<BlockEntity> {
     public int getAttachedBlades() {
         return rotor.getAttachedBlades();
     }
+
     @Override
     public void render(BlockEntity pBlockEntity, float pPartialTick, PoseStack pPoseStack, MultiBufferSource buffer, int packedLight, int combinedOverlay) {
         rotor = (TurbineRotorBE) pBlockEntity;
@@ -89,16 +90,16 @@ public class TurbineRotorRenderer implements BlockEntityRenderer<BlockEntity> {
             case NORTH:
             case SOUTH:
                 rotation = ZN.rotationDegrees(angle);
-                rotation2 = ZN.rotationDegrees(angle+90);
+                rotation2 = ZN.rotationDegrees(angle + 90);
                 break;
             case EAST:
             case WEST:
                 rotation = XN.rotationDegrees(angle);
-                rotation2 = XN.rotationDegrees(angle+90);
+                rotation2 = XN.rotationDegrees(angle + 90);
                 break;
             default:
                 rotation = YN.rotationDegrees(angle);
-                rotation2 = YN.rotationDegrees(angle+90);
+                rotation2 = YN.rotationDegrees(angle + 90);
                 break;
         }
 
@@ -110,10 +111,10 @@ public class TurbineRotorRenderer implements BlockEntityRenderer<BlockEntity> {
                 LightTexture.FULL_SKY, combinedOverlay);
         pPoseStack.popPose();
 
-        if(!rotor.isFormed()) {
+        if (!rotor.isFormed()) {
             return;
         }
-        if(facing.getAxis() == Y) {
+        if (facing.getAxis() == Y) {
             renderBlade(facing, pPoseStack, buffer, combinedOverlay, blockRenderer, rotation, northBladeModel);
             pPoseStack.translate(-0.5, -0.5, -0.5);
             renderBlade(facing, pPoseStack, buffer, combinedOverlay, blockRenderer, rotation2, northBladeModel);
@@ -128,9 +129,9 @@ public class TurbineRotorRenderer implements BlockEntityRenderer<BlockEntity> {
     private void renderBlade(Direction facing, PoseStack pPoseStack, MultiBufferSource buffer, int combinedOverlay, BlockRenderDispatcher blockRenderer, Quaternionf rotation, BakedModel blade) {
 
         pPoseStack.translate(0.5, 0.5, 0.5);
-        Transformation tr = new Transformation(new Vector3f(0, 0, 0), rotation, new Vector3f(1f, getAttachedBlades()+1, 1f), null);
+        Transformation tr = new Transformation(new Vector3f(0, 0, 0), rotation, new Vector3f(1f, getAttachedBlades() + 1, 1f), null);
         BlockState theBlade = bladeVertical;
-        if(facing.getAxis() == Y) {
+        if (facing.getAxis() == Y) {
             tr = new Transformation(
                     new Vector3f(0, 0, 0),
                     rotation,

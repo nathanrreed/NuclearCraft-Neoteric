@@ -1,87 +1,18 @@
 package igentuman.nc.network.toServer;
 
-import igentuman.nc.block.entity.fission.FissionControllerBE;
-import igentuman.nc.block.entity.fission.FissionPortBE;
-import igentuman.nc.block.entity.fusion.FusionCoreBE;
-import igentuman.nc.block.entity.fusion.FusionCoreProxyBE;
-import igentuman.nc.block.entity.processor.NCProcessorBE;
-import igentuman.nc.client.gui.element.button.Button;
-import igentuman.nc.client.gui.element.button.Button.ReactorPortRedstoneModeButton;
-import igentuman.nc.client.gui.element.button.Button.ReactorMode;
-import igentuman.nc.client.gui.element.button.Button.RedstoneConfig;
-import igentuman.nc.network.INcPacket;
+import igentuman.nc.NuclearCraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-public class PacketGuiButtonPress implements INcPacket {
-
-    private BlockPos tilePosition;
-    private int buttonId;
-
-    public PacketGuiButtonPress(Object position, int bId) {
-        this.tilePosition = (BlockPos) position;
-        buttonId = bId;
-    }
-
-    public PacketGuiButtonPress() {
-
-    }
-
+public record PacketGuiButtonPress(BlockPos tilePosition, int buttonId) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<PacketGuiButtonPress> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(NuclearCraft.MODID, "packet_gui_button_press_to_server"));
+    public static final StreamCodec STREAM_CODEC = StreamCodec.composite(BlockPos.STREAM_CODEC, PacketGuiButtonPress::tilePosition, ByteBufCodecs.INT, PacketGuiButtonPress::buttonId, PacketGuiButtonPress::new);
 
     @Override
-    public void handle(NetworkEvent.Context context) {
-        ServerPlayer player = context.getSender();
-        if (player == null) {
-            return;
-        }
-
-        BlockEntity be = player.level().getBlockEntity(tilePosition);
-        switch (buttonId) {
-            case RedstoneConfig.BTN_ID:
-                if (!(be instanceof NCProcessorBE<?> processor)) {
-                    return;
-                }
-                processor.toggleRedstoneMode();
-                break;
-            case ReactorMode.BTN_ID:
-                if (!(be instanceof FissionControllerBE<?> port)) {
-                    return;
-                }
-                port.toggleMode();
-                break;
-            case ReactorPortRedstoneModeButton.BTN_ID:
-                if (!(be instanceof FissionPortBE port)) {
-                    return;
-                }
-                port.toggleRedstoneMode();
-                break;
-            case Button.FusionReactorRedstoneModeButton.BTN_ID:
-                if (be instanceof FusionCoreBE<?> port) {
-                    port.toggleRedstoneMode();
-                }
-                if (be instanceof FusionCoreProxyBE port) {
-                    port.toggleRedstoneMode();
-                }
-                break;
-        }
+    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
-
-    @Override
-    public void encode(FriendlyByteBuf buffer) {
-        buffer.writeBlockPos(tilePosition);
-        buffer.writeInt(buttonId);
-    }
-
-    public static PacketGuiButtonPress decode(FriendlyByteBuf buffer) {
-         PacketGuiButtonPress packet = new PacketGuiButtonPress();
-          packet.tilePosition = buffer.readBlockPos();
-          packet.buttonId = buffer.readInt();
-          return packet;
-    }
-
-
-
 }

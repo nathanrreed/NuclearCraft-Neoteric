@@ -1,6 +1,6 @@
 package igentuman.nc.util;
 
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 
 public class ModUtil {
     protected static boolean initialized = false;
@@ -9,9 +9,9 @@ public class ModUtil {
     protected static boolean ieLoaded;
     protected static boolean gtLoaded;
     protected static boolean oc2Loaded;
-    protected static void initialize()
-    {
-        if(initialized)
+
+    protected static void initialize() {
+        if (initialized)
             return;
         initialized = true;
         isMekanismLoadeed = ModList.get().isLoaded("mekanism");

@@ -2,15 +2,13 @@ package igentuman.nc.datagen.recipes.recipes;
 
 import igentuman.nc.content.processors.Processors;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.data.recipes.RecipeOutput;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class GasScrubberRecipes extends AbstractRecipeProvider {
 
-    public static void generate(Consumer<FinishedRecipe> consumer) {
+    public static void generate(RecipeOutput consumer) {
         GasScrubberRecipes.consumer = consumer;
         ID = Processors.GAS_SCRUBBER;
 
@@ -20,7 +18,7 @@ public class GasScrubberRecipes extends AbstractRecipeProvider {
         );
     }
 
-    protected static void add(FluidStackIngredient input, FluidStackIngredient output, double...modifiers) {
+    protected static void add(FluidStackIngredient input, FluidStackIngredient output, double... modifiers) {
         fluidsAndFluids(List.of(input), List.of(output), modifiers);
     }
 }

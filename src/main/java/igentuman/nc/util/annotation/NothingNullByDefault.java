@@ -7,6 +7,7 @@ import javax.annotation.meta.TypeQualifierDefault;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
 @NotNull
 @Nonnull//Note: Must use the javax nonnull for intellij to recognize it properly in override warnings
 @TypeQualifierDefault({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})

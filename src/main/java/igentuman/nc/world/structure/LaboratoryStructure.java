@@ -1,6 +1,7 @@
 package igentuman.nc.world.structure;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import igentuman.nc.setup.Registration;
 import net.minecraft.core.BlockPos;
@@ -15,12 +16,16 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup;
 
 import java.util.Optional;
 
+import static net.minecraft.world.level.levelgen.structure.structures.JigsawStructure.DEFAULT_DIMENSION_PADDING;
+import static net.minecraft.world.level.levelgen.structure.structures.JigsawStructure.DEFAULT_LIQUID_SETTINGS;
+
 public class LaboratoryStructure extends Structure {
 
-    public static final Codec<LaboratoryStructure> CODEC = RecordCodecBuilder.<LaboratoryStructure>mapCodec(instance ->
+    public static final MapCodec<LaboratoryStructure> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(Structure.settingsCodec(instance),
                     StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool),
                     ResourceLocation.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(structure -> structure.startJigsawName),
@@ -28,7 +33,7 @@ public class LaboratoryStructure extends Structure {
                     HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
                     Heightmap.Types.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
                     Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter)
-            ).apply(instance, LaboratoryStructure::new)).codec();
+            ).apply(instance, LaboratoryStructure::new));
 
     private final Holder<StructureTemplatePool> startPool;
     private final Optional<ResourceLocation> startJigsawName;
@@ -107,7 +112,11 @@ public class LaboratoryStructure extends Structure {
                         // Here, blockpos's y value is 60 which means the structure spawn 60 blocks above terrain height.
                         // Set this to false for structure to be place only at the passed in blockpos's Y value instead.
                         // Definitely keep this false when placing structures in the nether as otherwise, heightmap placing will put the structure on the Bedrock roof.
-                        this.maxDistanceFromCenter); // Maximum limit for how far pieces can spawn from center. You cannot set this bigger than 128 or else pieces gets cutoff.
+                        this.maxDistanceFromCenter,// Maximum limit for how far pieces can spawn from center. You cannot set this bigger than 128 or else pieces gets cutoff.
+                        PoolAliasLookup.EMPTY,
+                        DEFAULT_DIMENSION_PADDING,
+                        DEFAULT_LIQUID_SETTINGS
+                );
 
         /*
          * Note, you are always free to make your own JigsawPlacement class and implementation of how the structure

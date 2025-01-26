@@ -1,7 +1,7 @@
 package igentuman.nc.fluid;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 
 import static igentuman.nc.NuclearCraft.rl;
 
@@ -15,8 +15,8 @@ public class FluidRenderProps implements IClientFluidTypeExtensions {
     }
 
     public FluidRenderProps(String still, String flowing, int colorTint) {
-        this.still = still.indexOf(':') > 0 ? new ResourceLocation(still) : rl("block/material/fluid/" + still);
-        this.flowing = flowing.indexOf(':') > 0 ? new ResourceLocation(flowing) : rl("block/material/fluid/" + flowing);
+        this.still = still.indexOf(':') > 0 ? ResourceLocation.parse(still) : rl("block/material/fluid/" + still);
+        this.flowing = flowing.indexOf(':') > 0 ? ResourceLocation.parse(flowing) : rl("block/material/fluid/" + flowing);
         this.colorTint = colorTint;
     }
 

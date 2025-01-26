@@ -1,4 +1,5 @@
 package igentuman.nc.effect;
+
 import igentuman.nc.radiation.data.PlayerRadiation;
 import igentuman.nc.radiation.data.PlayerRadiationProvider;
 import net.minecraft.world.effect.MobEffect;
@@ -12,8 +13,7 @@ public class RadiationResistance extends MobEffect {
         super(pCategory, pColor);
     }
 
-    public void applyInstantenousEffect(@Nullable Entity entity, @Nullable Entity entity1, LivingEntity livingEntity, int strength, double p_19466_)
-    {
+    public void applyInstantenousEffect(@Nullable Entity entity, @Nullable Entity entity1, LivingEntity livingEntity, int strength, double p_19466_) {
         applyEffectTick(livingEntity, strength);
     }
 
@@ -25,12 +25,13 @@ public class RadiationResistance extends MobEffect {
         return true;
     }
 
-    public void applyEffectTick(LivingEntity ent, int id)
-    {
-        PlayerRadiation radCap = ent.getCapability(PlayerRadiationProvider.PLAYER_RADIATION).orElse(null);
-        if(radCap == null) {
-            return;
+    @Override
+    public boolean applyEffectTick(LivingEntity ent, int id) {
+        PlayerRadiation radCap = ent.getCapability(PlayerRadiationProvider.PLAYER_RADIATION);
+        if (radCap != null) {
+            radCap.setRadiation(radCap.getRadiation() - id / 1000);
+            return true;
         }
-        radCap.setRadiation(radCap.getRadiation() - id/1000);
+        return false;
     }
 }

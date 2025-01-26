@@ -3,12 +3,9 @@ package igentuman.nc.block.entity.fission;
 import igentuman.nc.block.entity.NuclearCraftBE;
 import igentuman.nc.multiblock.AbstractNCMultiblock;
 import igentuman.nc.multiblock.IMultiblockAttachable;
-import igentuman.nc.multiblock.fission.FissionReactorMultiblock;
 import igentuman.nc.multiblock.fission.FissionReactor;
-import igentuman.nc.util.NCBlockPos;
+import igentuman.nc.multiblock.fission.FissionReactorMultiblock;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class FissionBE extends NuclearCraftBE implements IMultiblockAttachable {
@@ -48,8 +45,7 @@ public class FissionBE extends NuclearCraftBE implements IMultiblockAttachable {
         super(FissionReactor.FISSION_BE.get(name).get(), pPos, pBlockState);
     }
 
-    public void invalidateCache()
-    {
+    public void invalidateCache() {
         refreshCacheFlag = true;
         validationRuns = 0;
     }
@@ -62,14 +58,13 @@ public class FissionBE extends NuclearCraftBE implements IMultiblockAttachable {
     }
 
     @Override
-    public void setRemoved()
-    {
-        if(controller() != null) controller().invalidateCache();
+    public void setRemoved() {
+        if (controller() != null) controller().invalidateCache();
         super.setRemoved();
     }
 
     public void onNeighborChange(BlockState state, BlockPos pos, BlockPos neighbor) {
-        if(multiblock() != null) {
+        if (multiblock() != null) {
             multiblock().onNeighborChange(state, pos, neighbor);
         }
     }

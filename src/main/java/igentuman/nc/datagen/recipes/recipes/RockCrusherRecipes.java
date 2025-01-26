@@ -1,20 +1,17 @@
 package igentuman.nc.datagen.recipes.recipes;
 
-import igentuman.nc.recipes.ingredient.NcIngredient;
-import igentuman.nc.content.processors.Processors;
 import igentuman.nc.content.materials.Materials;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.world.item.Item;
+import igentuman.nc.content.processors.Processors;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import static igentuman.nc.setup.registration.Tags.forgeOre;
 import static net.minecraft.world.item.Items.*;
 
 public class RockCrusherRecipes extends AbstractRecipeProvider {
-
-    public static void generate(Consumer<FinishedRecipe> consumer) {
+    public static void generate(RecipeOutput consumer) {
         RockCrusherRecipes.consumer = consumer;
         ID = Processors.ROCK_CRUSHER;
 
@@ -50,7 +47,7 @@ public class RockCrusherRecipes extends AbstractRecipeProvider {
 
         add(
                 (ingredient(ANCIENT_DEBRIS, 1)),
-                List.of(NcIngredient.stack(stack(NETHERITE_SCRAP, 2)), dustIngredient(Materials.titanium, 1))
+                List.of(Ingredient.of(stack(NETHERITE_SCRAP, 2)), dustIngredient(Materials.titanium, 1))
         );
 
         add(
@@ -81,8 +78,7 @@ public class RockCrusherRecipes extends AbstractRecipeProvider {
         );
     }
 
-    private static void add(NcIngredient input, List<NcIngredient> output, double...modifiers) {
+    private static void add(Ingredient input, List<Ingredient> output, double... modifiers) {
         itemsToItems(List.of(input), output, modifiers);
     }
-
 }

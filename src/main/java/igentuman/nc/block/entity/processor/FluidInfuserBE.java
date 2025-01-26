@@ -6,20 +6,15 @@ import igentuman.nc.recipes.ingredient.ItemStackIngredient;
 import igentuman.nc.recipes.type.NcRecipe;
 import igentuman.nc.util.annotation.NothingNullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
-
-import java.util.List;
-
-import static igentuman.nc.compat.GlobalVars.CATALYSTS;
-import static igentuman.nc.compat.GlobalVars.RECIPE_CLASSES;
 
 public class FluidInfuserBE extends NCProcessorBE<FluidInfuserBE.Recipe> {
     public FluidInfuserBE(BlockPos pPos, BlockState pBlockState) {
         super(pPos, pBlockState, Processors.FLUID_INFUSER);
     }
+
     @Override
     public String getName() {
         return Processors.FLUID_INFUSER;
@@ -27,16 +22,15 @@ public class FluidInfuserBE extends NCProcessorBE<FluidInfuserBE.Recipe> {
 
     @NothingNullByDefault
     public static class Recipe extends NcRecipe {
-        public Recipe(ResourceLocation id,
-                      ItemStackIngredient[] input, ItemStackIngredient[] output,
+        public Recipe(                      ItemStackIngredient[] input, ItemStackIngredient[] output,
                       FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids,
                       double timeModifier, double powerModifier, double heatModifier, double rarity) {
-            super(id, input, output, inputFluids, outputFluids, timeModifier, powerModifier, heatModifier, 1);
+            super(input, output, inputFluids, outputFluids, timeModifier, powerModifier, heatModifier, 1);
         }
 
         @Override
-        public String getCodeId() {
-            return Processors.FLUID_INFUSER;
+        public void write(FriendlyByteBuf buffer) {
+            //TODO
         }
     }
 }

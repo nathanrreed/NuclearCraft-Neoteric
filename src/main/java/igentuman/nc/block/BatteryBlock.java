@@ -8,19 +8,20 @@ import igentuman.nc.util.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -28,14 +29,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 import static igentuman.nc.handler.config.CommonConfig.ENERGY_STORAGE;
-import static igentuman.nc.setup.registration.NCItems.MULTITOOL;
 import static igentuman.nc.util.StackUtils.isMultiTool;
 
 public class BatteryBlock extends Block implements EntityBlock {
@@ -50,30 +49,40 @@ public class BatteryBlock extends Block implements EntityBlock {
     public int getAnalogOutputSignal(BlockState pBlockState, Level pLevel, BlockPos pPos) {
         BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
         if (blockEntity instanceof BatteryBE batteryBE) {
-            return (int) ((batteryBE.energyStorage.getEnergyStored()/(double)batteryBE.energyStorage.getMaxEnergyStored())*15);
+            return (int) ((batteryBE.energyStorage.getEnergyStored() / (double) batteryBE.energyStorage.getMaxEnergyStored()) * 15);
         }
         return 0;
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof BatteryBE batteryBE)  {
-                if(isMultiTool(player.getItemInHand(hand))) {
-                    Direction dirToChange = result.getDirection();
-                    if(player.isShiftKeyDown()) {
-                        dirToChange = dirToChange.getOpposite();
-                    }
-                    ISizeToggable.SideMode mode = batteryBE.toggleSideConfig(dirToChange.ordinal());
-                    player.sendSystemMessage(Component.translatable("message.nc.barrel.side_config", mode.name()));
-                } else {
-                    player.sendSystemMessage(Component.translatable("tooltip.nc.energy_stored", formatEnergy(batteryBE.energyStorage.getEnergyStored()), formatEnergy(batteryBE.energyStorage.getMaxEnergyStored())).withStyle(ChatFormatting.BLUE));
-                }
+            if (be instanceof BatteryBE batteryBE) {
+                player.sendSystemMessage(Component.translatable("tooltip.nc.energy_stored", formatEnergy(batteryBE.energyStorage.getEnergyStored()), formatEnergy(batteryBE.energyStorage.getMaxEnergyStored())).withStyle(ChatFormatting.BLUE));
             }
         }
         return InteractionResult.SUCCESS;
     }
+
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+        if (!level.isClientSide()) {
+            BlockEntity be = level.getBlockEntity(pos);
+            if (be instanceof BatteryBE batteryBE) {
+                if (isMultiTool(player.getItemInHand(hand))) {
+                    Direction dirToChange = result.getDirection();
+                    if (player.isShiftKeyDown()) {
+                        dirToChange = dirToChange.getOpposite();
+                    }
+                    ISizeToggable.SideMode mode = batteryBE.toggleSideConfig(dirToChange.ordinal());
+                    player.sendSystemMessage(Component.translatable("message.nc.barrel.side_config", mode.name()));
+                }
+            }
+        }
+        return ItemInteractionResult.SUCCESS;
+    }
+
 
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
@@ -92,8 +101,7 @@ public class BatteryBlock extends Block implements EntityBlock {
         return NCEnergyBlocks.ENERGY_BE.get(code()).get().create(pPos, pState);
     }
 
-    public String code()
-    {
+    public String code() {
         return asItem().toString();
     }
 
@@ -107,21 +115,23 @@ public class BatteryBlock extends Block implements EntityBlock {
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof NCEnergy tile) {
                 tile.tickServer();
             }
         };
 
     }
+
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(world, pos, state, placer, stack);
 
-        if (stack.hasTag()) {
+        CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+
+        if (!data.isEmpty()) {
             BatteryBE tileEntity = (BatteryBE) world.getBlockEntity(pos);
-            CompoundTag nbtData = stack.getTag();
-            tileEntity.load(nbtData);
+            data.loadInto(tileEntity, world.registryAccess());
         }
     }
 
@@ -130,10 +140,10 @@ public class BatteryBlock extends Block implements EntityBlock {
         pPlayer.awardStat(Stats.BLOCK_MINED.get(this));
         pPlayer.causeFoodExhaustion(0.005F);
         BatteryBE batteryBE = (BatteryBE) pBlockEntity;
-        CompoundTag data = batteryBE.getUpdateTag();
+        CompoundTag data = batteryBE.getUpdateTag(pLevel.registryAccess());
 
         ItemStack drop = new ItemStack(this);
-        drop.setTag(data);
+        drop.set(DataComponents.CUSTOM_DATA, CustomData.of(data));
         if (!pLevel.isClientSide()) {
             ItemEntity itemEntity = new ItemEntity(pLevel, pPos.getX(), pPos.getY(), pPos.getZ(), drop);
             itemEntity.setDefaultPickUpDelay();
@@ -141,29 +151,25 @@ public class BatteryBlock extends Block implements EntityBlock {
         }
     }
 
-
     @Override
-    public void appendHoverText(ItemStack stack, @javax.annotation.Nullable BlockGetter world, List<Component> list, TooltipFlag flag)
-    {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         int storage = ENERGY_STORAGE.getCapacityFor(asItem().toString());
 
-        list.add(Component.translatable("tooltip.nc.energy_capacity", formatEnergy(storage)).withStyle(ChatFormatting.BLUE));
-        list.add(Component.translatable("tooltip.nc.use_multitool").withStyle(ChatFormatting.YELLOW));
-
+        tooltipComponents.add(Component.translatable("tooltip.nc.energy_capacity", formatEnergy(storage)).withStyle(ChatFormatting.BLUE));
+        tooltipComponents.add(Component.translatable("tooltip.nc.use_multitool").withStyle(ChatFormatting.YELLOW));
     }
 
-    public String formatEnergy(int energy)
-    {
-        if(energy >= 1000000000) {
-            return TextUtils.numberFormat(energy/1000000000)+" GFE";
+    public String formatEnergy(int energy) {
+        if (energy >= 1000000000) {
+            return TextUtils.numberFormat(energy / 1000000000) + " GFE";
         }
-        if(energy >= 1000000) {
-            return TextUtils.numberFormat(energy/1000000)+" MFE";
+        if (energy >= 1000000) {
+            return TextUtils.numberFormat(energy / 1000000) + " MFE";
         }
-        if(energy >= 1000) {
-            return TextUtils.numberFormat(energy/1000)+" kFE";
+        if (energy >= 1000) {
+            return TextUtils.numberFormat(energy / 1000) + " kFE";
         }
-        return TextUtils.numberFormat(energy)+" FE";
+        return TextUtils.numberFormat(energy) + " FE";
     }
 
     public boolean registered() {

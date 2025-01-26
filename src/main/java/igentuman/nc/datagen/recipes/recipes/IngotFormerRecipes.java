@@ -1,56 +1,55 @@
 package igentuman.nc.datagen.recipes.recipes;
 
-import igentuman.nc.recipes.ingredient.NcIngredient;
-import igentuman.nc.recipes.ingredient.creator.IngredientCreatorAccess;
-import igentuman.nc.content.processors.Processors;
-import igentuman.nc.setup.registration.FissionFuel;
-import igentuman.nc.content.materials.Materials;
-import igentuman.nc.setup.registration.NCItems;
 import igentuman.nc.content.fuel.FuelManager;
+import igentuman.nc.content.materials.Materials;
 import igentuman.nc.content.materials.NCMaterial;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraftforge.fluids.FluidStack;
+import igentuman.nc.content.processors.Processors;
+import igentuman.nc.recipes.ingredient.creator.IngredientCreatorAccess;
+import igentuman.nc.setup.registration.FissionFuel;
+import igentuman.nc.setup.registration.NCItems;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static net.minecraft.world.item.Items.*;
 
 public class IngotFormerRecipes extends AbstractRecipeProvider {
 
-    public static void generate(Consumer<FinishedRecipe> consumer) {
+    public static void generate(RecipeOutput consumer) {
         IngotFormerRecipes.consumer = consumer;
         ID = Processors.INGOT_FORMER;
-        for(String name: Materials.all().keySet()) {
+        for (String name : Materials.all().keySet()) {
             NCMaterial material = Materials.all().get(name);
-            if(material.fluid && !material.isGas && material.ingot) {
+            if (material.fluid && !material.isGas && material.ingot) {
                 add(ingotStack(name), fluidStack(name, 144));
             }
         }
 
-        for (String name: Materials.isotopes()) {
-            for(String type: new String[] {"", "_ox", "_ni", "_za"}) {
-                String key = name+type;
+        for (String name : Materials.isotopes()) {
+            for (String type : new String[]{"", "_ox", "_ni", "_za"}) {
+                String key = name + type;
                 add(ingredient(FissionFuel.NC_ISOTOPES.get(key).get()), fluidStack(key, 144));
             }
         }
 
-        for (String name: FuelManager.all().keySet()) {
-            for(String subType: FuelManager.all().get(name).keySet()) {
-                for (String type : new String[]{"", "za", "ox","ni"}) {
+        for (String name : FuelManager.all().keySet()) {
+            for (String subType : FuelManager.all().get(name).keySet()) {
+                for (String type : new String[]{"", "za", "ox", "ni"}) {
 
                     List<String> key = List.of("fuel", name, subType, type);
 
-                    String keyStr = "fuel_"+name +"_"+ subType;
-                    if(!type.isEmpty()){
+                    String keyStr = "fuel_" + name + "_" + subType;
+                    if (!type.isEmpty()) {
                         keyStr += "_";
                     }
-                    keyStr+= type;
+                    keyStr += type;
                     add(ingredient(FissionFuel.NC_FUEL.get(key).get()), fluidStack(keyStr, 144));
 
                     key = List.of("depleted", name, subType, type);
-                    keyStr = "depleted_"+keyStr;
+                    keyStr = "depleted_" + keyStr;
                     add(ingredient(FissionFuel.NC_DEPLETED_FUEL.get(key).get()), fluidStack(keyStr, 144));
                 }
             }
@@ -72,7 +71,7 @@ public class IngotFormerRecipes extends AbstractRecipeProvider {
         add(ingredient(NCItems.NC_FOOD.get("marshmallow").get()), fluidStack("marshmallow", 144), 0.5D, 0.5D);
     }
 
-    protected static void add(NcIngredient outputItem, FluidStack inputFluid, double...modifiers) {
+    protected static void add(Ingredient outputItem, FluidStack inputFluid, double... modifiers) {
         itemsAndFluids(new ArrayList<>(), List.of(outputItem), List.of(IngredientCreatorAccess.fluid().from(inputFluid)), new ArrayList<>(), modifiers);
     }
 }

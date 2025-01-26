@@ -20,7 +20,6 @@ public class MathUtils {
      * Clamp a long to int
      *
      * @param l long to clamp
-     *
      * @return an int clamped to {@link Integer#MAX_VALUE}
      */
     public static int clampToInt(long l) {
@@ -34,7 +33,6 @@ public class MathUtils {
      * Clamp a double to a long
      *
      * @param d double to clamp
-     *
      * @return a long clamped to {@link Long#MAX_VALUE}
      */
     public static long clampToLong(double d) {
@@ -48,7 +46,6 @@ public class MathUtils {
      * Clamp an unsigned long to int
      *
      * @param l unsigned long to clamp
-     *
      * @return an int clamped to {@link Integer#MAX_VALUE}
      */
     public static int clampUnsignedToInt(long l) {
@@ -62,7 +59,6 @@ public class MathUtils {
      * Clamp an unsigned long to int
      *
      * @param l unsigned long to clamp
-     *
      * @return an int clamped to {@link Integer#MAX_VALUE}
      */
     public static long clampUnsignedToLong(long l) {
@@ -96,7 +92,6 @@ public class MathUtils {
      *
      * @param elements Elements.
      * @param index    Index.
-     *
      * @return Element at the given index.
      */
     public static <TYPE> TYPE getByIndexMod(TYPE[] elements, int index) {
@@ -111,7 +106,6 @@ public class MathUtils {
      *
      * @param elements Elements.
      * @param index    Index.
-     *
      * @return Element at the given index.
      */
     public static <TYPE> TYPE getByIndexMod(List<TYPE> elements, int index) {

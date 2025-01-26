@@ -1,7 +1,6 @@
 package igentuman.nc.content.storage;
 
 import igentuman.nc.block.entity.ContainerBE;
-import igentuman.nc.handler.config.CommonConfig;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -23,31 +22,32 @@ public class ContainerBlockPrefab {
     }
 
     public int getCapacity() {
-        return rows*colls;
+        return rows * colls;
     }
 
-    public ContainerBlockPrefab config()
-    {
-        if(!initialized) {
+    public ContainerBlockPrefab config() {
+        if (!initialized) {
             int id = ContainerBlocks.all().keySet().stream().toList().indexOf(name);
             registered = STORAGE_BLOCKS.REGISTER_CONTAINER.get().get(id);
             initialized = true;
         }
         return this;
     }
+
     public boolean isRegistered() {
-        return  registered;
+        return registered;
     }
 
-    public BlockEntityType.BlockEntitySupplier<? extends BlockEntity>  getBlockEntity() {
+    public BlockEntityType.BlockEntitySupplier<? extends BlockEntity> getBlockEntity() {
         return blockEntity;
     }
 
-    public ContainerBlockPrefab setBlockEntity(BlockEntityType.BlockEntitySupplier<? extends BlockEntity>  blockEntity) {
+    public ContainerBlockPrefab setBlockEntity(BlockEntityType.BlockEntitySupplier<? extends BlockEntity> blockEntity) {
         this.blockEntity = blockEntity;
         return this;
     }
-    private BlockEntityType.BlockEntitySupplier<? extends BlockEntity>  blockEntity;
+
+    private BlockEntityType.BlockEntitySupplier<? extends BlockEntity> blockEntity;
 
     public int getRows() {
         return rows;

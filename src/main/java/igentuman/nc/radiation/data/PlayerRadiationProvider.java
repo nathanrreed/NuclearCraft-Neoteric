@@ -1,26 +1,26 @@
 package igentuman.nc.radiation.data;
 
-import net.minecraft.core.Direction;
+import igentuman.nc.NuclearCraft;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.EntityCapability;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import javax.annotation.Nonnull;
 
 public class PlayerRadiationProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
-    public static Capability<PlayerRadiation> PLAYER_RADIATION = CapabilityManager.get(new CapabilityToken<>(){});
+    public static EntityCapability<PlayerRadiation, @Nullable Void> PLAYER_RADIATION = EntityCapability.createVoid(ResourceLocation.fromNamespaceAndPath(NuclearCraft.MODID, "player_radiation_cap"), PlayerRadiation.class);
     private PlayerRadiation playerRadiation = createPlayerRadiation();
-    private final LazyOptional<PlayerRadiation> opt = LazyOptional.of(this::createPlayerRadiation);
+//    private final IPlayerRadiationCapability opt = this::createPlayerRadiation; //TODO
 
     public static void setRadiation(Player pl, int i) {
-        PlayerRadiation playerRadiationCap = pl.getCapability(PlayerRadiationProvider.PLAYER_RADIATION).orElse(null);
-        if(playerRadiationCap != null) {
+        PlayerRadiation playerRadiationCap = pl.getCapability(PlayerRadiationProvider.PLAYER_RADIATION);
+        if (playerRadiationCap != null) {
             playerRadiationCap.setRadiation(i);
         }
     }
@@ -33,28 +33,21 @@ public class PlayerRadiationProvider implements ICapabilityProvider, INBTSeriali
         return playerRadiation;
     }
 
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
+    public @Nullable IPlayerRadiationCapability getCapability(Object cap, Object side) {
         if (cap == PLAYER_RADIATION) {
-            return opt.cast();
+            return playerRadiation;
         }
-        return LazyOptional.empty();
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return getCapability(cap);
+        return null;
     }
 
     @Override
-    public CompoundTag serializeNBT() {
-        return playerRadiation.serializeNBT();
+    public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        return playerRadiation.serializeNBT(provider);
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        playerRadiation.deserializeNBT(nbt);
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag compoundTag) {
+        playerRadiation.deserializeNBT(provider, compoundTag);
     }
 }

@@ -1,11 +1,15 @@
 package igentuman.nc.block.turbine;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import igentuman.nc.block.entity.turbine.TurbineBE;
 import igentuman.nc.util.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -22,14 +26,12 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
 
-import static igentuman.nc.handler.event.client.InputEvents.DESCRIPTIONS_SHOW;
 import static igentuman.nc.multiblock.turbine.TurbineRegistration.TURBINE_BE;
 
 public class TurbineRotorBlock extends DirectionalBlock implements EntityBlock {
@@ -37,7 +39,17 @@ public class TurbineRotorBlock extends DirectionalBlock implements EntityBlock {
     public TurbineRotorBlock(Properties pProperties) {
         super(pProperties.sound(SoundType.METAL).noOcclusion());
     }
+
     public static final BooleanProperty ACTIVE = BlockStateProperties.POWERED;
+
+    public static final MapCodec<TurbineRotorBlock> CODEC = RecordCodecBuilder.mapCodec(instance ->
+            instance.group(propertiesCodec()).apply(instance, TurbineRotorBlock::new)
+    );
+
+    @Override
+    protected MapCodec<? extends TurbineRotorBlock> codec() {
+        return CODEC;
+    }
 
     @Override
     public RenderShape getRenderShape(BlockState pState) {
@@ -48,7 +60,7 @@ public class TurbineRotorBlock extends DirectionalBlock implements EntityBlock {
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Level level = context.getLevel();
         BlockState neighbor = level.getBlockState(context.getClickedPos().relative(context.getClickedFace().getOpposite()));
-        if(!neighbor.isAir() && neighbor.getBlock() instanceof TurbineRotorBlock) {
+        if (!neighbor.isAir() && neighbor.getBlock() instanceof TurbineRotorBlock) {
             return this.defaultBlockState().setValue(FACING, neighbor.getValue(FACING)).setValue(ACTIVE, false);
         }
         return this.defaultBlockState().setValue(FACING, context.getNearestLookingDirection().getOpposite());
@@ -56,7 +68,7 @@ public class TurbineRotorBlock extends DirectionalBlock implements EntityBlock {
 
     @Override
     public VoxelShape getVisualShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        if(!pState.getValue(ACTIVE)) {
+        if (!pState.getValue(ACTIVE)) {
             return null;
         }
         return super.getVisualShape(pState, pLevel, pPos, pContext);
@@ -66,15 +78,15 @@ public class TurbineRotorBlock extends DirectionalBlock implements EntityBlock {
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(BlockStateProperties.FACING).add(ACTIVE);
     }
+
     @Override
     @Deprecated
     public boolean skipRendering(@NotNull BlockState state, @NotNull BlockState adjacentBlockState, @NotNull Direction side) {
         return adjacentBlockState.getBlock().equals(this);
     }
 
-    private String codeID()
-    {
-        return ForgeRegistries.BLOCKS.getKey(this).getPath();
+    private String codeID() {
+        return BuiltInRegistries.BLOCK.getKey(this).getPath();
     }
 
     @Nullable
@@ -93,7 +105,7 @@ public class TurbineRotorBlock extends DirectionalBlock implements EntityBlock {
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof TurbineBE tile) {
                 tile.tickServer();
             }
@@ -101,12 +113,12 @@ public class TurbineRotorBlock extends DirectionalBlock implements EntityBlock {
     }
 
     @Override
-    public void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor){
-        ((TurbineBE) Objects.requireNonNull(level.getBlockEntity(pos))).onNeighborChange(state,  pos, neighbor);
+    public void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor) {
+        ((TurbineBE) Objects.requireNonNull(level.getBlockEntity(pos))).onNeighborChange(state, pos, neighbor);
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag) {
-        list.add(TextUtils.applyFormat(Component.translatable("tooltip.nc.rotor_shaft.desc"), ChatFormatting.BLUE));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        tooltipComponents.add(TextUtils.applyFormat(Component.translatable("tooltip.nc.rotor_shaft.desc"), ChatFormatting.BLUE));
     }
 }

@@ -19,6 +19,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.neoforge.client.event.ContainerScreenEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,7 @@ import java.util.List;
 import static igentuman.nc.NuclearCraft.MODID;
 
 public class SideConfigSlotSelectionScreen<T extends NCProcessorContainer<T>> extends AbstractContainerScreen<T> implements IProgressScreen {
-    protected final ResourceLocation GUI = new ResourceLocation(MODID, "textures/gui/window_no_inventory.png");
+    protected final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/window_no_inventory.png");
     protected int relX;
     protected int relY;
 
@@ -43,8 +45,7 @@ public class SideConfigSlotSelectionScreen<T extends NCProcessorContainer<T>> ex
         imageHeight = 180;
     }
 
-    protected void updateRelativeCords()
-    {
+    protected void updateRelativeCords() {
         relX = (this.width - this.imageWidth) / 2;
         relY = (this.height - this.imageHeight) / 2;
         NCGuiElement.RELATIVE_X = relX;
@@ -60,15 +61,15 @@ public class SideConfigSlotSelectionScreen<T extends NCProcessorContainer<T>> ex
         energyBar = new EnergyBar(9, 4, menu.getEnergy());
         widgets.add(energyBar);
         int progressBarX = 71;
-        if(slots.getOutputItems()+slots.getOutputFluids() > 6) {
+        if (slots.getOutputItems() + slots.getOutputFluids() > 6) {
             progressBarX -= ProcessorSlots.margin;
         }
         widgets.add(new ProgressBar(progressBarX, 40, this, menu.getProcessor().progressBar));
-        for(int i = 0; i < slots.slotsCount();i++) {
-            if(slots.outputSlotsCount() == 1 && slots.getSlotType(i).contains("_out")) {
-                widgets.add(new BigSlot(slots.getSlotPos(i), slots.getSlotType(i)).forConfig(this,  i));
+        for (int i = 0; i < slots.slotsCount(); i++) {
+            if (slots.outputSlotsCount() == 1 && slots.getSlotType(i).contains("_out")) {
+                widgets.add(new BigSlot(slots.getSlotPos(i), slots.getSlotType(i)).forConfig(this, i));
             } else {
-                if(!menu.getProcessor().isSlotHidden(i)) {
+                if (!menu.getProcessor().isSlotHidden(i)) {
                     widgets.add(new NormalSlot(slots.getSlotPos(i), slots.getSlotType(i)).forConfig(this, i));
                 }
             }
@@ -77,8 +78,8 @@ public class SideConfigSlotSelectionScreen<T extends NCProcessorContainer<T>> ex
     }
 
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        for(NCGuiElement widget : widgets) {
-            if(widget.mouseClicked(pMouseX, pMouseY, pButton)) {
+        for (NCGuiElement widget : widgets) {
+            if (widget.mouseClicked(pMouseX, pMouseY, pButton)) {
                 return true;
             }
         }
@@ -91,24 +92,24 @@ public class SideConfigSlotSelectionScreen<T extends NCProcessorContainer<T>> ex
     }
 
     public SideConfigSlotSelectionScreen(AbstractContainerScreen parentScreen) {
-        this((T)parentScreen.getMenu(), NcClient.tryGetClientPlayer().getInventory(), Component.empty());
+        this((T) parentScreen.getMenu(), NcClient.tryGetClientPlayer().getInventory(), Component.empty());
         this.parentScreen = parentScreen;
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         int i = this.leftPos;
         int j = this.topPos;
         this.renderBg(graphics, partialTicks, mouseX, mouseY);
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.ContainerScreenEvent.Render.Background(this, graphics, mouseX, mouseY));
+        NeoForge.EVENT_BUS.post(new ContainerScreenEvent.Render.Background(this, graphics, mouseX, mouseY));
         RenderSystem.disableDepthTest();
-        for(Renderable widget : this.renderables) {
+        for (Renderable widget : this.renderables) {
             widget.render(graphics, mouseX, mouseY, partialTicks);
         }
-        PoseStack posestack = RenderSystem.getModelViewStack();
+        PoseStack posestack = graphics.pose();
         posestack.pushPose();
-        posestack.translate((double)i, (double)j, 0.0D);
+        posestack.translate((double) i, (double) j, 0.0D);
         RenderSystem.applyModelViewMatrix();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         this.hoveredSlot = null;
@@ -121,14 +122,14 @@ public class SideConfigSlotSelectionScreen<T extends NCProcessorContainer<T>> ex
     }
 
     private void renderWidgets(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-        for(NCGuiElement widget: widgets) {
+        for (NCGuiElement widget : widgets) {
             widget.draw(graphics, mouseX, mouseY, partialTicks);
         }
     }
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawCenteredString(font,  Component.translatable("processor_side_config.title"), imageWidth/2, titleLabelY, 0xffffff);
+        graphics.drawCenteredString(font, Component.translatable("processor_side_config.title"), imageWidth / 2, titleLabelY, 0xffffff);
     }
 
     @Override

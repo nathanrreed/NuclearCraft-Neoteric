@@ -2,8 +2,8 @@ package igentuman.nc.handler.sided.capability;
 
 import igentuman.nc.handler.sided.SidedContentHandler;
 import igentuman.nc.handler.sided.SlotModePair;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiPredicate;
@@ -24,6 +24,7 @@ public class FluidHandlerWrapper implements IFluidHandler {
         this.insert = insert;
         this.extract = extract;
     }
+
     @Override
     public int getTanks() {
         return handler.tanks.size();
@@ -46,10 +47,10 @@ public class FluidHandlerWrapper implements IFluidHandler {
 
     @Override
     public int fill(FluidStack resource, FluidAction action) {
-        for(SlotModePair pair: handler.sideMap.get(direction.ordinal())) {
-            if(insert.test(pair.getSlot(), resource)) {
+        for (SlotModePair pair : handler.sideMap.get(direction.ordinal())) {
+            if (insert.test(pair.getSlot(), resource)) {
                 NcFluidTank tank = handler.tanks.get(pair.getSlot());
-                if(tank.isFluidValid(pair.getSlot(), resource)) {
+                if (tank.isFluidValid(pair.getSlot(), resource)) {
                     return tank.fill(resource.copy(), action);
                 }
             }
@@ -59,8 +60,8 @@ public class FluidHandlerWrapper implements IFluidHandler {
 
     @Override
     public @NotNull FluidStack drain(FluidStack resource, FluidAction action) {
-        for(SlotModePair pair: handler.sideMap.get(direction.ordinal())) {
-            if(extract.test(pair.getSlot()) && resource.isFluidEqual(handler.tanks.get(pair.getSlot()).getFluid())) {
+        for (SlotModePair pair : handler.sideMap.get(direction.ordinal())) {
+            if (extract.test(pair.getSlot()) && FluidStack.isSameFluidSameComponents(resource, handler.tanks.get(pair.getSlot()).getFluid())) {
                 NcFluidTank tank = handler.tanks.get(pair.getSlot());
                 return tank.drain(resource, action);
             }
@@ -70,7 +71,7 @@ public class FluidHandlerWrapper implements IFluidHandler {
 
     @Override
     public @NotNull FluidStack drain(int maxDrain, FluidAction action) {
-        for(SlotModePair pair: handler.sideMap.get(direction.ordinal())) {
+        for (SlotModePair pair : handler.sideMap.get(direction.ordinal())) {
             if (extract.test(pair.getSlot())) {
                 NcFluidTank tank = handler.tanks.get(pair.getSlot());
                 return tank.drain(maxDrain, action);

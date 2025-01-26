@@ -2,16 +2,16 @@ package igentuman.nc.datagen.recipes.recipes;
 
 import igentuman.nc.content.processors.Processors;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
-import igentuman.nc.recipes.ingredient.NcIngredient;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.world.item.crafting.Ingredient;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+
 import static igentuman.nc.setup.registration.NCItems.NC_ITEMS;
 
 public class PumpRecipes extends AbstractRecipeProvider {
-
-    public static void generate(Consumer<FinishedRecipe> consumer) {
+    public static void generate(RecipeOutput consumer) {
         PumpRecipes.consumer = consumer;
         ID = Processors.PUMP;
 
@@ -30,7 +30,7 @@ public class PumpRecipes extends AbstractRecipeProvider {
         add(ingredient(NC_ITEMS.get("lava_collector").get()), fluidIngredient("minecraft:lava", 1000), 1D, 3D);
     }
 
-    protected static void add(NcIngredient inputItem, FluidStackIngredient outputFluid, double...modifiers) {
+    protected static void add(Ingredient inputItem, FluidStackIngredient outputFluid, double... modifiers) {
         itemsAndFluids(List.of(inputItem), new ArrayList<>(), new ArrayList<>(), List.of(outputFluid), modifiers);
     }
 }

@@ -8,10 +8,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -33,7 +33,7 @@ public class TurbineControllerContainer extends AbstractContainerMenu {
     public TurbineControllerContainer(int pContainerId, BlockPos pos, Inventory playerInventory) {
         super(TURBINE_CONTROLLER_CONTAINER.get(), pContainerId);
         this.playerEntity = playerInventory.player;
-        this.playerInventory =  new InvWrapper(playerInventory);
+        this.playerInventory = new InvWrapper(playerInventory);
         blockEntity = (TurbineControllerBE<?>) playerEntity.getCommandSenderWorld().getBlockEntity(pos);
         layoutPlayerInventorySlots();
     }
@@ -53,7 +53,7 @@ public class TurbineControllerContainer extends AbstractContainerMenu {
     }
 
     public Component getTitle() {
-        return Component.translatable("block."+MODID+"."+name);
+        return Component.translatable("block." + MODID + "." + name);
     }
 
     public boolean isCasingValid() {
@@ -72,8 +72,7 @@ public class TurbineControllerContainer extends AbstractContainerMenu {
         return blockEntity.getWidth();
     }
 
-    public int getHeight()
-    {
+    public int getHeight() {
         return blockEntity.getHeight();
     }
 
@@ -82,11 +81,11 @@ public class TurbineControllerContainer extends AbstractContainerMenu {
     }
 
     public BlockPos getValidationResultData() {
-        return  blockEntity.errorBlockPos;
+        return blockEntity.errorBlockPos;
     }
 
     public String getValidationResultKey() {
-        return  blockEntity.validationResult.messageKey;
+        return blockEntity.validationResult.messageKey;
     }
 
     public int getEnergy() {
@@ -95,7 +94,7 @@ public class TurbineControllerContainer extends AbstractContainerMenu {
 
 
     private void addSlotRange(IItemHandler handler, int x, int y, int amount, int dx) {
-        for (int i = 0 ; i < amount ; i++) {
+        for (int i = 0; i < amount; i++) {
             addSlot(new SlotItemHandler(handler, slotIndex, x, y));
             x += dx;
             slotIndex++;
@@ -103,7 +102,7 @@ public class TurbineControllerContainer extends AbstractContainerMenu {
     }
 
     protected void addSlotBox(IItemHandler handler, int x, int y, int horAmount, int dx, int verAmount, int dy) {
-        for (int j = 0 ; j < verAmount ; j++) {
+        for (int j = 0; j < verAmount; j++) {
             addSlotRange(handler, x, y, horAmount, dx);
             y += dy;
         }

@@ -10,9 +10,9 @@ import igentuman.nc.setup.registration.NCProcessors;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.BlockTags;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.data.BlockTagsProvider;
-import net.minecraftforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.NotNull;
 
 import static igentuman.nc.NuclearCraft.MODID;
@@ -22,8 +22,7 @@ import static igentuman.nc.multiblock.fusion.FusionReactor.FUSION_CORE_PROXY;
 import static igentuman.nc.multiblock.turbine.TurbineRegistration.TURBINE_BLOCKS;
 import static igentuman.nc.setup.registration.NCBlocks.*;
 import static igentuman.nc.setup.registration.NCStorageBlocks.STORAGE_BLOCKS;
-import static igentuman.nc.setup.registration.Tags.BLOCK_TAGS;
-import static igentuman.nc.setup.registration.Tags.ORE_TAGS;
+import static igentuman.nc.setup.registration.Tags.*;
 
 public class NCBlockTags extends BlockTagsProvider {
 
@@ -46,7 +45,7 @@ public class NCBlockTags extends BlockTagsProvider {
                 FISSION_BLOCKS.get("fission_reactor_glass").get(),
                 FISSION_BLOCKS.get("fission_reactor_port").get(),
                 NCProcessors.PROCESSORS.get("irradiator").get()
-                );
+        );
         tag(FissionBlocks.HEAT_SINK_BLOCKS).add(FissionReactor.getHSBlocks());
         tag(FissionBlocks.INNER_REACTOR_BLOCKS)
                 .add(FissionReactor.getHSBlocks())
@@ -72,14 +71,18 @@ public class NCBlockTags extends BlockTagsProvider {
         tag(TurbineRegistration.INNER_TURBINE_BLOCKS).add(
                 TurbineRegistration.getBladeBlocks()
         );
+        tag(MINEABLE_WITH_PAXEL).addTags(BlockTags.MINEABLE_WITH_AXE, BlockTags.MINEABLE_WITH_PICKAXE, BlockTags.MINEABLE_WITH_SHOVEL);
+        tag(INCORRECT_FOR_TOUGH); //TODO ADD
+        tag(INCORRECT_FOR_THORIUM);
+        tag(INCORRECT_FOR_QNP);
     }
 
     private void ores() {
-        for(String ore: NCBlocks.ORE_BLOCKS.keySet()) {
+        for (String ore : NCBlocks.ORE_BLOCKS.keySet()) {
             tag(BlockTags.MINEABLE_WITH_PICKAXE).add(NCBlocks.ORE_BLOCKS.get(ore).get());
             tag(BlockTags.NEEDS_IRON_TOOL).add(NCBlocks.ORE_BLOCKS.get(ore).get());
             tag(Tags.Blocks.ORES).add(NCBlocks.ORE_BLOCKS.get(ore).get());
-            tag(ORE_TAGS.get(ore.replaceAll("_deepslate|_end|_nether","")))
+            tag(ORE_TAGS.get(ore.replaceAll("_deepslate|_end|_nether", "")))
                     .add(NCBlocks.ORE_BLOCKS.get(ore).get());
         }
     }
@@ -88,19 +91,19 @@ public class NCBlockTags extends BlockTagsProvider {
         tag(BlockTags.MINEABLE_WITH_PICKAXE).add(REDSTONE_DIMMER_BLOCK.get());
         tag(BlockTags.NEEDS_IRON_TOOL).add(REDSTONE_DIMMER_BLOCK.get());
 
-        for(String block: NCBlocks.NC_BLOCKS.keySet()) {
+        for (String block : NCBlocks.NC_BLOCKS.keySet()) {
             tag(BlockTags.MINEABLE_WITH_PICKAXE).add(NCBlocks.NC_BLOCKS.get(block).get());
             tag(BlockTags.NEEDS_IRON_TOOL).add(NCBlocks.NC_BLOCKS.get(block).get());
             tag(Tags.Blocks.STORAGE_BLOCKS).add(NCBlocks.NC_BLOCKS.get(block).get());
-            if(BLOCK_TAGS.get(block) != null) {
+            if (BLOCK_TAGS.get(block) != null) {
                 tag(BLOCK_TAGS.get(block)).add(NCBlocks.NC_BLOCKS.get(block).get());
             }
         }
-        for(String block: NC_MATERIAL_BLOCKS.keySet()) {
+        for (String block : NC_MATERIAL_BLOCKS.keySet()) {
             tag(BlockTags.MINEABLE_WITH_PICKAXE).add(NC_MATERIAL_BLOCKS.get(block).get());
             tag(BlockTags.NEEDS_IRON_TOOL).add(NC_MATERIAL_BLOCKS.get(block).get());
             tag(Tags.Blocks.STORAGE_BLOCKS).add(NC_MATERIAL_BLOCKS.get(block).get());
-            if(BLOCK_TAGS.get(block) != null) {
+            if (BLOCK_TAGS.get(block) != null) {
                 tag(BLOCK_TAGS.get(block)).add(NC_MATERIAL_BLOCKS.get(block).get());
             }
         }
@@ -109,36 +112,35 @@ public class NCBlockTags extends BlockTagsProvider {
                 NC_MATERIAL_BLOCKS.get("uranium238").get(),
                 NC_MATERIAL_BLOCKS.get("plutonium238").get(),
                 NC_MATERIAL_BLOCKS.get("americium241").get()
-                );
-
+        );
     }
 
     private void machines() {
-        for(String block: NCEnergyBlocks.ENERGY_BLOCKS.keySet()) {
+        for (String block : NCEnergyBlocks.ENERGY_BLOCKS.keySet()) {
             tag(BlockTags.MINEABLE_WITH_PICKAXE).add(NCEnergyBlocks.ENERGY_BLOCKS.get(block).get());
             tag(BlockTags.NEEDS_IRON_TOOL).add(NCEnergyBlocks.ENERGY_BLOCKS.get(block).get());
         }
-        for(String block: STORAGE_BLOCKS.keySet()) {
+        for (String block : STORAGE_BLOCKS.keySet()) {
             tag(BlockTags.MINEABLE_WITH_PICKAXE).add(STORAGE_BLOCKS.get(block).get());
             tag(BlockTags.NEEDS_IRON_TOOL).add(STORAGE_BLOCKS.get(block).get());
         }
-        for(String block: NCProcessors.PROCESSORS.keySet()) {
+        for (String block : NCProcessors.PROCESSORS.keySet()) {
             tag(BlockTags.MINEABLE_WITH_PICKAXE).add(NCProcessors.PROCESSORS.get(block).get());
             tag(BlockTags.NEEDS_IRON_TOOL).add(NCProcessors.PROCESSORS.get(block).get());
         }
-        for(String block: NC_ELECTROMAGNETS.keySet()) {
+        for (String block : NC_ELECTROMAGNETS.keySet()) {
             tag(BlockTags.MINEABLE_WITH_PICKAXE).add(NC_ELECTROMAGNETS.get(block).get());
             tag(BlockTags.NEEDS_IRON_TOOL).add(NC_ELECTROMAGNETS.get(block).get());
         }
-        for(String block: NC_RF_AMPLIFIERS.keySet()) {
+        for (String block : NC_RF_AMPLIFIERS.keySet()) {
             tag(BlockTags.MINEABLE_WITH_PICKAXE).add(NC_RF_AMPLIFIERS.get(block).get());
             tag(BlockTags.NEEDS_IRON_TOOL).add(NC_RF_AMPLIFIERS.get(block).get());
         }
-        for(String block: FISSION_BLOCKS.keySet()) {
+        for (String block : FISSION_BLOCKS.keySet()) {
             tag(BlockTags.MINEABLE_WITH_PICKAXE).add(FISSION_BLOCKS.get(block).get());
             tag(BlockTags.NEEDS_IRON_TOOL).add(FISSION_BLOCKS.get(block).get());
         }
-        for(String block: FUSION_BLOCKS.keySet()) {
+        for (String block : FUSION_BLOCKS.keySet()) {
             tag(BlockTags.MINEABLE_WITH_PICKAXE).add(FUSION_BLOCKS.get(block).get());
             tag(BlockTags.NEEDS_IRON_TOOL).add(FUSION_BLOCKS.get(block).get());
         }
@@ -150,5 +152,4 @@ public class NCBlockTags extends BlockTagsProvider {
     public @NotNull String getName() {
         return "NuclearCraft Block Tags";
     }
-
 }

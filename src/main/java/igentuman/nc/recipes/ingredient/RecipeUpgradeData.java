@@ -4,7 +4,6 @@ import igentuman.nc.util.ItemDataUtils;
 import igentuman.nc.util.annotation.ParametersAreNotNullByDefault;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.ItemStack;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,5 +26,4 @@ public interface RecipeUpgradeData<TYPE extends RecipeUpgradeData<TYPE>> {
         ListTag containers = ItemDataUtils.getList(stack, key);
         return containers.isEmpty() ? null : creator.apply(containers);
     }
-
 }

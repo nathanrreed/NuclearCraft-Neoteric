@@ -6,6 +6,7 @@ public interface IMultiblockAttachable {
     void setMultiblock(AbstractNCMultiblock multiblock);
 
     BlockEntity controller();
+
     AbstractNCMultiblock multiblock();
 
     boolean canInvalidateCache();

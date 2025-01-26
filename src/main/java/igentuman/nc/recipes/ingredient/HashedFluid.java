@@ -1,6 +1,8 @@
 package igentuman.nc.recipes.ingredient;
 
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.CustomData;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -9,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class HashedFluid {
 
     public static HashedFluid create(@NotNull FluidStack stack) {
-        return new HashedFluid(new FluidStack(stack, 1));
+        return new HashedFluid(new FluidStack(stack.getFluid(), 1));
     }
 
     /**
@@ -41,7 +43,7 @@ public class HashedFluid {
         if (size <= 0 || fluidStack.isEmpty()) {
             return FluidStack.EMPTY;
         }
-        return new FluidStack(fluidStack, size);
+        return new FluidStack(fluidStack.getFluid(), size);
     }
 
     @Override
@@ -49,7 +51,7 @@ public class HashedFluid {
         if (obj == this) {
             return true;
         }
-        return obj instanceof HashedFluid other && !fluidStack.isEmpty() && fluidStack.isFluidEqual(other.fluidStack);
+        return obj instanceof HashedFluid other && !fluidStack.isEmpty() && FluidStack.isSameFluidSameComponents(fluidStack, other.fluidStack);
     }
 
     @Override
@@ -60,8 +62,10 @@ public class HashedFluid {
     private int initHashCode() {
         int code = 1;
         code = 31 * code + fluidStack.getFluid().hashCode();
-        if (fluidStack.hasTag()) {
-            code = 31 * code + fluidStack.getTag().hashCode();
+
+        CustomData data = fluidStack.get(DataComponents.CUSTOM_DATA);
+        if (data != null) {
+            code = 31 * code + data.hashCode();
         }
         return code;
     }

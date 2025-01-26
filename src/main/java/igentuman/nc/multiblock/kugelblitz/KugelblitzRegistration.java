@@ -7,20 +7,20 @@ import igentuman.nc.block.kugelblitz.ChamberPortBlock;
 import igentuman.nc.block.kugelblitz.ChamberTerminalBlock;
 import igentuman.nc.container.ChamberPortContainer;
 import igentuman.nc.container.ChamberTerminalContainer;
-import igentuman.nc.container.FissionControllerContainer;
-import igentuman.nc.container.FissionPortContainer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.GlassBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 
 import java.util.HashMap;
 
@@ -32,18 +32,19 @@ import static igentuman.nc.setup.registration.Tags.itemTag;
 public class KugelblitzRegistration {
 
     public static final Item.Properties KUGELBLITZ_ITEM_PROPERTIES = new Item.Properties();
-    public static final Block.Properties KUGELBLITZ_BLOCK_PROPERTIES =  BlockBehaviour.Properties.of().sound(SoundType.METAL).strength(4f).requiresCorrectToolForDrops();;
-    public static HashMap<String, RegistryObject<BlockEntityType<? extends BlockEntity>>> KUGELBLITZ_BE = new HashMap<>();
-    public static HashMap<String, RegistryObject<Item>> KUGELBLITZ_ITEMS = new HashMap<>();
-    public static HashMap<String, RegistryObject<Block>> KUGELBLITZ_BLOCKS = new HashMap<>();
+    public static final Block.Properties KUGELBLITZ_BLOCK_PROPERTIES = BlockBehaviour.Properties.of().sound(SoundType.METAL).strength(4f).requiresCorrectToolForDrops();
+    ;
+    public static HashMap<String, DeferredHolder<BlockEntityType<?>, BlockEntityType<? extends BlockEntity>>> KUGELBLITZ_BE = new HashMap<>();
+    public static HashMap<String, DeferredItem<Item>> KUGELBLITZ_ITEMS = new HashMap<>();
+    public static HashMap<String, DeferredBlock<Block>> KUGELBLITZ_BLOCKS = new HashMap<>();
     public static TagKey<Block> CASING_BLOCKS = blockTag("kugelblitz_casing");
     public static TagKey<Item> CASING_ITEMS = itemTag("kugelblitz_casing");
 
-    public static final RegistryObject<MenuType<ChamberTerminalContainer>> CHAMBER_TERMINAL_CONTAINER = CONTAINERS.register("chamber_terminal",
-            () -> IForgeMenuType.create((windowId, inv, data) -> new ChamberTerminalContainer(windowId, data.readBlockPos(), inv))
+    public static final DeferredHolder<MenuType<?>, MenuType<ChamberTerminalContainer>> CHAMBER_TERMINAL_CONTAINER = CONTAINERS.register("chamber_terminal",
+            () -> IMenuTypeExtension.create((windowId, inv, data) -> new ChamberTerminalContainer(windowId, data.readBlockPos(), inv))
     );
-    public static final RegistryObject<MenuType<ChamberPortContainer>> CHAMBER_PORT_CONTAINER = CONTAINERS.register("chamber_port",
-            () -> IForgeMenuType.create((windowId, inv, data) -> new ChamberPortContainer(windowId, data.readBlockPos(), inv))
+    public static final DeferredHolder<MenuType<?>, MenuType<ChamberPortContainer>> CHAMBER_PORT_CONTAINER = CONTAINERS.register("chamber_port",
+            () -> IMenuTypeExtension.create((windowId, inv, data) -> new ChamberPortContainer(windowId, data.readBlockPos(), inv))
     );
 
     /*
@@ -91,8 +92,8 @@ public class KugelblitzRegistration {
     }
 
     private static void registerSimpleBlock(String key) {
-        if(key.contains("photon")) {
-            KUGELBLITZ_BLOCKS.put(key, BLOCKS.register(key, () -> new GlassBlock(KUGELBLITZ_BLOCK_PROPERTIES)));
+        if (key.contains("photon")) {
+            KUGELBLITZ_BLOCKS.put(key, BLOCKS.register(key, () -> new TransparentBlock(KUGELBLITZ_BLOCK_PROPERTIES)));
         } else {
             KUGELBLITZ_BLOCKS.put(key, BLOCKS.register(key, () -> new Block(KUGELBLITZ_BLOCK_PROPERTIES)));
         }
@@ -100,7 +101,7 @@ public class KugelblitzRegistration {
         ALL_NC_ITEMS.put(key, KUGELBLITZ_ITEMS.get(key));
     }
 
-    public static <B extends Block> RegistryObject<Item> fromMultiblock(RegistryObject<B> block) {
+    public static <B extends Block> DeferredItem<Item> fromMultiblock(DeferredBlock<B> block) {
         return ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), KUGELBLITZ_ITEM_PROPERTIES));
     }
 }

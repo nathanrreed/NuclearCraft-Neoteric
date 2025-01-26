@@ -1,10 +1,8 @@
 package igentuman.nc.client.gui.element.button;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import igentuman.nc.client.gui.element.NCGuiElement;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 
@@ -24,7 +22,7 @@ public class Checkbox extends NCGuiElement {
 
     private boolean isChecked = false;
 
-    public Checkbox(int xPos, int yPos, AbstractContainerScreen<?> screen, boolean checked)  {
+    public Checkbox(int xPos, int yPos, AbstractContainerScreen<?> screen, boolean checked) {
         super(xPos, yPos, 12, 12, Component.empty());
         x = xPos;
         y = yPos;
@@ -60,7 +58,7 @@ public class Checkbox extends NCGuiElement {
         RenderSystem.enableDepthTest();
         xTexStart = isChecked() ? 11 : 0;
 
-        graphics.blit(TEXTURE, this.x, this.y, (float)this.xTexStart, (float)i, this.width, this.height, this.textureWidth, this.textureHeight);
+        graphics.blit(TEXTURE, this.x, this.y, (float) this.xTexStart, (float) i, this.width, this.height, this.textureWidth, this.textureHeight);
         if (this.isHovered) {
             this.renderToolTip(graphics, pMouseX, pMouseY);
         }

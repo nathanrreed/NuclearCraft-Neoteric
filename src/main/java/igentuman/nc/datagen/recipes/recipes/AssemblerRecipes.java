@@ -1,30 +1,29 @@
 package igentuman.nc.datagen.recipes.recipes;
 
 import igentuman.nc.content.fuel.FuelManager;
-import igentuman.nc.content.processors.Processors;
 import igentuman.nc.content.materials.Materials;
-import net.minecraft.data.recipes.FinishedRecipe;
+import igentuman.nc.content.processors.Processors;
+import net.minecraft.data.recipes.RecipeOutput;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import static igentuman.nc.setup.registration.NCItems.*;
 import static net.minecraft.world.item.Items.*;
 
 public class AssemblerRecipes extends AbstractRecipeProvider {
 
-    public static void generate(Consumer<FinishedRecipe> consumer) {
+    public static void generate(RecipeOutput consumer) {
         AssemblerRecipes.consumer = consumer;
         ID = Processors.ASSEMBLER;
 
-        for (String name: FuelManager.all().keySet()) {
-            for(String subType: FuelManager.all().get(name).keySet()) {
+        for (String name : FuelManager.all().keySet()) {
+            for (String subType : FuelManager.all().get(name).keySet()) {
                 itemsToItems(
                         List.of(
-                            ingredient(fuelItem(List.of("fuel", name, subType, "")), 9),
-                            dustIngredient(Materials.graphite),
-                            ingotIngredient(Materials.pyrolitic_carbon),
-                            ingotIngredient(Materials.silicon_carbide)
+                                ingredient(fuelItem(List.of("fuel", name, subType, "")), 9),
+                                dustIngredient(Materials.graphite),
+                                ingotIngredient(Materials.pyrolitic_carbon),
+                                ingotIngredient(Materials.silicon_carbide)
                         ),
                         List.of(ingredient(fuelItem(List.of("fuel", name, subType, "tr")), 9))
                 );
@@ -95,7 +94,7 @@ public class AssemblerRecipes extends AbstractRecipeProvider {
 
         itemsToItems(
                 List.of(
-                        ingredient(NC_ITEMS.get("compact_water_collector").get(),4),
+                        ingredient(NC_ITEMS.get("compact_water_collector").get(), 4),
                         ingredient(HEART_OF_THE_SEA),
                         plateIngredient(Materials.platinum, 4),
                         ingredient(NC_PARTS.get("motor").get())
@@ -105,7 +104,7 @@ public class AssemblerRecipes extends AbstractRecipeProvider {
 
         itemsToItems(
                 List.of(
-                        ingredient(NC_ITEMS.get("compact_nitrogen_collector").get(),4),
+                        ingredient(NC_ITEMS.get("compact_nitrogen_collector").get(), 4),
                         plateIngredient(Materials.beryllium),
                         plateIngredient(Materials.netherite, 4),
                         ingredient(NC_PARTS.get("motor").get())
@@ -115,7 +114,7 @@ public class AssemblerRecipes extends AbstractRecipeProvider {
 
         itemsToItems(
                 List.of(
-                        ingredient(NC_ITEMS.get("compact_helium_collector").get(),4),
+                        ingredient(NC_ITEMS.get("compact_helium_collector").get(), 4),
                         plateIngredient(Materials.zinc),
                         plateIngredient(Materials.cobalt, 4),
                         ingredient(NC_PARTS.get("motor").get())

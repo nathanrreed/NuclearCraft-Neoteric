@@ -21,31 +21,26 @@ public class NCMaterial {
     public boolean dust = true;
     public int color = 0xFFFFFFFF;
 
-    private NCMaterial(String name)
-    {
+    private NCMaterial(String name) {
         this.name = name;
     }
 
-    public static NCMaterial get(String name)
-    {
+    public static NCMaterial get(String name) {
         return new NCMaterial(name);
     }
 
-    public static NCMaterial ore(String name)
-    {
+    public static NCMaterial ore(String name) {
         return get(name);
     }
 
-    public static NCMaterial metal(String name)
-    {
+    public static NCMaterial metal(String name) {
         return get(name)
                 .ores(false, false, false, false)
                 .products(false, true, true, true, true, true)
                 .fluid(true, 1000);
     }
 
-    public static NCMaterial alloy(String name)
-    {
+    public static NCMaterial alloy(String name) {
         return get(name)
                 .ores(false, false, false, false)
                 .products(false, true, true, true, true, true)
@@ -53,8 +48,7 @@ public class NCMaterial {
     }
 
 
-    public static NCMaterial gem(String name)
-    {
+    public static NCMaterial gem(String name) {
         return get(name)
                 .ores(false, false, false, false)
                 .products(false, false, false, false, false, false)
@@ -63,16 +57,14 @@ public class NCMaterial {
     }
 
 
-    public static NCMaterial dust(String name)
-    {
+    public static NCMaterial dust(String name) {
         return get(name)
                 .ores(false, false, false, false)
                 .products(false, true, false, false, false, false)
                 .fluid(false, 1000);
     }
 
-    public NCMaterial ores(boolean normal_ore, boolean deepslate_ore, boolean nether_ore, boolean end_ore)
-    {
+    public NCMaterial ores(boolean normal_ore, boolean deepslate_ore, boolean nether_ore, boolean end_ore) {
         this.normal_ore = normal_ore;
         this.deepslate_ore = deepslate_ore;
         this.nether_ore = nether_ore;
@@ -80,8 +72,7 @@ public class NCMaterial {
         return this;
     }
 
-    public NCMaterial products(boolean chunk, boolean dust, boolean ingot, boolean nugget, boolean block, boolean plate)
-    {
+    public NCMaterial products(boolean chunk, boolean dust, boolean ingot, boolean nugget, boolean block, boolean plate) {
         this.chunk = chunk;
         this.dust = dust;
         this.ingot = ingot;
@@ -91,16 +82,17 @@ public class NCMaterial {
         return this;
     }
 
-    public NCMaterial with(String... args)  {
-        for(String str: args) {
+    public NCMaterial with(String... args) {
+        for (String str : args) {
             try {
                 getClass().getDeclaredField(str).set(this, true);
-            } catch (NoSuchFieldException|IllegalAccessException ignored) {}
+            } catch (NoSuchFieldException | IllegalAccessException ignored) {
+            }
         }
         return this;
     }
 
-    public NCMaterial define(String... args)  {
+    public NCMaterial define(String... args) {
         normal_ore = false;
         deepslate_ore = false;
         chunk = false;
@@ -110,22 +102,21 @@ public class NCMaterial {
         fluid = false;
         plate = false;
         dust = false;
-        for(String str: args) {
+        for (String str : args) {
             try {
                 getClass().getDeclaredField(str).set(this, true);
-            } catch (NoSuchFieldException|IllegalAccessException ignored) {}
+            } catch (NoSuchFieldException | IllegalAccessException ignored) {
+            }
         }
         return this;
     }
 
-    public NCMaterial color(int color)
-    {
+    public NCMaterial color(int color) {
         this.color = color;
         return this;
     }
 
-    public NCMaterial fluid(boolean fluid, int temperature)
-    {
+    public NCMaterial fluid(boolean fluid, int temperature) {
         this.fluid = fluid;
         this.temperature = temperature;
         return this;

@@ -1,13 +1,15 @@
 package igentuman.nc.util;
 
-import net.minecraftforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.EnergyStorage;
 
 public class CustomEnergyStorage extends EnergyStorage {
 
     public boolean wasUpdated = true;
+
     public CustomEnergyStorage(int capacity, int maxTransfer) {
         super(capacity, maxTransfer, 0);
     }
+
     public CustomEnergyStorage(int capacity, int maxTransfer, int maxExtract) {
         super(capacity, maxTransfer, maxExtract);
     }
@@ -38,7 +40,7 @@ public class CustomEnergyStorage extends EnergyStorage {
         this.energy = energy;
         this.energy = Math.max(this.energy, 0);
         this.energy = Math.min(this.energy, getMaxEnergyStored());
-        if(energy != 0) {
+        if (energy != 0) {
             onEnergyChanged();
         }
     }
@@ -50,7 +52,7 @@ public class CustomEnergyStorage extends EnergyStorage {
         }
         this.energy = Math.max(this.energy, 0);
         this.energy = Math.min(this.energy, getMaxEnergyStored());
-        if(energy != 0) {
+        if (energy != 0) {
             onEnergyChanged();
         }
     }
@@ -60,7 +62,7 @@ public class CustomEnergyStorage extends EnergyStorage {
         if (this.energy < 0) {
             this.energy = 0;
         }
-        if(energy != 0) {
+        if (energy != 0) {
             onEnergyChanged();
         }
     }

@@ -2,20 +2,16 @@ package igentuman.nc.datagen.recipes.recipes;
 
 import igentuman.nc.content.materials.Materials;
 import igentuman.nc.content.processors.Processors;
-import igentuman.nc.recipes.ingredient.NcIngredient;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.common.Tags;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import static net.minecraft.world.level.block.Blocks.*;
 
-
 public class IrradiatorRecipes extends AbstractRecipeProvider {
-
-    public static void generate(Consumer<FinishedRecipe> consumer) {
+    public static void generate(RecipeOutput consumer) {
         IrradiatorRecipes.consumer = consumer;
         ID = Processors.IRRADIATOR;
 
@@ -25,7 +21,7 @@ public class IrradiatorRecipes extends AbstractRecipeProvider {
                 List.of(ingredient(Item.byBlock(NETHERRACK))),
                 List.of(fluidIngredient("redstone", 72)),
                 List.of(), 0.5D);
-        itemToItem(ingredient(Tags.Items.SAND, 1), NcIngredient.stack(stack(GLOWSTONE, 1)), 3D);
+        itemToItem(ingredient(net.neoforged.neoforge.common.Tags.Items.SANDS, 1), Ingredient.of(stack(GLOWSTONE, 1)), 3D);
         itemToItem(dustIngredient(Materials.tbp), dustIngredient(Materials.protactinium_233), 2.5D);
         itemToItem(dustIngredient(Materials.bismuth), dustIngredient(Materials.polonium), 2D);
         fluidsAndFluids(List.of(fluidIngredient("lithium", 500)), List.of(fluidIngredient("irradiated_lithium", 500)), 1.5D);

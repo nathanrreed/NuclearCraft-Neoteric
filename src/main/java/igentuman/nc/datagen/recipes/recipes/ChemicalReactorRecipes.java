@@ -3,18 +3,13 @@ package igentuman.nc.datagen.recipes.recipes;
 import igentuman.nc.content.materials.Materials;
 import igentuman.nc.content.processors.Processors;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
-import igentuman.nc.recipes.ingredient.creator.IngredientCreatorAccess;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.data.recipes.RecipeOutput;
 
 import java.util.List;
-import java.util.function.Consumer;
-
-import static net.minecraft.world.level.material.Fluids.WATER;
 
 public class ChemicalReactorRecipes extends AbstractRecipeProvider {
 
-    public static void generate(Consumer<FinishedRecipe> consumer) {
+    public static void generate(RecipeOutput consumer) {
         ChemicalReactorRecipes.consumer = consumer;
         ID = Processors.CHEMICAL_REACTOR;
 
@@ -81,9 +76,9 @@ public class ChemicalReactorRecipes extends AbstractRecipeProvider {
 
         add(
                 List.of(
-                    fluidIngredient("boron", 144),
-                    fluidIngredient("hydrogen", 666)
-                        ),
+                        fluidIngredient("boron", 144),
+                        fluidIngredient("hydrogen", 666)
+                ),
                 List.of(
                         fluidIngredient("diborane", 500)
                 ), 0.5D
@@ -91,9 +86,9 @@ public class ChemicalReactorRecipes extends AbstractRecipeProvider {
 
         add(
                 List.of(
-                    fluidIngredient("diborane", 250),
-                    fluidIngredient("minecraft:water", 750)
-                        ),
+                        fluidIngredient("diborane", 250),
+                        fluidIngredient("minecraft:water", 750)
+                ),
                 List.of(
                         fluidIngredient("boric_acid", 500),
                         fluidIngredient("hydrogen", 500)
@@ -102,9 +97,9 @@ public class ChemicalReactorRecipes extends AbstractRecipeProvider {
 
         add(
                 List.of(
-                    fluidIngredient("boric_acid", 500),
-                    fluidIngredient("ammonia", 500)
-                        ),
+                        fluidIngredient("boric_acid", 500),
+                        fluidIngredient("ammonia", 500)
+                ),
                 List.of(
                         fluidIngredient("boron_nitride_solution", 72),
                         fluidIngredient("minecraft:water", 1000)
@@ -436,7 +431,7 @@ public class ChemicalReactorRecipes extends AbstractRecipeProvider {
 
     }
 
-    protected static void add(List<FluidStackIngredient> input, List<FluidStackIngredient> output, double...modifiers) {
+    protected static void add(List<FluidStackIngredient> input, List<FluidStackIngredient> output, double... modifiers) {
         fluidsAndFluids(input, output, modifiers);
     }
 }

@@ -22,7 +22,7 @@ public class IngredientCreatorAccess {
     public static IItemStackIngredientCreator item() {
         if (ITEM_STACK_INGREDIENT_CREATOR == null) {
             lookupInstance(IItemStackIngredientCreator.class, "igentuman.nc.recipes.ingredient.creator.ItemStackIngredientCreator",
-                  helper -> ITEM_STACK_INGREDIENT_CREATOR = helper);
+                    helper -> ITEM_STACK_INGREDIENT_CREATOR = helper);
         }
         return ITEM_STACK_INGREDIENT_CREATOR;
     }
@@ -33,7 +33,7 @@ public class IngredientCreatorAccess {
     public static IFluidStackIngredientCreator fluid() {
         if (FLUID_STACK_INGREDIENT_CREATOR == null) {
             lookupInstance(IFluidStackIngredientCreator.class, "igentuman.nc.recipes.ingredient.creator.FluidStackIngredientCreator",
-                  helper -> FLUID_STACK_INGREDIENT_CREATOR = helper);
+                    helper -> FLUID_STACK_INGREDIENT_CREATOR = helper);
         }
         return FLUID_STACK_INGREDIENT_CREATOR;
     }

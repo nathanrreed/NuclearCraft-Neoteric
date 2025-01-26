@@ -1,19 +1,16 @@
 package igentuman.nc.block.kugelblitz;
 
 import igentuman.nc.block.entity.kugelblitz.BlackHoleBE;
-import igentuman.nc.block.entity.turbine.TurbineBE;
-import igentuman.nc.util.TextUtils;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -23,21 +20,17 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Objects;
-
 import static igentuman.nc.multiblock.kugelblitz.KugelblitzRegistration.KUGELBLITZ_BE;
-import static igentuman.nc.multiblock.turbine.TurbineRegistration.TURBINE_BE;
 
 public class BlackHoleBlock extends Block implements EntityBlock {
 
     public BlackHoleBlock(Properties pProperties) {
         super(pProperties.sound(SoundType.METAL).noOcclusion());
     }
+
     public static final BooleanProperty ACTIVE = BlockStateProperties.POWERED;
 
     @Override
@@ -52,7 +45,7 @@ public class BlackHoleBlock extends Block implements EntityBlock {
 
     @Override
     public VoxelShape getVisualShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
-        if(!pState.getValue(ACTIVE)) {
+        if (!pState.getValue(ACTIVE)) {
             return null;
         }
         return super.getVisualShape(pState, pLevel, pPos, pContext);
@@ -62,15 +55,15 @@ public class BlackHoleBlock extends Block implements EntityBlock {
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(ACTIVE);
     }
+
     @Override
     @Deprecated
     public boolean skipRendering(@NotNull BlockState state, @NotNull BlockState adjacentBlockState, @NotNull Direction side) {
         return adjacentBlockState.getBlock().equals(this);
     }
 
-    private String codeID()
-    {
-        return ForgeRegistries.BLOCKS.getKey(this).getPath();
+    private String codeID() {
+        return BuiltInRegistries.BLOCK.getKey(this).getPath();
     }
 
     @Nullable
@@ -89,7 +82,7 @@ public class BlackHoleBlock extends Block implements EntityBlock {
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof BlackHoleBE tile) {
                 tile.tickServer();
             }

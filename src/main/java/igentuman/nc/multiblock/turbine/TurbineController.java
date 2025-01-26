@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 
 public class TurbineController implements INCMultiblockController {
     protected TurbineControllerBE<?> controllerBE;
+
     public TurbineController(TurbineControllerBE<?> turbineControllerBE) {
         controllerBE = turbineControllerBE;
     }

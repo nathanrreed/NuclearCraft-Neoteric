@@ -1,15 +1,11 @@
 package igentuman.nc.client.gui.element;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import igentuman.nc.client.gui.processor.NCProcessorScreen;
-import igentuman.nc.container.NCProcessorContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -28,7 +24,7 @@ import java.util.List;
 import static igentuman.nc.NuclearCraft.MODID;
 
 public class NCGuiElement extends AbstractWidget {
-    protected static ResourceLocation TEXTURE = new ResourceLocation(MODID, "textures/gui/widgets.png");
+    protected static ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/widgets.png");
     public static int RELATIVE_X = 0;
     public static int RELATIVE_Y = 0;
     protected int width;
@@ -44,14 +40,12 @@ public class NCGuiElement extends AbstractWidget {
         super(pX, pY, pWidth, pHeight, pMessage);
     }
 
-    public int X()
-    {
-        return RELATIVE_X+x;
+    public int X() {
+        return RELATIVE_X + x;
     }
 
-    public int Y()
-    {
-        return RELATIVE_Y+y;
+    public int Y() {
+        return RELATIVE_Y + y;
     }
 
     protected Component message;
@@ -67,37 +61,32 @@ public class NCGuiElement extends AbstractWidget {
 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        if(X() <= pMouseX && pMouseX < X() + width && Y() <= pMouseY && pMouseY < Y() + height) {
+        if (X() <= pMouseX && pMouseX < X() + width && Y() <= pMouseY && pMouseY < Y() + height) {
             return onPress();
         }
         return false;
     }
 
     protected BlockPos getPosition() {
-        if(screen instanceof NCProcessorScreen<?> processorScreen) {
+        if (screen instanceof NCProcessorScreen<?> processorScreen) {
             return processorScreen.getMenu().getPosition();
         }
         return BlockPos.ZERO;
     }
 
     @Override
-    public void render(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    protected void renderWidget(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         if (this.visible) {
             this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
-            this.renderButton(graphics, pMouseX, pMouseY, pPartialTick);
+            this.renderButton(guiGraphics, pMouseX, pMouseY, pPartialTick);
         }
-    }
-
-    @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int i, int i1, float v) {
-
     }
 
     protected void onFocusedChanged(boolean pFocused) {
     }
 
     public boolean isMouseOver(double pMouseX, double pMouseY) {
-        return this.active && this.visible && pMouseX >= (double)this.x && pMouseY >= (double)this.y && pMouseX < (double)(this.x + this.width) && pMouseY < (double)(this.y + this.height);
+        return this.active && this.visible && pMouseX >= (double) this.x && pMouseY >= (double) this.y && pMouseX < (double) (this.x + this.width) && pMouseY < (double) (this.y + this.height);
     }
 
     public void renderToolTip(GuiGraphics graphics, int pMouseX, int pMouseY) {
@@ -109,7 +98,7 @@ public class NCGuiElement extends AbstractWidget {
     }
 
     protected boolean clicked(double pMouseX, double pMouseY) {
-        return this.active && this.visible && pMouseX >= (double)this.x && pMouseY >= (double)this.y && pMouseX < (double)(this.x + this.width) && pMouseY < (double)(this.y + this.height);
+        return this.active && this.visible && pMouseX >= (double) this.x && pMouseY >= (double) this.y && pMouseX < (double) (this.x + this.width) && pMouseY < (double) (this.y + this.height);
     }
 
     public boolean isHoveredOrFocused() {
@@ -145,13 +134,16 @@ public class NCGuiElement extends AbstractWidget {
 
     public static final int UNSET_FG_COLOR = -1;
     protected int packedFGColor = UNSET_FG_COLOR;
+
     public int getFGColor() {
         if (packedFGColor != UNSET_FG_COLOR) return packedFGColor;
         return this.active ? 16777215 : 10526880; // White : Light Grey
     }
+
     public void setFGColor(int color) {
         this.packedFGColor = color;
     }
+
     public void clearFGColor() {
         this.packedFGColor = UNSET_FG_COLOR;
     }
@@ -216,8 +208,7 @@ public class NCGuiElement extends AbstractWidget {
         return tooltips;
     }
 
-    public void addTooltip(Component tooltip)
-    {
+    public void addTooltip(Component tooltip) {
         tooltips.add(tooltip);
     }
 

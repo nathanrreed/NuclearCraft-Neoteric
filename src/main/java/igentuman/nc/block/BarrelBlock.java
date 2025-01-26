@@ -1,17 +1,19 @@
 package igentuman.nc.block;
 
 import igentuman.nc.block.entity.BarrelBE;
-import igentuman.nc.setup.registration.NCStorageBlocks;
 import igentuman.nc.content.storage.BarrelBlocks;
+import igentuman.nc.setup.registration.NCStorageBlocks;
 import igentuman.nc.util.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -19,8 +21,8 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -30,18 +32,16 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static igentuman.nc.setup.registration.NCItems.MULTITOOL;
-import static igentuman.nc.util.StackUtils.getItemByRegistryName;
 import static igentuman.nc.util.StackUtils.isMultiTool;
 import static net.minecraft.world.item.Items.BUCKET;
 
@@ -50,6 +50,7 @@ public class BarrelBlock extends Block implements EntityBlock {
     public BarrelBlock(Properties pProperties) {
         super(pProperties);
     }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState();
@@ -67,85 +68,88 @@ public class BarrelBlock extends Block implements EntityBlock {
     public int getAnalogOutputSignal(BlockState pBlockState, Level pLevel, BlockPos pPos) {
         BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
         if (blockEntity instanceof BarrelBE barrelBE) {
-            return (int) ((barrelBE.fluidTank.getFluid().getAmount()/(double)barrelBE.fluidTank.getCapacity())*15);
+            return (int) ((barrelBE.fluidTank.getFluid().getAmount() / (double) barrelBE.fluidTank.getCapacity()) * 15);
         }
         return 0;
     }
 
-
-
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (!level.isClientSide()) {
+            BarrelBE be = (BarrelBE) level.getBlockEntity(pos);
+            FluidStack fluid = FluidStack.EMPTY;
+            fluid = be.getFluidHandler().get().getFluidInTank(0);
+            int storage = BarrelBlocks.all().get(code()).getCapacity();
+            if (fluid == FluidStack.EMPTY || fluid.isEmpty()) {
+                player.sendSystemMessage(Component.translatable("tooltip.nc.liquid_empty", formatLiquid(storage)).withStyle(ChatFormatting.BLUE));
+            } else {
+                player.sendSystemMessage(Component.translatable("tooltip.nc.liquid_stored", Component.translatable(fluid.getDescriptionId()).getString(), formatLiquid(fluid.getAmount()), formatLiquid(storage)).withStyle(ChatFormatting.BLUE));
+            }
+        }
+        return InteractionResult.SUCCESS;
+    }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
         if (!level.isClientSide()) {
-            BarrelBE be = (BarrelBE)level.getBlockEntity(pos);
+            BarrelBE be = (BarrelBE) level.getBlockEntity(pos);
             ItemStack handStack = player.getItemInHand(hand);
-            IFluidHandler barrel = be.getFluidHandler().orElse(null);
-            if(isMultiTool(handStack)) {
+            IFluidHandler barrel = be.getFluidHandler().get();
+            if (isMultiTool(handStack)) {
                 Direction dirToChange = result.getDirection();
-                if(player.isShiftKeyDown()) {
+                if (player.isShiftKeyDown()) {
                     dirToChange = dirToChange.getOpposite();
                 }
                 ISizeToggable.SideMode mode = be.toggleSideConfig(dirToChange.ordinal());
                 player.sendSystemMessage(Component.translatable("message.nc.barrel.side_config", mode.name()));
-            } else
-            if(!handStack.equals(ItemStack.EMPTY)) {
-                if(handStack.getItem() instanceof BucketItem) {
-                    Fluid to = ((BucketItem) handStack.getItem()).getFluid();
-                    if(to == null || to == FluidStack.EMPTY.getFluid()) {
-                        if(!barrel.getFluidInTank(0).isEmpty() && barrel.getFluidInTank(0).getAmount() >= 1000) {
+            } else if (!handStack.equals(ItemStack.EMPTY)) {
+                if (handStack.getItem() instanceof BucketItem) {
+                    Fluid to = ((BucketItem) handStack.getItem()).content;
+                    if (to == Fluids.EMPTY || to == FluidStack.EMPTY.getFluid()) {
+                        if (!barrel.getFluidInTank(0).isEmpty() && barrel.getFluidInTank(0).getAmount() >= 1000) {
                             ItemStack bucket = new ItemStack(barrel.getFluidInTank(0).getFluid().getBucket());
                             barrel.drain(1000, IFluidHandler.FluidAction.EXECUTE);
-                            if(handStack.getCount() == 1) {
+                            if (handStack.getCount() == 1) {
                                 player.setItemInHand(hand, bucket);
                             } else {
                                 handStack.shrink(1);
-                                if(!player.getInventory().add(bucket)) {
+                                if (!player.getInventory().add(bucket)) {
                                     player.drop(bucket, false);
                                 }
                             }
                         }
                     } else {
                         int filled = barrel.fill(new FluidStack(to, 1000), IFluidHandler.FluidAction.SIMULATE);
-                        if(filled == 1000) {
+                        if (filled == 1000) {
                             barrel.fill(new FluidStack(to, 1000), IFluidHandler.FluidAction.EXECUTE);
-                            if(player.isCreative()) return InteractionResult.SUCCESS;
-                            if(handStack.getCount() == 1) {
+                            if (player.isCreative()) return ItemInteractionResult.SUCCESS;
+                            if (handStack.getCount() == 1) {
                                 player.setItemInHand(hand, new ItemStack(BUCKET));
                             } else {
                                 handStack.shrink(1);
-                                if(!player.getInventory().add(new ItemStack(to.getBucket()))) {
+                                if (!player.getInventory().add(new ItemStack(to.getBucket()))) {
                                     player.drop(new ItemStack(to.getBucket()), false);
                                 }
                             }
                         }
                     }
 
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
-                IFluidHandlerItem fluidCap = handStack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).orElse(null);
-                if(fluidCap == null) {
-                    return InteractionResult.SUCCESS;
+                IFluidHandlerItem fluidCap = handStack.getCapability(Capabilities.FluidHandler.ITEM);
+                if (fluidCap == null) {
+                    return ItemInteractionResult.SUCCESS;
                 }
                 FluidStack inhandFluid = fluidCap.getFluidInTank(0);
-                if(inhandFluid == null || inhandFluid.isEmpty()) {
+                if (inhandFluid == null || inhandFluid.isEmpty()) {
                     int amount = barrel.fill(inhandFluid, IFluidHandlerItem.FluidAction.EXECUTE);
-                    if(amount > 0) {
+                    if (amount > 0) {
                         fluidCap.drain(amount, IFluidHandler.FluidAction.EXECUTE);
                     }
                 }
-            } else {
-                FluidStack fluid = FluidStack.EMPTY;
-                fluid = be.getFluidHandler().orElseGet(null).getFluidInTank(0);
-                int storage = BarrelBlocks.all().get(code()).getCapacity();
-                if(fluid == null || fluid.isEmpty()) {
-                    player.sendSystemMessage(Component.translatable("tooltip.nc.liquid_empty", formatLiquid(storage)).withStyle(ChatFormatting.BLUE));
-                } else {
-                    player.sendSystemMessage(Component.translatable("tooltip.nc.liquid_stored", fluid.getDisplayName(), formatLiquid(fluid.getAmount()), formatLiquid(storage)).withStyle(ChatFormatting.BLUE));
-                }
             }
         }
-        return InteractionResult.SUCCESS;
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Override
@@ -163,8 +167,7 @@ public class BarrelBlock extends Block implements EntityBlock {
         return NCStorageBlocks.STORAGE_BE.get(code()).get().create(pPos, pState);
     }
 
-    public String code()
-    {
+    public String code() {
         return asItem().toString();
     }
 
@@ -178,21 +181,21 @@ public class BarrelBlock extends Block implements EntityBlock {
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof BarrelBE tile) {
                 tile.tickServer();
             }
         };
 
     }
+
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(world, pos, state, placer, stack);
 
-        if (stack.hasTag()) {
+        if (stack.has(DataComponents.CUSTOM_DATA)) {
             BarrelBE tileEntity = (BarrelBE) world.getBlockEntity(pos);
-            CompoundTag nbtData = stack.getTag();
-            tileEntity.load(nbtData);
+            stack.get(DataComponents.CUSTOM_DATA).loadInto(tileEntity, world.registryAccess());
         }
     }
 
@@ -201,10 +204,10 @@ public class BarrelBlock extends Block implements EntityBlock {
         pPlayer.awardStat(Stats.BLOCK_MINED.get(this));
         pPlayer.causeFoodExhaustion(0.005F);
         BarrelBE BarrelBE = (BarrelBE) pBlockEntity;
-        CompoundTag data = BarrelBE.getUpdateTag();
+        CompoundTag data = BarrelBE.getUpdateTag(pLevel.registryAccess());
 
         ItemStack drop = new ItemStack(this);
-        drop.setTag(data);
+        drop.set(DataComponents.CUSTOM_DATA, CustomData.of(data));
         if (!pLevel.isClientSide()) {
             ItemEntity itemEntity = new ItemEntity(pLevel, pPos.getX(), pPos.getY(), pPos.getZ(), drop);
             itemEntity.setDefaultPickUpDelay();
@@ -212,19 +215,16 @@ public class BarrelBlock extends Block implements EntityBlock {
         }
     }
 
-
     @Override
-    public void appendHoverText(ItemStack stack, @javax.annotation.Nullable BlockGetter world, List<Component> list, TooltipFlag flag)
-    {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         int storage = BarrelBlocks.all().get(code()).config().getCapacity();
 
-        list.add(Component.translatable("tooltip.nc.liquid_capacity", formatLiquid(storage)).withStyle(ChatFormatting.BLUE));
-        list.add(Component.translatable("tooltip.nc.use_multitool").withStyle(ChatFormatting.YELLOW));
+        tooltipComponents.add(Component.translatable("tooltip.nc.liquid_capacity", formatLiquid(storage)).withStyle(ChatFormatting.BLUE));
+        tooltipComponents.add(Component.translatable("tooltip.nc.use_multitool").withStyle(ChatFormatting.YELLOW));
     }
 
-    public String formatLiquid(int val)
-    {
-        return TextUtils.numberFormat(val/1000)+" B";
+    public String formatLiquid(int val) {
+        return TextUtils.numberFormat(val / 1000) + " B";
     }
 
     public boolean registered() {

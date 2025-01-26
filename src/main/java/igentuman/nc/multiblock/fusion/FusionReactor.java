@@ -1,6 +1,11 @@
 package igentuman.nc.multiblock.fusion;
 
-import igentuman.nc.block.fusion.*;
+import igentuman.nc.block.entity.fusion.FusionCoreBE;
+import igentuman.nc.block.entity.fusion.FusionCoreProxyBE;
+import igentuman.nc.block.fusion.FusionCoreBlock;
+import igentuman.nc.block.fusion.FusionCoreProxyBlock;
+import igentuman.nc.block.fusion.MultiblockCasingBlock;
+import igentuman.nc.block.fusion.MultiblockConnectorBlock;
 import igentuman.nc.container.FusionCoreContainer;
 import igentuman.nc.item.FusionCoreItem;
 import net.minecraft.tags.TagKey;
@@ -12,9 +17,11 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.registries.RegistryObject;
-import igentuman.nc.block.entity.fusion.*;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
+
 import java.util.HashMap;
 
 import static igentuman.nc.multiblock.fission.FissionBlocks.REACTOR_BLOCKS_PROPERTIES;
@@ -26,24 +33,24 @@ import static igentuman.nc.setup.registration.Tags.itemTag;
 public class FusionReactor {
 
     public static final Item.Properties FUSION_ITEM_PROPERTIES = new Item.Properties();
-    public static HashMap<String, RegistryObject<Block>> FUSION_BLOCKS = new HashMap<>();
-    public static HashMap<String, RegistryObject<BlockEntityType<? extends BlockEntity>>> FUSION_BE = new HashMap<>();
-    public static HashMap<String, RegistryObject<Item>> FUSION_ITEMS = new HashMap<>();
+    public static HashMap<String, DeferredBlock<Block>> FUSION_BLOCKS = new HashMap<>();
+    public static HashMap<String, DeferredHolder<BlockEntityType<?>, BlockEntityType<? extends BlockEntity>>> FUSION_BE = new HashMap<>();
+    public static HashMap<String, DeferredItem<Item>> FUSION_ITEMS = new HashMap<>();
     public static TagKey<Block> CASING_BLOCKS = blockTag("fusion_reactor_casing");
     public static TagKey<Item> CASING_ITEMS = itemTag("fusion_reactor_casing");
 
-    public static final RegistryObject<Block> FUSION_CORE_PROXY =
+    public static final DeferredBlock<Block> FUSION_CORE_PROXY =
             BLOCKS.register("fusion_reactor_core_proxy",
                     () -> new FusionCoreProxyBlock(REACTOR_BLOCKS_PROPERTIES));
-    public static final RegistryObject<BlockEntityType<? extends BlockEntity>> FUSION_CORE_PROXY_BE =
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<? extends BlockEntity>> FUSION_CORE_PROXY_BE =
             BLOCK_ENTITIES.register("fusion_reactor_core_proxy",
                     () -> BlockEntityType.Builder
                             .of(FusionCoreProxyBE::new, FUSION_CORE_PROXY.get())
                             .build(null));
 
-    public static final RegistryObject<MenuType<FusionCoreContainer>> FUSION_CORE_CONTAINER =
+    public static final DeferredHolder<MenuType<?>, MenuType<FusionCoreContainer>> FUSION_CORE_CONTAINER =
             CONTAINERS.register("fusion_reactor_core",
-                () -> IForgeMenuType.create((windowId, inv, data) -> new FusionCoreContainer(windowId, data.readBlockPos(), inv))
+                    () -> IMenuTypeExtension.create((windowId, inv, data) -> new FusionCoreContainer(windowId, data.readBlockPos(), inv))
             );
 
     public static void init() {
@@ -76,7 +83,7 @@ public class FusionReactor {
         ALL_NC_ITEMS.put(key, FUSION_ITEMS.get(key));
     }
 
-    public static <B extends Block> RegistryObject<Item> fromMultiblock(RegistryObject<B> block) {
+    public static <B extends Block> DeferredItem<Item> fromMultiblock(DeferredBlock<B> block) {
         return ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), FUSION_ITEM_PROPERTIES));
     }
 }

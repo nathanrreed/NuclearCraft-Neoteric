@@ -6,6 +6,7 @@ import net.minecraft.core.BlockPos;
 
 public class FusionReactorController implements INCMultiblockController {
     protected FusionCoreBE<?> controllerBE;
+
     public FusionReactorController(FusionCoreBE<?> FusionCoreBE) {
         controllerBE = FusionCoreBE;
     }

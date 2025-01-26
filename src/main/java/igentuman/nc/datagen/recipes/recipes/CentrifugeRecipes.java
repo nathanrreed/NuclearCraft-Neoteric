@@ -1,17 +1,15 @@
 package igentuman.nc.datagen.recipes.recipes;
 
+import igentuman.nc.content.materials.Materials;
 import igentuman.nc.content.processors.Processors;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
-import igentuman.nc.content.materials.Materials;
-import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.data.recipes.RecipeOutput;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class CentrifugeRecipes extends AbstractRecipeProvider {
 
-    public static void generate(Consumer<FinishedRecipe> consumer) {
+    public static void generate(RecipeOutput consumer) {
         CentrifugeRecipes.consumer = consumer;
         ID = Processors.CENTRIFUGE;
 
@@ -88,7 +86,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.americium243, 432), fluidIngredient(Materials.curium243, 144),
                         fluidIngredient(Materials.curium246, 288), fluidIngredient(Materials.berkelium247, 144),
                         fluidIngredient(Materials.molybdenum, 144), fluidIngredient(Materials.promethium_147, 144)
-                ),1.5D
+                ), 1.5D
         );
 
         add(
@@ -97,7 +95,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.americium243, 432), fluidIngredient(Materials.curium243, 144),
                         fluidIngredient(Materials.curium246, 432), fluidIngredient(Materials.berkelium248, 144),
                         fluidIngredient(Materials.molybdenum, 144), fluidIngredient(Materials.promethium_147, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -106,7 +104,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.uranium233, 144), fluidIngredient(Materials.uranium238, 720),
                         fluidIngredient(Materials.neptunium236, 144), fluidIngredient(Materials.neptunium237, 144),
                         fluidIngredient(Materials.strontium_90, 144), fluidIngredient(Materials.caesium_137, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -115,7 +113,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.uranium238, 720), fluidIngredient(Materials.plutonium241, 144),
                         fluidIngredient(Materials.plutonium242, 144), fluidIngredient(Materials.americium243, 144),
                         fluidIngredient(Materials.strontium_90, 144), fluidIngredient(Materials.caesium_137, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -124,7 +122,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.uranium235, 144), fluidIngredient(Materials.uranium238, 288),
                         fluidIngredient(Materials.plutonium242, 432), fluidIngredient(Materials.americium243, 144),
                         fluidIngredient(Materials.strontium_90, 144), fluidIngredient(Materials.caesium_137, 144)
-                ),1.5D
+                ), 1.5D
         );
 
         add(
@@ -133,7 +131,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.uranium238, 576), fluidIngredient(Materials.plutonium239, 144),
                         fluidIngredient(Materials.plutonium242, 144), fluidIngredient(Materials.americium243, 144),
                         fluidIngredient(Materials.strontium_90, 144), fluidIngredient(Materials.caesium_137, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -142,7 +140,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.uranium238, 288), fluidIngredient(Materials.plutonium239, 144),
                         fluidIngredient(Materials.plutonium242, 432), fluidIngredient(Materials.americium243, 144),
                         fluidIngredient(Materials.strontium_90, 144), fluidIngredient(Materials.caesium_137, 144)
-                ),1.5D
+                ), 1.5D
         );
 
         add(
@@ -151,7 +149,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.uranium238, 576), fluidIngredient(Materials.neptunium237, 144),
                         fluidIngredient(Materials.plutonium241, 144), fluidIngredient(Materials.plutonium242, 144),
                         fluidIngredient(Materials.molybdenum, 144), fluidIngredient(Materials.caesium_137, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -160,7 +158,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.uranium238, 576), fluidIngredient(Materials.plutonium238, 144),
                         fluidIngredient(Materials.plutonium241, 144), fluidIngredient(Materials.plutonium242, 144),
                         fluidIngredient(Materials.molybdenum, 144), fluidIngredient(Materials.caesium_137, 144)
-                ),1.5D
+                ), 1.5D
         );
 
         add(
@@ -169,7 +167,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.curium246, 576), fluidIngredient(Materials.americium243, 144),
                         fluidIngredient(Materials.americium242, 144), fluidIngredient(Materials.plutonium242, 720),
                         fluidIngredient(Materials.strontium_90, 144), fluidIngredient(Materials.caesium_137, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -178,7 +176,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.americium243, 576), fluidIngredient(Materials.plutonium238, 144),
                         fluidIngredient(Materials.plutonium241, 144), fluidIngredient(Materials.americium242, 144),
                         fluidIngredient(Materials.caesium_137, 144), fluidIngredient(Materials.strontium_90, 144)
-                ),1.5D
+                ), 1.5D
         );
 
         add(
@@ -187,7 +185,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.plutonium242, 720), fluidIngredient(Materials.americium243, 144),
                         fluidIngredient(Materials.curium246, 144), fluidIngredient(Materials.berkelium247, 144),
                         fluidIngredient(Materials.promethium_147, 144), fluidIngredient(Materials.caesium_137, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -196,7 +194,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.americium243, 576), fluidIngredient(Materials.curium243, 144),
                         fluidIngredient(Materials.americium242, 144), fluidIngredient(Materials.plutonium241, 144),
                         fluidIngredient(Materials.strontium_90, 144), fluidIngredient(Materials.caesium_137, 144)
-                ),1.5D
+                ), 1.5D
         );
 
         add(
@@ -205,7 +203,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.uranium238, 576), fluidIngredient(Materials.plutonium239, 144),
                         fluidIngredient(Materials.plutonium242, 144), fluidIngredient(Materials.americium243, 144),
                         fluidIngredient(Materials.strontium_90, 144), fluidIngredient(Materials.caesium_137, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -214,7 +212,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.uranium238, 576), fluidIngredient(Materials.neptunium237, 144),
                         fluidIngredient(Materials.plutonium241, 144), fluidIngredient(Materials.plutonium242, 144),
                         fluidIngredient(Materials.molybdenum, 144), fluidIngredient(Materials.caesium_137, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -223,7 +221,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.curium246, 576), fluidIngredient(Materials.curium247, 144),
                         fluidIngredient(Materials.berkelium247, 288), fluidIngredient(Materials.berkelium248, 144),
                         fluidIngredient(Materials.molybdenum, 144), fluidIngredient(Materials.promethium_147, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -232,7 +230,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.curium245, 432), fluidIngredient(Materials.curium245, 144),
                         fluidIngredient(Materials.berkelium247, 288), fluidIngredient(Materials.berkelium248, 144),
                         fluidIngredient(Materials.molybdenum, 144), fluidIngredient(Materials.promethium_147, 144)
-                ),1.5D
+                ), 1.5D
         );
 
         add(
@@ -241,7 +239,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.curium246, 576), fluidIngredient(Materials.curium247, 144),
                         fluidIngredient(Materials.berkelium247, 288), fluidIngredient(Materials.californium249, 144),
                         fluidIngredient(Materials.molybdenum, 144), fluidIngredient(Materials.europium_155, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -250,7 +248,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.curium246, 432), fluidIngredient(Materials.curium247, 144),
                         fluidIngredient(Materials.berkelium247, 288), fluidIngredient(Materials.californium249, 144),
                         fluidIngredient(Materials.molybdenum, 144), fluidIngredient(Materials.europium_155, 144)
-                ),1.5D
+                ), 1.5D
         );
 
         add(
@@ -259,7 +257,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.curium246, 720), fluidIngredient(Materials.berkelium247, 144),
                         fluidIngredient(Materials.californium249, 144), fluidIngredient(Materials.berkelium248, 144),
                         fluidIngredient(Materials.molybdenum, 144), fluidIngredient(Materials.europium_155, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -268,7 +266,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.californium251, 144), fluidIngredient(Materials.californium249, 144),
                         fluidIngredient(Materials.berkelium247, 576), fluidIngredient(Materials.berkelium248, 144),
                         fluidIngredient(Materials.molybdenum, 144), fluidIngredient(Materials.europium_155, 144)
-                ),1.5D
+                ), 1.5D
         );
 
         add(
@@ -277,7 +275,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.berkelium247, 720), fluidIngredient(Materials.berkelium248, 144),
                         fluidIngredient(Materials.californium249, 144), fluidIngredient(Materials.californium251, 144),
                         fluidIngredient(Materials.ruthenium_106, 144), fluidIngredient(Materials.promethium_147, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -286,7 +284,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                         fluidIngredient(Materials.berkelium248, 144), fluidIngredient(Materials.californium249, 144),
                         fluidIngredient(Materials.californium251, 288), fluidIngredient(Materials.californium252, 3),
                         fluidIngredient(Materials.ruthenium_106, 144), fluidIngredient(Materials.promethium_147, 144)
-                ),1.5D
+                ), 1.5D
         );
 
         add(
@@ -294,7 +292,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                 List.of(
                         fluidIngredient(Materials.californium252, 1152),
                         fluidIngredient(Materials.ruthenium_106, 144), fluidIngredient(Materials.promethium_147, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -302,7 +300,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                 List.of(
                         fluidIngredient(Materials.californium252, 864), fluidIngredient(Materials.californium250, 288),
                         fluidIngredient(Materials.ruthenium_106, 144), fluidIngredient(Materials.promethium_147, 144)
-                ),1.5D
+                ), 1.5D
         );
 
         add(
@@ -310,7 +308,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                 List.of(
                         fluidIngredient(Materials.californium252, 1152),
                         fluidIngredient(Materials.ruthenium_106, 144), fluidIngredient(Materials.promethium_147, 144)
-                ),0.5D
+                ), 0.5D
         );
 
         add(
@@ -318,14 +316,14 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
                 List.of(
                         fluidIngredient(Materials.californium252, 1008),
                         fluidIngredient(Materials.ruthenium_106, 144), fluidIngredient(Materials.promethium_147, 144)
-                ),1.5D
+                ), 1.5D
         );
 
-        for(String material: Materials.slurries()) {
+        for (String material : Materials.slurries()) {
             add(
-                    fluidIngredient(material+"_slurry", 1000),
+                    fluidIngredient(material + "_slurry", 1000),
                     List.of(
-                            fluidIngredient(material+"_clean_slurry", 800),
+                            fluidIngredient(material + "_clean_slurry", 800),
                             fluidIngredient("hydrochloric_acid", 50),
                             fluidIngredient("nitric_acid", 50),
                             fluidIngredient("calcium_sulfate_solution", 10)
@@ -334,7 +332,7 @@ public class CentrifugeRecipes extends AbstractRecipeProvider {
         }
     }
 
-    protected static void add(FluidStackIngredient input, List<FluidStackIngredient> output, double...modifiers) {
+    protected static void add(FluidStackIngredient input, List<FluidStackIngredient> output, double... modifiers) {
         fluidsAndFluids(List.of(input), output, modifiers);
     }
 }

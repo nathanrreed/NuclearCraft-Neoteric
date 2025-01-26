@@ -13,15 +13,13 @@ public class NCMaterialProduct {
         this.type = type;
     }
 
-    public static NCMaterialProduct get(String name, String type)
-    {
+    public static NCMaterialProduct get(String name, String type) {
         return new NCMaterialProduct(name, type);
     }
 
-    public NCMaterialProduct config()
-    {
+    public NCMaterialProduct config() {
         int id = 0;
-        if(!initialized) {
+        if (!initialized) {
             switch (type) {
                 case "ingot":
                     id = Materials.ingots().keySet().stream().toList().indexOf(name);
@@ -59,7 +57,7 @@ public class NCMaterialProduct {
 
     public boolean isRegistered() {
 
-        return  registered;
+        return registered;
     }
 
 }

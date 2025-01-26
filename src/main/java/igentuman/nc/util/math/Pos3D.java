@@ -66,12 +66,10 @@ public class Pos3D extends Vec3 {
     }
 
 
-
     /**
      * Creates and returns a Pos3D with values representing the difference between this and the Pos3D in the parameters.
      *
      * @param vec - Vec3 to subtract
-     *
      * @return difference of the two Pos3Ds
      */
     public Pos3D diff(Vec3 vec) {
@@ -92,7 +90,6 @@ public class Pos3D extends Vec3 {
      * @param x - amount to translate on the x-axis
      * @param y - amount to translate on the y-axis
      * @param z - amount to translate on the z-axis
-     *
      * @return the translated Pos3D
      */
     public Pos3D translate(double x, double y, double z) {
@@ -103,7 +100,6 @@ public class Pos3D extends Vec3 {
      * Performs the same operation as translate(x, y, z), but with a Pos3D value instead.
      *
      * @param pos - Pos3D value to translate by
-     *
      * @return translated Pos3D
      */
     public Pos3D translate(Vec3 pos) {
@@ -114,7 +110,6 @@ public class Pos3D extends Vec3 {
      * Performs the same operation as translate(x, y, z), but with multiple Pos3Ds to avoid having to create intermediary objects.
      *
      * @param positions - Pos3D values to translate by
-     *
      * @return translated Pos3D
      */
     public Pos3D translate(Vec3... positions) {
@@ -169,7 +164,6 @@ public class Pos3D extends Vec3 {
      * Returns the distance between this and the defined Pos3D.
      *
      * @param pos - the Pos3D to find the distance to
-     *
      * @return the distance between this and the defined Pos3D
      */
     public double distance(Vec3 pos) {
@@ -180,7 +174,6 @@ public class Pos3D extends Vec3 {
      * Rotates this Pos3D by the defined yaw value.
      *
      * @param yaw - yaw to rotate by
-     *
      * @return rotated Pos3D
      */
     @NotNull
@@ -223,11 +216,11 @@ public class Pos3D extends Vec3 {
         double rollRadians = Math.toRadians(roll);
 
         double xPos = x * Math.cos(yawRadians) * Math.cos(pitchRadians) + z * (
-              Math.cos(yawRadians) * Math.sin(pitchRadians) * Math.sin(rollRadians) - Math.sin(yawRadians) * Math.cos(rollRadians)) +
-                      y * (Math.cos(yawRadians) * Math.sin(pitchRadians) * Math.cos(rollRadians) + Math.sin(yawRadians) * Math.sin(rollRadians));
+                Math.cos(yawRadians) * Math.sin(pitchRadians) * Math.sin(rollRadians) - Math.sin(yawRadians) * Math.cos(rollRadians)) +
+                y * (Math.cos(yawRadians) * Math.sin(pitchRadians) * Math.cos(rollRadians) + Math.sin(yawRadians) * Math.sin(rollRadians));
         double zPos = x * Math.sin(yawRadians) * Math.cos(pitchRadians) + z * (
-              Math.sin(yawRadians) * Math.sin(pitchRadians) * Math.sin(rollRadians) + Math.cos(yawRadians) * Math.cos(rollRadians)) +
-                      y * (Math.sin(yawRadians) * Math.sin(pitchRadians) * Math.cos(rollRadians) - Math.cos(yawRadians) * Math.sin(rollRadians));
+                Math.sin(yawRadians) * Math.sin(pitchRadians) * Math.sin(rollRadians) + Math.cos(yawRadians) * Math.cos(rollRadians)) +
+                y * (Math.sin(yawRadians) * Math.sin(pitchRadians) * Math.cos(rollRadians) - Math.cos(yawRadians) * Math.sin(rollRadians));
         double yPos = -x * Math.sin(pitchRadians) + z * Math.cos(pitchRadians) * Math.sin(rollRadians) + y * Math.cos(pitchRadians) * Math.cos(rollRadians);
         return new Pos3D(xPos, yPos, zPos);
     }
@@ -244,7 +237,6 @@ public class Pos3D extends Vec3 {
      * @param x - x value to scale by
      * @param y - y value to scale by
      * @param z - z value to scale by
-     *
      * @return scaled Pos3D
      */
     @NotNull
@@ -262,7 +254,6 @@ public class Pos3D extends Vec3 {
     public Pos3D rotate(float angle, Pos3D axis) {
         return translateMatrix(getRotationMatrix(angle, axis), this);
     }
-
 
 
     public double[] getRotationMatrix(float angle) {

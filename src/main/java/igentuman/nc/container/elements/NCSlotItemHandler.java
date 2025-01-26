@@ -3,8 +3,8 @@ package igentuman.nc.container.elements;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ import java.util.List;
 public class NCSlotItemHandler extends SlotItemHandler {
 
     private List<Item> allowed = new ArrayList<>();
+
     public NCSlotItemHandler(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);
     }
@@ -30,13 +31,15 @@ public class NCSlotItemHandler extends SlotItemHandler {
 
     @Override
     public boolean mayPlace(ItemStack stack) {
-        if(hidden)
+        if (hidden)
             return false;
-        if(!allowed.isEmpty())
+        if (!allowed.isEmpty())
             return allowed.contains(stack.getItem());
         return super.mayPlace(stack);
     }
+
     public boolean hidden = false;
+
     public Slot hidden() {
         hidden = true;
         return this;

@@ -1,17 +1,13 @@
 package igentuman.nc.client.gui.element.button;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import igentuman.nc.NuclearCraft;
 import igentuman.nc.client.gui.element.NCGuiElement;
-import igentuman.nc.client.gui.processor.side.SideConfigSlotSelectionScreen;
-import igentuman.nc.network.toServer.PacketGuiButtonPress;
 import igentuman.nc.network.toServer.PacketSliderChanged;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class SliderHorizontal extends NCGuiElement {
     protected AbstractContainerScreen screen;
@@ -25,7 +21,7 @@ public class SliderHorizontal extends NCGuiElement {
     private BlockPos pos;
     private int startX;
 
-    public SliderHorizontal(int xPos, int yPos, int width, AbstractContainerScreen<?> screen, BlockPos pos)  {
+    public SliderHorizontal(int xPos, int yPos, int width, AbstractContainerScreen<?> screen, BlockPos pos) {
         super(xPos, yPos, width, 12, Component.empty());
         x = xPos;
         y = yPos;
@@ -42,7 +38,7 @@ public class SliderHorizontal extends NCGuiElement {
 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        if(X() <= pMouseX && pMouseX < X() + width && Y()-1 <= pMouseY && pMouseY < Y() + height+1) {
+        if (X() <= pMouseX && pMouseX < X() + width && Y() - 1 <= pMouseY && pMouseY < Y() + height + 1) {
             isPressed = true;
             return isPressed;
         }
@@ -58,29 +54,29 @@ public class SliderHorizontal extends NCGuiElement {
 
     @Override
     public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY) {
-        mouseMove((int)pMouseX, (int)pMouseY);
+        mouseMove((int) pMouseX, (int) pMouseY);
         return false;
     }
 
     public void mouseMove(int x, int y) {
         if (isPressed) {
-            int maxX = startX+screen.getGuiLeft()+width-3;
-            int minX = startX+screen.getGuiLeft();
+            int maxX = startX + screen.getGuiLeft() + width - 3;
+            int minX = startX + screen.getGuiLeft();
             x = Math.min(maxX, x);
             x = Math.max(minX, x);
             btn.setX(x);
-            int xpos = maxX-x;
+            int xpos = maxX - x;
             int ratio = 100;
-            if(xpos > 0) {
-                ratio = 100-xpos*100/(width - 3);
+            if (xpos > 0) {
+                ratio = 100 - xpos * 100 / (width - 3);
             }
-            NuclearCraft.packetHandler().sendToServer(new PacketSliderChanged(pos, ratio, 0));
+            PacketDistributor.sendToServer(new PacketSliderChanged(pos, ratio, 0));
         }
     }
 
     public void drawSlide(GuiGraphics graphics) {
         RenderSystem.setShaderTexture(0, TEXTURE);
-        graphics.blit(TEXTURE, this.x+ screen.getGuiLeft(), this.y+2+screen.getGuiTop(), 5, 175, this.width, 3, this.textureWidth, this.textureHeight);
+        graphics.blit(TEXTURE, this.x + screen.getGuiLeft(), this.y + 2 + screen.getGuiTop(), 5, 175, this.width, 3, this.textureWidth, this.textureHeight);
     }
 
     @Override
@@ -101,7 +97,7 @@ public class SliderHorizontal extends NCGuiElement {
         }
         RenderSystem.enableDepthTest();
 
-        graphics.blit(TEXTURE, this.x, this.y, (float)this.xTexStart, (float)i, this.width, this.height, this.textureWidth, this.textureHeight);
+        graphics.blit(TEXTURE, this.x, this.y, (float) this.xTexStart, (float) i, this.width, this.height, this.textureWidth, this.textureHeight);
         if (this.isHovered) {
             this.renderToolTip(graphics, pMouseX, pMouseY);
         }
@@ -115,6 +111,6 @@ public class SliderHorizontal extends NCGuiElement {
     }
 
     public void slideTo(int rfAmplifiersPowerRatio) {
-        btn.setX(startX+screen.getGuiLeft()+width*rfAmplifiersPowerRatio/100);
+        btn.setX(startX + screen.getGuiLeft() + width * rfAmplifiersPowerRatio / 100);
     }
 }

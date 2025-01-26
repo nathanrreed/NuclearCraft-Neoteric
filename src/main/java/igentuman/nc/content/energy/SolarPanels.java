@@ -6,7 +6,6 @@ import igentuman.nc.block.entity.energy.solar.AdvancedSolarBE;
 import igentuman.nc.block.entity.energy.solar.BasicSolarBE;
 import igentuman.nc.block.entity.energy.solar.DuSolarBE;
 import igentuman.nc.block.entity.energy.solar.EliteSolarBE;
-import igentuman.nc.handler.config.CommonConfig;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.ArrayList;
@@ -16,25 +15,24 @@ import java.util.List;
 import static igentuman.nc.handler.config.CommonConfig.ENERGY_GENERATION;
 
 public class SolarPanels {
-
     private static HashMap<String, SolarPanelPrefab> all = new HashMap<>();
     private static HashMap<String, SolarPanelPrefab> registered = new HashMap<>();
 
     public static HashMap<String, SolarPanelPrefab> all() {
-        if(all.isEmpty()) {
-            all.put("basic", new SolarPanelPrefab("basic",25).setBlockEntity(BasicSolarBE::new));
-            all.put("advanced", new SolarPanelPrefab("advanced",100).setBlockEntity(AdvancedSolarBE::new));
-            all.put("du", new SolarPanelPrefab("du",400).setBlockEntity(DuSolarBE::new));
-            all.put("elite", new SolarPanelPrefab("elite",1500).setBlockEntity(EliteSolarBE::new));
+        if (all.isEmpty()) {
+            all.put("basic", new SolarPanelPrefab("basic", 25).setBlockEntity(BasicSolarBE::new));
+            all.put("advanced", new SolarPanelPrefab("advanced", 100).setBlockEntity(AdvancedSolarBE::new));
+            all.put("du", new SolarPanelPrefab("du", 400).setBlockEntity(DuSolarBE::new));
+            all.put("elite", new SolarPanelPrefab("elite", 1500).setBlockEntity(EliteSolarBE::new));
         }
         return all;
     }
 
     public static HashMap<String, SolarPanelPrefab> registered() {
-        if(registered.isEmpty()) {
-            for(String name: all().keySet()) {
+        if (registered.isEmpty()) {
+            for (String name : all().keySet()) {
                 if (all().get(name).config().isRegistered())
-                    registered.put(name,all().get(name));
+                    registered.put(name, all().get(name));
             }
         }
         return registered;
@@ -42,7 +40,7 @@ public class SolarPanels {
 
     public static List<Boolean> initialRegistered() {
         List<Boolean> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(true);
         }
         return tmp;
@@ -50,16 +48,16 @@ public class SolarPanels {
 
     public static List<Integer> initialPower() {
         List<Integer> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(all().get(name).getGeneration());
         }
         return tmp;
     }
 
     public static String getCode(String name) {
-        for(String code: all().keySet()) {
-            if(name.equals("solar_panel_"+code)) {
-                return "solar_panel/"+code;
+        for (String code : all().keySet()) {
+            if (name.equals("solar_panel_" + code)) {
+                return "solar_panel/" + code;
             }
         }
         return "";
@@ -89,9 +87,8 @@ public class SolarPanels {
             return this;
         }
 
-        public SolarPanelPrefab config()
-        {
-            if(!initialized) {
+        public SolarPanelPrefab config() {
+            if (!initialized) {
                 try {
                     int id = SolarPanels.all().keySet().stream().toList().indexOf(name);
                     registered = ENERGY_GENERATION.REGISTER_SOLAR_PANELS.get().get(id);
@@ -103,18 +100,20 @@ public class SolarPanels {
             }
             return this;
         }
+
         public boolean isRegistered() {
-            return  registered;
+            return registered;
         }
 
-        public BlockEntityType.BlockEntitySupplier<? extends NCEnergy>  getBlockEntity() {
+        public BlockEntityType.BlockEntitySupplier<? extends NCEnergy> getBlockEntity() {
             return blockEntity;
         }
 
-        public SolarPanelPrefab setBlockEntity(BlockEntityType.BlockEntitySupplier<? extends NCEnergy>  blockEntity) {
+        public SolarPanelPrefab setBlockEntity(BlockEntityType.BlockEntitySupplier<? extends NCEnergy> blockEntity) {
             this.blockEntity = blockEntity;
             return this;
         }
-        private BlockEntityType.BlockEntitySupplier<? extends NCEnergy>  blockEntity;
+
+        private BlockEntityType.BlockEntitySupplier<? extends NCEnergy> blockEntity;
     }
 }

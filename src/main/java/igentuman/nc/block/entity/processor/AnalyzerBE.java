@@ -8,12 +8,13 @@ import igentuman.nc.recipes.type.NcRecipe;
 import igentuman.nc.recipes.type.OreVeinRecipe;
 import igentuman.nc.util.annotation.NothingNullByDefault;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
 
 import java.util.HashMap;
 
@@ -24,6 +25,7 @@ public class AnalyzerBE extends NCProcessorBE<AnalyzerBE.Recipe> {
     public AnalyzerBE(BlockPos pPos, BlockState pBlockState) {
         super(pPos, pBlockState, Processors.ANALYZER);
     }
+
     public HashMap<Long, OreVeinRecipe> veinsCache = new HashMap<>();
     private BlockPos alreadySearched;
 
@@ -34,22 +36,20 @@ public class AnalyzerBE extends NCProcessorBE<AnalyzerBE.Recipe> {
 
     @NothingNullByDefault
     public static class Recipe extends NcRecipe {
-        public Recipe(ResourceLocation id,
-                      ItemStackIngredient[] input, ItemStackIngredient[] output,
+        public Recipe(ItemStackIngredient[] input, ItemStackIngredient[] output,
                       FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids,
                       double timeModifier, double powerModifier, double heatModifier, double rarity) {
-            super(id, input, output, timeModifier, powerModifier, heatModifier,1);
+            super(input, output, timeModifier, powerModifier, heatModifier, 1);
         }
 
         @Override
-        public String getCodeId() {
-            return Processors.ANALYZER;
+        public void write(FriendlyByteBuf buffer) {
+            //TODO
         }
     }
 
     public void tickServer() {
-        if(worldPosition.equals(alreadySearched))
-        {
+        if (worldPosition.equals(alreadySearched)) {
             return;
         }
         super.tickServer();
@@ -69,38 +69,39 @@ public class AnalyzerBE extends NCProcessorBE<AnalyzerBE.Recipe> {
     }
 
     private void handleMapAnalyze() {
-        if(recipe.getInputIngredient(0).test(new ItemStack(FILLED_MAP))) {
+        if (recipe.getInputIngredient(0).test(new ItemStack(FILLED_MAP))) {
             for (ItemStack output : recipe.getResultItems()) {
-                output.setTag(contentHandler.itemHandler.holdedInputs.get(0).getOrCreateTag());
-                output.getOrCreateTag().putBoolean("is_nc_analyzed", true);
+                output.set(DataComponents.CUSTOM_DATA, contentHandler.itemHandler.holdedInputs.getFirst().get(DataComponents.CUSTOM_DATA));
+                output.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, customData -> customData.update(compoundTag -> compoundTag.putBoolean("is_nc_analyzed", true)));
             }
         }
     }
 
     private void handleChunkAnalyzeWithPaper() {
-        if(recipe.getInputIngredient(0).test(new ItemStack(PAPER))) {
+        if (recipe.getInputIngredient(0).test(new ItemStack(PAPER))) {
             OreVeinRecipe vein = getVein();
             alreadySearched = worldPosition;
             if (vein == null) {
                 for (ItemStack output : recipe.getResultItems()) {
-                    output.getOrCreateTag().putString("vein", "nc.ore_vein.none");
+                    output.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, customData -> customData.update(compoundTag -> compoundTag.putString("vein", "nc.ore_vein.none")));
                 }
             } else {
                 for (ItemStack output : recipe.getResultItems()) {
-                    output.getOrCreateTag().putString("vein", "nc.ore_vein." + vein.getId().getPath().replace("nc_ore_veins/", ""));
+                    output.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, customData -> customData.update(compoundTag -> compoundTag.putString("vein", "nc.ore_vein." + vein.getCodeId().replace("nc_ore_veins/", ""))));
                 }
             }
             for (ItemStack output : recipe.getResultItems()) {
-                output.getOrCreateTag().putLong("pos", worldPosition.asLong());
-                output.getOrCreateTag().putBoolean("is_nc_analyzed", true);
+                output.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, customData -> customData.update(compoundTag -> {
+                    compoundTag.putLong("pos", worldPosition.asLong());
+                    compoundTag.putBoolean("is_nc_analyzed", true);
+                }));
             }
         }
     }
 
     protected OreVeinRecipe getVein() {
         long pos = ChunkPos.asLong(worldPosition);
-        if(!veinsCache.containsKey(pos))
-        {
+        if (!veinsCache.containsKey(pos)) {
             veinsCache.put(pos, OreVeinProvider.get((ServerLevel) level)
                     .getVeinForChunk(ChunkPos.getX(pos), ChunkPos.getZ(pos)));
         }

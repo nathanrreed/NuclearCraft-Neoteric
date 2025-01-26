@@ -13,24 +13,22 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static igentuman.nc.NuclearCraft.MODID;
-import static igentuman.nc.client.gui.element.fluid.FluidTankRenderer.TooltipMode.SHOW_AMOUNT_AND_CAPACITY;
 
 public class ChamberPortScreen extends AbstractContainerScreen<ChamberPortContainer> implements IProgressScreen, IVerticalBarScreen {
-    protected final ResourceLocation GUI = new ResourceLocation(MODID, "textures/gui/kugelblitz/port.png");
+    protected final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/kugelblitz/port.png");
     protected int relX;
     protected int relY;
     private int xCenter;
 
-    public ChamberPortContainer container()
-    {
-        return (ChamberPortContainer)menu;
+    public ChamberPortContainer container() {
+        return (ChamberPortContainer) menu;
     }
 
     public List<NCGuiElement> widgets = new ArrayList<>();
@@ -44,8 +42,7 @@ public class ChamberPortScreen extends AbstractContainerScreen<ChamberPortContai
         imageHeight = 176;
     }
 
-    protected void updateRelativeCords()
-    {
+    protected void updateRelativeCords() {
         relX = (this.width - this.imageWidth) / 2;
         relY = (this.height - this.imageHeight) / 2;
         NCGuiElement.RELATIVE_X = relX;
@@ -57,8 +54,8 @@ public class ChamberPortScreen extends AbstractContainerScreen<ChamberPortContai
         Minecraft mc = Minecraft.getInstance();
         updateRelativeCords();
         widgets.clear();
-        energyBar = new VerticalBar.Energy(17, 16,  this, container().getMaxEnergy());
-        widgets.add(new ProgressBar(74, 35, this,  7));
+        energyBar = new VerticalBar.Energy(17, 16, this, container().getMaxEnergy());
+        widgets.add(new ProgressBar(74, 35, this, 7));
     }
 
     protected FluidTank getFluidTank(int i) {
@@ -67,14 +64,14 @@ public class ChamberPortScreen extends AbstractContainerScreen<ChamberPortContai
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        xCenter = getGuiLeft()-imageWidth/2;
-        this.renderBackground(graphics);
+        xCenter = getGuiLeft() - imageWidth / 2;
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         super.render(graphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(graphics, mouseX, mouseY);
     }
 
     private void renderWidgets(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-        for(NCGuiElement widget: widgets) {
+        for (NCGuiElement widget : widgets) {
             widget.draw(graphics, mouseX, mouseY, partialTicks);
         }
         energyBar.draw(graphics, mouseX, mouseY, partialTicks);
@@ -82,13 +79,13 @@ public class ChamberPortScreen extends AbstractContainerScreen<ChamberPortContai
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawCenteredString(font,  menu.getTitle(), imageWidth/2, titleLabelY, 0xffffff);
-        renderTooltips(graphics, mouseX-relX, mouseY-relY);
+        graphics.drawCenteredString(font, menu.getTitle(), imageWidth / 2, titleLabelY, 0xffffff);
+        renderTooltips(graphics, mouseX - relX, mouseY - relY);
     }
 
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        for(NCGuiElement widget : widgets) {
-            if(widget.mouseClicked(pMouseX, pMouseY, pButton)) {
+        for (NCGuiElement widget : widgets) {
+            if (widget.mouseClicked(pMouseX, pMouseY, pButton)) {
                 return true;
             }
         }
@@ -105,16 +102,16 @@ public class ChamberPortScreen extends AbstractContainerScreen<ChamberPortContai
 
     private void renderTooltips(GuiGraphics graphics, int pMouseX, int pMouseY) {
 
-        for(NCGuiElement widget: widgets) {
-           if(widget.isMouseOver(pMouseX, pMouseY)) {
-               graphics.renderTooltip(font, widget.getTooltips(),
-                       Optional.empty(), pMouseX, pMouseY);
-           }
+        for (NCGuiElement widget : widgets) {
+            if (widget.isMouseOver(pMouseX, pMouseY)) {
+                graphics.renderTooltip(font, widget.getTooltips(),
+                        Optional.empty(), pMouseX, pMouseY);
+            }
         }
 
         energyBar.clearTooltips();
         energyBar.addTooltip(Component.translatable("reactor.forge_energy_per_tick", container().energyPerTick()));
-        if(energyBar.isMouseOver(pMouseX, pMouseY+10)) {
+        if (energyBar.isMouseOver(pMouseX, pMouseY + 10)) {
             graphics.renderTooltip(font, energyBar.getTooltips(),
                     Optional.empty(), pMouseX, pMouseY);
         }

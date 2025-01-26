@@ -1,7 +1,9 @@
 package igentuman.nc.block.entity.turbine;
 
+import dan200.computercraft.api.peripheral.IPeripheral;
 import igentuman.nc.NuclearCraft;
 import igentuman.nc.client.sound.SoundHandler;
+import igentuman.nc.compat.cc.NCTurbinePeripheral;
 import igentuman.nc.handler.sided.SidedContentHandler;
 import igentuman.nc.handler.sided.SlotModePair;
 import igentuman.nc.handler.sided.capability.ItemCapabilityHandler;
@@ -17,22 +19,21 @@ import igentuman.nc.util.annotation.NBTField;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -41,7 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import igentuman.nc.compat.cc.NCTurbinePeripheral;
+import java.util.function.Supplier;
 
 import static igentuman.nc.block.fission.FissionControllerBlock.POWERED;
 import static igentuman.nc.compat.GlobalVars.CATALYSTS;
@@ -49,9 +50,8 @@ import static igentuman.nc.handler.config.CommonConfig.ENERGY_GENERATION;
 import static igentuman.nc.handler.config.TurbineConfig.TURBINE_CONFIG;
 import static igentuman.nc.multiblock.turbine.TurbineRegistration.TURBINE_BLOCKS;
 import static igentuman.nc.setup.registration.NCSounds.FISSION_REACTOR;
-import static igentuman.nc.util.ModUtil.isCcLoaded;
-import static net.minecraft.core.particles.ParticleTypes.*;
-import static net.minecraftforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE;
+import static net.minecraft.core.particles.ParticleTypes.CLOUD;
+import static net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE;
 
 public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> extends TurbineBE {
 
@@ -59,7 +59,7 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
     public final SidedContentHandler contentHandler;
     public final CustomEnergyStorage energyStorage = createEnergy();
 
-    protected final LazyOptional<IEnergyStorage> energy = LazyOptional.of(() -> energyStorage);
+    protected final Supplier<IEnergyStorage> energy = () -> energyStorage;
     public BlockPos errorBlockPos = BlockPos.ZERO;
     @NBTField
     public Direction orientation = Direction.NORTH;
@@ -102,14 +102,12 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
     public HashMap<String, RECIPE> cachedRecipes = new HashMap<>();
 
 
-
     @Override
     public String getName() {
         return NAME;
     }
 
     private List<FluidStack> allowedInputs;
-
 
     public TurbineControllerBE(BlockPos pPos, BlockState pBlockState) {
         super(pPos, pBlockState, NAME);
@@ -125,12 +123,11 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
     }
 
     @Override
-    public ItemCapabilityHandler getItemInventory()
-    {
+    public ItemCapabilityHandler getItemInventory() {
         return contentHandler.itemHandler;
     }
 
-    public LazyOptional<IEnergyStorage> getEnergy() {
+    public Supplier<IEnergyStorage> getEnergy() {
         return energy;
     }
 
@@ -143,17 +140,16 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
         };
     }
 
-    public BlockPos getBlockPosForSteam()
-    {
-        if(!multiblock().isFormed()) {
+    public BlockPos getBlockPosForSteam() {
+        if (!multiblock().isFormed()) {
             multiblock().validate();
         }
         BlockPos start = worldPosition;
-        if(multiblock().bearingPositions.size() > 0) {
+        if (multiblock().bearingPositions.size() > 0) {
             for (int i = 0; i < multiblock().bearingPositions.size(); i++) {
                 start = new BlockPos(multiblock().bearingPositions.get(i));
                 BlockEntity be = getLevel().getBlockEntity(start.relative(orientation));
-                if(!(be instanceof TurbineRotorBE)) {
+                if (!(be instanceof TurbineRotorBE)) {
                     return start;
                 }
             }
@@ -163,21 +159,22 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
 
     private void addToCache(RECIPE recipe) {
         String key = contentHandler.getCacheKey();
-        if(cachedRecipes.containsKey(key)) {
+        if (cachedRecipes.containsKey(key)) {
             cachedRecipes.replace(key, recipe);
         } else {
             cachedRecipes.put(key, recipe);
         }
     }
+
     public RECIPE getRecipe() {
-        if(contentHandler.fluidCapability.tanks.get(0).isEmpty()) return null;
+        if (contentHandler.fluidCapability.tanks.get(0).isEmpty()) return null;
         RECIPE cachedRecipe = getCachedRecipe();
-        if(cachedRecipe != null) return cachedRecipe;
-        if(!NcRecipeType.ALL_RECIPES.containsKey(getName())) return null;
-        for(NcRecipe recipe: NcRecipeType.ALL_RECIPES.get(getName()).getRecipeType().getRecipes(getLevel())) {
-            if(recipe.test(contentHandler)) {
-                addToCache((RECIPE)recipe);
-                return (RECIPE)recipe;
+        if (cachedRecipe != null) return cachedRecipe;
+        if (!NcRecipeType.ALL_RECIPES.containsKey(getName())) return null;
+        for (NcRecipe recipe : NcRecipeType.ALL_RECIPES.get(getName()).getRecipeType().getRecipes(getLevel())) {
+            if (recipe.test(contentHandler)) {
+                addToCache((RECIPE) recipe);
+                return (RECIPE) recipe;
             }
         }
         return null;
@@ -185,47 +182,48 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
 
     public RECIPE getCachedRecipe() {
         String key = contentHandler.getCacheKey();
-        if(cachedRecipes.containsKey(key)) {
-            if(cachedRecipes.get(key).test(contentHandler)) {
+        if (cachedRecipes.containsKey(key)) {
+            if (cachedRecipes.get(key).test(contentHandler)) {
                 return cachedRecipes.get(key);
             }
         }
         return null;
     }
 
-    private LazyOptional<NCTurbinePeripheral> peripheralCap;
+    private Supplier<NCTurbinePeripheral> peripheralCap;
 
-    public <T> LazyOptional<T>  getPeripheral(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if(peripheralCap == null) {
-            peripheralCap = LazyOptional.of(() -> new NCTurbinePeripheral(this));
+    public <T> IPeripheral getPeripheral(@Nonnull DeferredRegister<T> cap, @Nullable Direction side) {
+        if (peripheralCap == null) {
+            peripheralCap = () -> new NCTurbinePeripheral(this);
         }
-        return peripheralCap.cast();
+        return peripheralCap.get();
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.FLUID_HANDLER) {
-            return contentHandler.getFluidCapability(null);
-        }
-        if (cap == ForgeCapabilities.ENERGY) {
-            return energy.cast();
-        }
-        if(isCcLoaded()) {
-            if(cap == dan200.computercraft.shared.Capabilities.CAPABILITY_PERIPHERAL) {
-                return getPeripheral(cap, side);
-            }
-        }
-        return super.getCapability(cap, side);
-    }
+
+//    @Nonnull
+//    @Override
+//    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+//        if (cap == ForgeCapabilities.FLUID_HANDLER) {
+//            return contentHandler.getFluidCapability(null);
+//        }
+//        if (cap == ForgeCapabilities.ENERGY) {
+//            return energy.cast();
+//        }
+//        if (isCcLoaded()) {
+//            if (cap == dan200.computercraft.shared.Capabilities.CAPABILITY_PERIPHERAL) {
+//                return getPeripheral(cap, side);
+//            }
+//        }
+//        return super.getCapability(cap, side);
+//    }
 
     protected void playRunningSound() {
-        if(isRemoved() || (currentSound != null && !currentSound.getLocation().equals(FISSION_REACTOR.get().getLocation()))) {
+        if (isRemoved() || (currentSound != null && !currentSound.getLocation().equals(FISSION_REACTOR.get().getLocation()))) {
             SoundHandler.stopTileSound(getBlockPos());
             currentSound = null;
         }
-        if((currentSound == null || !Minecraft.getInstance().getSoundManager().isActive(currentSound))) {
-            if(currentSound != null && currentSound.getLocation().equals(FISSION_REACTOR.get().getLocation())) {
+        if ((currentSound == null || !Minecraft.getInstance().getSoundManager().isActive(currentSound))) {
+            if (currentSound != null && currentSound.getLocation().equals(FISSION_REACTOR.get().getLocation())) {
                 return;
             }
 
@@ -235,22 +233,22 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
     }
 
     public void tickClient() {
-        if(!isCasingValid || !isInternalValid) {
+        if (!isCasingValid || !isInternalValid) {
             stopSound();
             return;
         }
-        if(rotationSpeed > 0) {
+        if (rotationSpeed > 0) {
             spawnSteamParticles();
             playRunningSound();
         }
     }
-    protected int reValidateCounter = 0;
 
+    protected int reValidateCounter = 0;
 
 
     public void tickServer() {
         rotationSpeed = 0;
-        if(NuclearCraft.instance.isNcBeStopped || isRemoved()) {
+        if (NuclearCraft.instance.isNcBeStopped || isRemoved()) {
             return;
         }
         changed = false;
@@ -263,7 +261,7 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
 
         if (multiblock().isFormed()) {
             trackChanges(contentHandler.tick());
-            if(controllerEnabled) {
+            if (controllerEnabled) {
                 powered = processRecipe();
                 trackChanges(powered);
             } else {
@@ -272,24 +270,24 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
             handleMeltdown();
         }
         refreshCacheFlag = !multiblock().isFormed();
-        if(wasPowered != powered) {
+        if (wasPowered != powered) {
             level.setBlockAndUpdate(worldPosition, getBlockState().setValue(POWERED, powered));
         }
-        if(refreshCacheFlag || changed) {
+        if (refreshCacheFlag || changed) {
             try {
                 level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState().setValue(POWERED, powered), Block.UPDATE_ALL);
-            } catch (NullPointerException ignored) {}
+            } catch (NullPointerException ignored) {
+            }
         }
 
         controllerEnabled = false;
     }
 
-    public List<FluidStack> getAllowedInputFluids()
-    {
-        if(allowedInputs == null) {
+    public List<FluidStack> getAllowedInputFluids() {
+        if (allowedInputs == null) {
             allowedInputs = new ArrayList<>();
-            for(NcRecipe recipe: NcRecipeType.ALL_RECIPES.get(getName()).getRecipeType().getRecipes(getLevel())) {
-                for(FluidStackIngredient ingredient: recipe.getInputFluids()) {
+            for (NcRecipe recipe : NcRecipeType.ALL_RECIPES.get(getName()).getRecipeType().getRecipes(getLevel())) {
+                for (FluidStackIngredient ingredient : recipe.getInputFluids()) {
                     allowedInputs.addAll(ingredient.getRepresentations());
                 }
             }
@@ -299,7 +297,7 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
 
     @Override
     public TurbineMultiblock multiblock() {
-        if(multiblock == null) {
+        if (multiblock == null) {
             multiblock = new TurbineMultiblock(this);
         }
         return multiblock;
@@ -307,7 +305,7 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
 
 
     private void handleValidation() {
-        if(multiblock == null) return;
+        if (multiblock == null) return;
         ValidationResult wasResult = validationResult;
         boolean wasFormed = multiblock().isFormed();
         if (!wasFormed || !isInternalValid || !isCasingValid) {
@@ -315,29 +313,29 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
             coilsEfficiency = 0;
             flow = 0;
             reValidateCounter++;
-            if(reValidateCounter < 40) {
+            if (reValidateCounter < 40) {
                 return;
             }
             reValidateCounter = 0;
             multiblock().validate();
             isCasingValid = multiblock().isOuterValid();
-            if(isCasingValid) {
+            if (isCasingValid) {
                 isInternalValid = multiblock().isInnerValid();
             }
             powered = false;
             changed = true;
         }
         validationResult = multiblock().validationResult;
-        if(validationResult.id != wasResult.id) {
+        if (validationResult.id != wasResult.id) {
             changed = true;
         }
-        if(activeCoils != multiblock().activeCoils) {
+        if (activeCoils != multiblock().activeCoils) {
             changed = true;
             activeCoils = multiblock().activeCoils;
             coilsEfficiency = multiblock().coilsEfficiency;
         }
 
-        if(flow != multiblock().flow) {
+        if (flow != multiblock().flow) {
             changed = true;
             flow = multiblock().flow;
             blades = multiblock().blades;
@@ -348,14 +346,13 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
         trackChanges(wasFormed, multiblock().isFormed());
     }
 
-    public float bladesEfficiency()
-    {
-        if(blades == 0) return 0;
-        return flow/blades;
+    public float bladesEfficiency() {
+        if (blades == 0) return 0;
+        return flow / blades;
     }
 
     public float getEfficiencyRate() {
-        return (float) coilsEfficiency /(100*activeCoils) * bladesEfficiency();
+        return (float) coilsEfficiency / (100 * activeCoils) * bladesEfficiency();
     }
 
     @Override
@@ -369,17 +366,17 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
 
     public void setRemoved() {
         super.setRemoved();
-        if(getLevel().isClientSide()) {
+        if (getLevel().isClientSide()) {
             return;
         }
-        if(multiblock() != null) {
+        if (multiblock() != null) {
             multiblock().onControllerRemoved();
         }
     }
 
     private boolean processRecipe() {
-        if(recipeInfo.recipe != null && recipeInfo.isCompleted()) {
-            if(contentHandler.fluidCapability.getFluidInSlot(0).isEmpty()) {
+        if (recipeInfo.recipe != null && recipeInfo.isCompleted()) {
+            if (contentHandler.fluidCapability.getFluidInSlot(0).isEmpty()) {
                 recipeInfo.clear();
             }
         }
@@ -391,6 +388,7 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
         }
         return false;
     }
+
     public List<BlockPos> getBlocks(BlockPos pos, Direction.Axis axis) {
         List<BlockPos> positions = new ArrayList<>();
         int y = pos.getY();
@@ -406,10 +404,10 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
                 break;
             case Y:
                 // Generate positions around the BlockPos on the XZ plane
-                positions.add(pos.offset( -1, 0,-1));
-                positions.add(pos.offset( -1, 0, 1));
-                positions.add(pos.offset( 1, 0, 1));
-                positions.add(pos.offset( 1, 0, -1));
+                positions.add(pos.offset(-1, 0, -1));
+                positions.add(pos.offset(-1, 0, 1));
+                positions.add(pos.offset(1, 0, 1));
+                positions.add(pos.offset(1, 0, -1));
                 break;
             case Z:
                 // Generate positions around the BlockPos on the XY planed
@@ -422,10 +420,11 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
 
         return positions;
     }
+
     private void spawnSteamParticles() {
         if (level.isClientSide && level.getGameTime() % 4 == 0) {
             BlockPos pos = getBlockPosForSteam().relative(orientation.getOpposite(), 1);
-            for(BlockPos source:  getBlocks(pos, multiblock().turbineDirection.getAxis())){
+            for (BlockPos source : getBlocks(pos, multiblock().turbineDirection.getAxis())) {
                 for (int i = 0; i < 3; i++) {
                     double x = source.getX() + 0.4f + level.random.nextGaussian() * 0.2;
                     double y = source.getY() + 0.7f + level.random.nextGaussian() * 0.2;
@@ -466,11 +465,11 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
     private boolean process() {
         recipeInfo.process(1);
         flow = Math.max(1, flow);
-        float theFlow = (float)getRealFlow();
-        if(theFlow > 0) {
-            theFlow = Math.max(theFlow, flow/2*TURBINE_CONFIG.BLADE_FLOW.get());
+        float theFlow = (float) getRealFlow();
+        if (theFlow > 0) {
+            theFlow = Math.max(theFlow, flow / 2 * TURBINE_CONFIG.BLADE_FLOW.get());
         }
-        rotationSpeed = (rotationSpeed*4+theFlow/(flow*TURBINE_CONFIG.BLADE_FLOW.get()))/5f;
+        rotationSpeed = (rotationSpeed * 4 + theFlow / (flow * TURBINE_CONFIG.BLADE_FLOW.get())) / 5f;
         energyStorage.addEnergy(calculateEnergy());
         efficiency = calculateEfficiency();
         handleRecipeOutput();
@@ -481,12 +480,12 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
 
     private void handleRecipeOutput() {
         if (hasRecipe() && recipeInfo.isCompleted()) {
-            if(recipe == null) {
+            if (recipe == null) {
                 recipe = recipeInfo.recipe();
             }
             if (recipe.handleOutputs(contentHandler)) {
                 recipeInfo.clear();
-                if(contentHandler.fluidCapability.getFluidInSlot(0).isEmpty()) {
+                if (contentHandler.fluidCapability.getFluidInSlot(0).isEmpty()) {
                     recipe = null;
                 }
             } else {
@@ -496,11 +495,10 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
         }
     }
 
-    public int getRealFlow()
-    {
+    public int getRealFlow() {
         int wasFlow = realFlow;
-        realFlow = (int)Math.min(flow*TURBINE_CONFIG.BLADE_FLOW.get(), getFluidTank(0).getFluidAmount());
-        if(wasFlow != realFlow) {
+        realFlow = (int) Math.min(flow * TURBINE_CONFIG.BLADE_FLOW.get(), getFluidTank(0).getFluidAmount());
+        if (wasFlow != realFlow) {
             changed = true;
         }
         return realFlow;
@@ -508,8 +506,8 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
 
     private int calculateEnergy() {
         int wasEnergy = energyPerTick;
-        energyPerTick = (int)(realFlow*TURBINE_CONFIG.ENERGY_GEN.get()*getEfficiencyRate()*ENERGY_GENERATION.GENERATION_MULTIPLIER.get());
-        if(wasEnergy != energyPerTick) {
+        energyPerTick = (int) (realFlow * TURBINE_CONFIG.ENERGY_GEN.get() * getEfficiencyRate() * ENERGY_GENERATION.GENERATION_MULTIPLIER.get());
+        if (wasEnergy != energyPerTick) {
             changed = true;
         }
         return energyPerTick;
@@ -536,15 +534,15 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
     }
 
     @Override
-    public void load(CompoundTag tag) {
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         if (tag.contains("Energy")) {
-            energyStorage.deserializeNBT(tag.get("Energy"));
+            energyStorage.deserializeNBT(registries, tag.get("Energy"));
         }
         if (tag.contains("Info")) {
             CompoundTag infoTag = tag.getCompound("Info");
             readTagData(infoTag);
             if (infoTag.contains("recipeInfo")) {
-                recipeInfo.deserializeNBT(infoTag.getCompound("recipeInfo"));
+                recipeInfo.deserializeNBT(registries, infoTag.getCompound("recipeInfo"));
             }
             if (!isCasingValid || !isInternalValid) {
                 errorBlockPos = BlockPos.of(infoTag.getLong("erroredBlock"));
@@ -554,17 +552,17 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
             }
         }
         if (tag.contains("Content")) {
-            contentHandler.deserializeNBT(tag.getCompound("Content"));
+            contentHandler.deserializeNBT(registries, tag.getCompound("Content"));
         }
-        super.load(tag);
+        super.loadAdditional(tag, registries);
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         CompoundTag infoTag = new CompoundTag();
-        tag.put("Energy", energyStorage.serializeNBT());
-        tag.put("Content", contentHandler.serializeNBT());
-        infoTag.put("recipeInfo", recipeInfo.serializeNBT());
+        tag.put("Energy", energyStorage.serializeNBT(registries));
+        tag.put("Content", contentHandler.serializeNBT(registries));
+        infoTag.put("recipeInfo", recipeInfo.serializeNBT(registries));
         infoTag.putInt("validationId", validationResult.id);
         infoTag.putLong("erroredBlock", errorBlockPos.asLong());
         saveTagData(infoTag);
@@ -579,11 +577,11 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
     }
 
     @Override
-    public void loadClientData(CompoundTag tag) {
+    public void loadClientData(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         if (tag.contains("Info")) {
             CompoundTag infoTag = tag.getCompound("Info");
             if (infoTag.contains("recipeInfo")) {
-                recipeInfo.deserializeNBT(infoTag.getCompound("recipeInfo"));
+                recipeInfo.deserializeNBT(lookupProvider, infoTag.getCompound("recipeInfo"));
             }
             energyStorage.setEnergy(infoTag.getInt("energy"));
             readTagData(infoTag);
@@ -594,29 +592,29 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
                 validationResult = ValidationResult.VALID;
             }
             if (tag.contains("Content")) {
-                contentHandler.deserializeNBT(tag.getCompound("Content"));
+                contentHandler.deserializeNBT(lookupProvider, tag.getCompound("Content"));
             }
         }
     }
 
     @Override
-    protected void saveClientData(CompoundTag tag) {
+    protected void saveClientData(CompoundTag tag, HolderLookup.Provider registries) {
         CompoundTag infoTag = new CompoundTag();
         tag.put("Info", infoTag);
         infoTag.putInt("energy", energyStorage.getEnergyStored());
         saveTagData(infoTag);
-        infoTag.put("recipeInfo", recipeInfo.serializeNBT());
+        infoTag.put("recipeInfo", recipeInfo.serializeNBT(registries));
         infoTag.putInt("validationId", validationResult.id);
         infoTag.putLong("erroredBlock", errorBlockPos.asLong());
-        tag.put("Content", contentHandler.serializeNBT());
+        tag.put("Content", contentHandler.serializeNBT(registries));
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
         int oldEnergy = energyStorage.getEnergyStored();
 
         CompoundTag tag = pkt.getTag();
-        handleUpdateTag(tag);
+        handleUpdateTag(tag, lookupProvider);
 
         if (oldEnergy != energyStorage.getEnergyStored()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
@@ -672,15 +670,9 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
     }
 
     public static class Recipe extends NcRecipe {
-
-        public Recipe(ResourceLocation id, ItemStackIngredient[] input, ItemStackIngredient[] output, FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids, double timeModifier, double powerModifier, double heatModifier, double rarity) {
-            super(id, input, output, inputFluids, outputFluids, timeModifier, powerModifier, heatModifier, rarity);
+        public Recipe(ItemStackIngredient[] input, ItemStackIngredient[] output, FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids, double timeModifier, double powerModifier, double heatModifier, double rarity) {
+            super(input, output, inputFluids, outputFluids, timeModifier, powerModifier, heatModifier, rarity);
             CATALYSTS.put(TurbineControllerBE.NAME, List.of(getToastSymbol()));
-        }
-
-        @Override
-        public String getCodeId() {
-            return TurbineControllerBE.NAME;
         }
 
         @Override
@@ -690,21 +682,29 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
 
         @Override
         public @NotNull ItemStack getToastSymbol() {
-            return new ItemStack(TURBINE_BLOCKS.get(getCodeId()).get());
+            return new ItemStack(TURBINE_BLOCKS.get(TurbineControllerBE.NAME).get());
         }
 
         public int getBaseTime() {
             return (int) Math.max(1, timeModifier);
         }
 
-        public double getEnergy() { return Math.max(1, powerModifier); }
+        @Override
+        public void write(FriendlyByteBuf buffer) {
+            //TODO
+        }
+
+        public double getEnergy() {
+            return Math.max(1, powerModifier);
+        }
 
         public double ratio = 1D;
+
         @Override
         public void consumeInputs(SidedContentHandler contentHandler) {
-            TurbineControllerBE<?> be = (TurbineControllerBE<?>)contentHandler.blockEntity;
+            TurbineControllerBE<?> be = (TurbineControllerBE<?>) contentHandler.blockEntity;
             int flow = be.realFlow;
-            ratio = (double)flow/(double)getInputFluids(0).get(0).getAmount();
+            ratio = (double) flow / (double) getInputFluids(0).getFirst().getAmount();
             FluidStack holded = contentHandler.fluidCapability.getFluidInSlot(0).copy();
             holded.setAmount(flow);
             contentHandler.fluidCapability.holdedInputs.add(holded);
@@ -713,9 +713,9 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
 
         @Override
         public boolean handleOutputs(SidedContentHandler contentHandler) {
-            FluidStack outputFluid = outputFluids[0].getRepresentations().get(0);
+            FluidStack outputFluid = outputFluids[0].getRepresentations().getFirst();
             FluidStack toOutput = outputFluid.copy();
-            int toPush = (int) (outputFluid.getAmount()*ratio);
+            int toPush = (int) (outputFluid.getAmount() * ratio);
             toOutput.setAmount(toPush);
             return contentHandler.fluidCapability.insertFluidInternal(1, toOutput, false).getAmount() != toPush;
         }

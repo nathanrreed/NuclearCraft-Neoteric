@@ -8,7 +8,6 @@ import igentuman.nc.util.annotation.NBTField;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -30,9 +29,8 @@ public class TurbineCoilBE extends TurbineBE {
         super(pPos, pBlockState, NAME);
     }
 
-    public boolean isValid(boolean forceCheck)
-    {
-        if(forceCheck) {
+    public boolean isValid(boolean forceCheck) {
+        if (forceCheck) {
             try {
                 isValid = def().getValidator().isValid(this);
             } catch (NullPointerException ignore) {
@@ -40,13 +38,13 @@ public class TurbineCoilBE extends TurbineBE {
             }
             refreshCacheFlag = true;
         }
-       return isValid();
+        return isValid();
     }
 
     private CoilDef def() {
         Item item = getBlockState().getBlock().asItem();
-        if(item.equals(AIR)) return null;
-        if(def == null) {
+        if (item.equals(AIR)) return null;
+        if (def == null) {
             setCoilDef(TurbineRegistration.coils().get(item.toString().replaceAll("turbine_|_coil", "")));
         }
         return def;
@@ -58,9 +56,9 @@ public class TurbineCoilBE extends TurbineBE {
 
     @Override
     public void tickServer() {
-        if(NuclearCraft.instance.isNcBeStopped) return;
+        if (NuclearCraft.instance.isNcBeStopped) return;
         super.tickServer();
-        if(multiblock() != null) {
+        if (multiblock() != null) {
             if (refreshCacheFlag) {
                 for (Direction dir : Direction.values()) {
                     BlockEntity be = Objects.requireNonNull(getLevel()).getBlockEntity(getBlockPos().relative(dir));
@@ -70,7 +68,7 @@ public class TurbineCoilBE extends TurbineBE {
                         break;
                     }
                     if (be instanceof TurbineCoilBE sideCoil) {
-                        if(sideCoil.hasBearingConnection) {
+                        if (sideCoil.hasBearingConnection) {
                             hasBearingConnection = true;
                             break;
                         }
@@ -88,13 +86,14 @@ public class TurbineCoilBE extends TurbineBE {
     }
 
     public double getEfficiency() {
-        if(efficiency == 0) {
+        if (efficiency == 0) {
             efficiency = def.getEfficiency();
         }
         return efficiency;
     }
+
     public double getRealEfficiency() {
-        if(!isValid()) return 0;
+        if (!isValid()) return 0;
         return getEfficiency();
     }
 

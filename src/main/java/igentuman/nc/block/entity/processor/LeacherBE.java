@@ -14,41 +14,30 @@ import igentuman.nc.util.annotation.NBTField;
 import igentuman.nc.util.annotation.NothingNullByDefault;
 import igentuman.nc.util.insitu_leaching.WorldVeinsManager;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MapItem;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.common.util.FakePlayerFactory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
 import static igentuman.nc.block.ProcessorBlock.ACTIVE;
-import static igentuman.nc.compat.GlobalVars.CATALYSTS;
-import static igentuman.nc.compat.GlobalVars.RECIPE_CLASSES;
 import static igentuman.nc.radiation.ItemRadiation.getItemByName;
 import static igentuman.nc.setup.registration.NCItems.NC_PARTS;
-import static igentuman.nc.util.ModUtil.isCcLoaded;
-import static net.minecraft.world.item.Items.*;
-import static igentuman.nc.util.ModUtil.isIeLoaded;;
+import static igentuman.nc.util.ModUtil.isIeLoaded;
+import static net.minecraft.world.item.Items.FILLED_MAP;
 
 public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
     public LeacherBE(BlockPos pPos, BlockState pBlockState) {
@@ -87,24 +76,24 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
 
     @Override
     public void tickServer() {
-        if(NuclearCraft.instance.isNcBeStopped) return;
+        if (NuclearCraft.instance.isNcBeStopped) return;
         handleState();
         byte lastState = leacherState;
         leacherState = POSITION_IS_CORRECT;
 
-        if(!hasCatalyst()) {
+        if (!hasCatalyst()) {
             leacherState = NO_SOURCE;
         }
 
-        if(!pumpsAreValid) {
+        if (!pumpsAreValid) {
             leacherState = PUMPS_ERROR;
         }
 
-        if(lastState != leacherState) {
+        if (lastState != leacherState) {
             level.setBlockAndUpdate(worldPosition, getBlockState().setValue(ACTIVE, isActive));
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState().setValue(ACTIVE, isActive), Block.UPDATE_ALL);
         }
-        if(leacherState == POSITION_IS_CORRECT) {
+        if (leacherState == POSITION_IS_CORRECT) {
             super.tickServer();
         }
 
@@ -112,7 +101,7 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
 
     private void handleState() {
         pumpValidationTimeout--;
-        if(pumpValidationTimeout <= 0) {
+        if (pumpValidationTimeout <= 0) {
             pumpValidationTimeout = 40;
             clearHighligts();
             validatePumps();
@@ -120,8 +109,7 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
     }
 
     @Override
-    public void setRemoved()
-    {
+    public void setRemoved() {
         super.setRemoved();
         clearHighligts();
     }
@@ -129,7 +117,7 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
     private void clearHighligts() {
         ChunkPos chunkPos = new ChunkPos(getBlockPos());
         boolean isClientSide = Objects.requireNonNull(getLevel()).isClientSide;
-        if(isClientSide) {
+        if (isClientSide) {
             BlockOverlayHandler.removeFromOutline(new NCBlockPos(chunkPos.getMinBlockX(), worldPosition.getY(), chunkPos.getMinBlockZ()));
             BlockOverlayHandler.removeFromOutline(new NCBlockPos(chunkPos.getMinBlockX(), worldPosition.getY(), chunkPos.getMaxBlockZ()));
             BlockOverlayHandler.removeFromOutline(new NCBlockPos(chunkPos.getMaxBlockX(), worldPosition.getY(), chunkPos.getMaxBlockZ()));
@@ -144,16 +132,16 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
 
     @NothingNullByDefault
     public static class Recipe extends NcRecipe {
-        public Recipe(ResourceLocation id,
-                      ItemStackIngredient[] input, ItemStackIngredient[] output,
-                      FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids,
-                      double timeModifier, double powerModifier, double heatModifier, double rarity) {
-            super(id, input, output, inputFluids, outputFluids, timeModifier, powerModifier, heatModifier, 1);
+        public Recipe(
+                ItemStackIngredient[] input, ItemStackIngredient[] output,
+                FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids,
+                double timeModifier, double powerModifier, double heatModifier, double rarity) {
+            super(input, output, inputFluids, outputFluids, timeModifier, powerModifier, heatModifier, 1);
         }
 
         @Override
-        public String getCodeId() {
-            return Processors.LEACHER;
+        public void write(FriendlyByteBuf buffer) {
+            //TODO
         }
     }
 
@@ -163,7 +151,7 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
 
     public boolean isPumpValid(NCBlockPos pos, int id) {
         for (int y = 0; y < 20; y++) {
-            BlockEntity be = getLevel().getBlockEntity( pos.below());
+            BlockEntity be = getLevel().getBlockEntity(pos.below());
             if (be instanceof PumpBE) {
                 pumps[id] = (PumpBE) be;
                 return pumps[id].isInSituValid();
@@ -176,39 +164,39 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
         ChunkPos chunkPos = new ChunkPos(getBlockPos());
         boolean isClientSide = Objects.requireNonNull(getLevel()).isClientSide;
         pumpsAreValid = isPumpValid(
-                new NCBlockPos(chunkPos.getMinBlockX(), worldPosition.getY()+5, chunkPos.getMinBlockZ()),
+                new NCBlockPos(chunkPos.getMinBlockX(), worldPosition.getY() + 5, chunkPos.getMinBlockZ()),
                 0
         );
-        if(!pumpsAreValid) {
-            if(isClientSide) {
+        if (!pumpsAreValid) {
+            if (isClientSide) {
                 BlockOverlayHandler.addToOutline(new NCBlockPos(chunkPos.getMinBlockX(), worldPosition.getY(), chunkPos.getMinBlockZ()));
             }
         }
-        if(!isPumpValid(
-                new NCBlockPos(chunkPos.getMinBlockX(), worldPosition.getY()+5, chunkPos.getMaxBlockZ()),
+        if (!isPumpValid(
+                new NCBlockPos(chunkPos.getMinBlockX(), worldPosition.getY() + 5, chunkPos.getMaxBlockZ()),
                 1
         )) {
             pumpsAreValid = false;
-            if(isClientSide) {
+            if (isClientSide) {
                 BlockOverlayHandler.addToOutline(new NCBlockPos(chunkPos.getMinBlockX(), worldPosition.getY(), chunkPos.getMaxBlockZ()));
             }
         }
 
-        if(!isPumpValid(
-                new NCBlockPos(chunkPos.getMaxBlockX(), worldPosition.getY()+5, chunkPos.getMaxBlockZ()),
+        if (!isPumpValid(
+                new NCBlockPos(chunkPos.getMaxBlockX(), worldPosition.getY() + 5, chunkPos.getMaxBlockZ()),
                 2
         )) {
-            if(isClientSide) {
+            if (isClientSide) {
                 BlockOverlayHandler.addToOutline(new NCBlockPos(chunkPos.getMaxBlockX(), worldPosition.getY(), chunkPos.getMaxBlockZ()));
             }
             pumpsAreValid = false;
         }
 
-        if(!isPumpValid(
-                new NCBlockPos(chunkPos.getMaxBlockX(), worldPosition.getY()+5, chunkPos.getMinBlockZ()),
+        if (!isPumpValid(
+                new NCBlockPos(chunkPos.getMaxBlockX(), worldPosition.getY() + 5, chunkPos.getMinBlockZ()),
                 3
         )) {
-            if(isClientSide) {
+            if (isClientSide) {
                 BlockOverlayHandler.addToOutline(new NCBlockPos(chunkPos.getMaxBlockX(), worldPosition.getY(), chunkPos.getMinBlockZ()));
             }
             pumpsAreValid = false;
@@ -221,7 +209,7 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
 
     @Override
     public void processRecipe() {
-        if(!hasCatalyst()) return;
+        if (!hasCatalyst()) return;
         super.processRecipe();
     }
 
@@ -230,28 +218,27 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
         super.updateRecipe();
     }
 
-    public void gatherOre()
-    {
-        if(!hasCatalyst()) {
+    public void gatherOre() {
+        if (!hasCatalyst()) {
             catalyst = ItemStack.EMPTY;
             return;
         }
 
         catalyst = catalystHandler.getStackInSlot(0);
         ItemStack ore = ItemStack.EMPTY;
-        if(contentHandler.fluidCapability.getFluidInSlot(0).isEmpty()) {
+        if (contentHandler.fluidCapability.getFluidInSlot(0).isEmpty()) {
             leacherState = NO_ACID;
             return;
         }
-        if(catalyst.getItem().equals(FILLED_MAP)) {
+        if (catalyst.getItem().equals(FILLED_MAP)) {
             ore = useMapCatalyst();
         }
-        if(catalyst.getItem().equals(NC_PARTS.get("research_paper").get())) {
+        if (catalyst.getItem().equals(NC_PARTS.get("research_paper").get())) {
             ore = useResearchPaper();
         }
-        
-        if(isIeLoaded()){
-            if(catalyst.getItem().equals(getItemByName("immersiveengineering:coresample"))) {
+
+        if (isIeLoaded()) {
+            if (catalyst.getItem().equals(getItemByName("immersiveengineering:coresample"))) {
                 ore = useIECoreSample();
             }
         }
@@ -265,57 +252,58 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
 
 
     protected ItemStack useResearchPaper() {
-        CompoundTag tagData = catalyst.getOrCreateTag();
-        if(!tagData.contains("pos") || !tagData.contains("vein")) {
+        CompoundTag tagData = catalyst.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+        if (!tagData.contains("pos") || !tagData.contains("vein")) {
             leacherState = NO_SOURCE;
             return ItemStack.EMPTY;
         }
         BlockPos mapPos = BlockPos.of(tagData.getLong("pos"));
         ChunkPos chunkPos = new ChunkPos(mapPos);
-        if(!chunkPos.equals(new ChunkPos(getBlockPos()))) {
+        if (!chunkPos.equals(new ChunkPos(getBlockPos()))) {
             leacherState = WRONG_POSITION;
             return ItemStack.EMPTY;
         }
-        if(getLevel() == null) return ItemStack.EMPTY;
+        if (getLevel() == null) return ItemStack.EMPTY;
         return WorldVeinsManager.get(getLevel())
                 .getWorldVeinData((ServerLevel) getLevel()).gatherRandomOre(chunkPos.x, chunkPos.z);
     }
 
     int currentMiningTimeout = 0;
+
     protected ItemStack useMapCatalyst() {
 
-        MapItemSavedData mapData = ((MapItem)catalyst.getItem()).getSavedData(catalyst, getLevel());
-        if(mapData == null) return ItemStack.EMPTY;
-        if(worldPosition.getX() < mapData.centerX-64 || worldPosition.getX() > mapData.centerX+64 &&
-                worldPosition.getZ() < mapData.centerZ-64 || worldPosition.getZ() > mapData.centerZ+64) {
+        MapItemSavedData mapData = ((MapItem) catalyst.getItem()).getSavedData(catalyst, getLevel());
+        if (mapData == null) return ItemStack.EMPTY;
+        if (worldPosition.getX() < mapData.centerX - 64 || worldPosition.getX() > mapData.centerX + 64 &&
+                worldPosition.getZ() < mapData.centerZ - 64 || worldPosition.getZ() > mapData.centerZ + 64) {
             leacherState = WRONG_POSITION;
             return ItemStack.EMPTY;
         }
 
-        if(currentMiningPos == null) {
-            if(currentMiningTimeout > 200) {
+        if (currentMiningPos == null) {
+            if (currentMiningTimeout > 200) {
                 currentMiningTimeout = 0;
 
-                currentMiningPos = new NCBlockPos(getBlockPos().getX(), getBlockPos().getY()-1, getBlockPos().getZ());
+                currentMiningPos = new NCBlockPos(getBlockPos().getX(), getBlockPos().getY() - 1, getBlockPos().getZ());
             } else {
                 currentMiningTimeout++;
                 return ItemStack.EMPTY;
             }
         }
 
-        if(!mineFirstMinableBlock()) {
+        if (!mineFirstMinableBlock()) {
             currentMiningPos = null;
             currentMiningTimeout = 0;
-        };
+        }
+        ;
         return ItemStack.EMPTY;//this method handles inventory updates already
     }
 
-    public List<ItemStack> allMinableOres()
-    {
-        if(minableOres == null) {
+    public List<ItemStack> allMinableOres() {
+        if (minableOres == null) {
             minableOres = new ArrayList<>();
-            for(LeacherBE.Recipe recipe: getRecipes()) {
-                for(Ingredient ingredient: recipe.getItemIngredients()) {
+            for (LeacherBE.Recipe recipe : getRecipes()) {
+                for (Ingredient ingredient : recipe.getItemIngredients()) {
                     minableOres.addAll(Arrays.asList(ingredient.getItems()));
                 }
             }
@@ -327,60 +315,61 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
         return (List<Recipe>) NcRecipeType.ALL_RECIPES.get(getName()).getRecipeType().getRecipes(getLevel());
     }
 
-    protected boolean mineFirstMinableBlock()
-    {
+    protected boolean mineFirstMinableBlock() {
         int startY = currentMiningPos.getY();
         int startX = new ChunkPos(currentMiningPos).getMinBlockX();
         int startZ = new ChunkPos(currentMiningPos).getMinBlockZ();
         NCBlockPos tempMiningPos = new NCBlockPos(currentMiningPos);
-        for(int y = startY; y > getLevel().getMinBuildHeight(); y--) {
-           for(int x = 0; x < 16; x++) {
-               for(int z = 0; z < 16; z++) {
-                   BlockState toCheck = getLevel().getBlockState(tempMiningPos.y(y).x(x+startX).z(z+startZ));
-                   if(toCheck.is(Tags.Blocks.ORES)) {
+        for (int y = startY; y > getLevel().getMinBuildHeight(); y--) {
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    BlockState toCheck = getLevel().getBlockState(tempMiningPos.y(y).x(x + startX).z(z + startZ));
+                    if (toCheck.is(net.neoforged.neoforge.common.Tags.Blocks.ORES)) {
                         ItemStack toMine = new ItemStack(toCheck.getBlock());
-                        if(isMinable(toMine)) {
+                        if (isMinable(toMine)) {
                             currentMiningPos = new BlockPos(tempMiningPos);
-                            if(contentHandler.itemHandler.insertItemInternal(0, toMine, true).isEmpty()) {
-                                if(player == null) {
+                            if (contentHandler.itemHandler.insertItemInternal(0, toMine, true).isEmpty()) {
+                                if (player == null) {
                                     if (playerUID == null) {
                                         playerUID = fakePlayerUUID;
                                     }
                                     if (playerUID == fakePlayerUUID) {
+
                                         player = FakePlayerFactory.get((ServerLevel) getLevel(), new GameProfile(playerUID, "[NC]LEACHER"));
                                     } else {
                                         player = getLevel().getPlayerByUUID(playerUID);
                                     }
                                 }
-                                if(player == null) return false;
-                                if(!getLevel().mayInteract(player, tempMiningPos.y(y).x(x+startX).z(z+startZ))) return false;
-                                if(!getLevel().destroyBlock(tempMiningPos.y(y).x(x+startX).z(z+startZ), false, player)) return false;
+                                if (player == null) return false;
+                                if (!getLevel().mayInteract(player, tempMiningPos.y(y).x(x + startX).z(z + startZ))) return false;
+                                if (!getLevel().destroyBlock(tempMiningPos.y(y).x(x + startX).z(z + startZ), false, player)) return false;
                                 contentHandler.itemHandler.insertItemInternal(0, toMine, false);
                                 return true;
                             }
                         }
-                   }
-               }
-           }
+                    }
+                }
+            }
         }
         return false;
     }
 
     private boolean isMinable(ItemStack toMine) {
-        for(ItemStack stack: allMinableOres()) {
-            if(stack.equals(toMine, false)) return true;
+        for (ItemStack stack : allMinableOres()) {
+
+            if (ItemStack.isSameItemSameComponents(stack, toMine)) return true;
         }
         return false;
     }
 
-    @Nonnull
-    @Override
-    public final <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER) { //not letting to access item handler from outside
-            return LazyOptional.empty();
-        }
-        return super.getCapability(cap, side);
-    }
+//    @Nonnull
+//    @Override
+//    public final <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+//        if (cap == ForgeCapabilities.ITEM_HANDLER) { //not letting to access item handler from outside
+//            return LazyOptional.empty();
+//        }
+//        return super.getCapability(cap, side);
+//    }
 
     @Override
     public List<Item> getAllowedCatalysts() {
@@ -388,7 +377,7 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
                 NC_PARTS.get("research_paper").get(),
                 FILLED_MAP
         ));
-        if(isIeLoaded()){
+        if (isIeLoaded()) {
             Item ieCoreSample = getItemByName("immersiveengineering:coresample");
             items.add(ieCoreSample);
         }
@@ -396,7 +385,7 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
     }
 
     public int toggleSideConfig(int slotId, int direction) {
-        if(slotId == 1) return SlotModePair.SlotMode.DISABLED.ordinal();
+        if (slotId == 1) return SlotModePair.SlotMode.DISABLED.ordinal();
         setChanged();
         saveSideMapFlag = true;
         return contentHandler.toggleSideConfig(slotId, direction);

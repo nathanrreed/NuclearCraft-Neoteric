@@ -1,16 +1,18 @@
 package igentuman.nc.handler;
 
+import com.lowdragmc.lowdraglib.misc.ItemHandlerHelper;
 import igentuman.nc.handler.sided.capability.AbstractCapabilityHandler;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
 
 import javax.annotation.Nonnull;
 
@@ -34,7 +36,7 @@ public class ItemStorageCapabilityHandler extends AbstractCapabilityHandler impl
     public void setStackInSlot(int slot, @NotNull ItemStack stack) {
         validateSlotIndex(slot);
         this.stacks.set(slot, stack);
-    //    onContentsChanged(slot);
+        //    onContentsChanged(slot);
     }
 
     @Override
@@ -48,6 +50,7 @@ public class ItemStorageCapabilityHandler extends AbstractCapabilityHandler impl
         validateSlotIndex(slot);
         return this.stacks.get(slot);
     }
+
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (amount == 0)
             return ItemStack.EMPTY;
@@ -64,7 +67,7 @@ public class ItemStorageCapabilityHandler extends AbstractCapabilityHandler impl
         if (existing.getCount() <= toExtract) {
             if (!simulate) {
                 this.stacks.set(slot, ItemStack.EMPTY);
-              //  onContentsChanged(slot);
+                //  onContentsChanged(slot);
                 return existing;
             } else {
                 return existing.copy();
@@ -72,7 +75,7 @@ public class ItemStorageCapabilityHandler extends AbstractCapabilityHandler impl
         } else {
             if (!simulate) {
                 this.stacks.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
-               // onContentsChanged(slot);
+                // onContentsChanged(slot);
             }
 
             return ItemHandlerHelper.copyStackWithSize(existing, toExtract);
@@ -135,13 +138,13 @@ public class ItemStorageCapabilityHandler extends AbstractCapabilityHandler impl
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {
         ListTag nbtTagList = new ListTag();
         for (int i = 0; i < stacks.size(); i++) {
             if (!stacks.get(i).isEmpty()) {
                 CompoundTag itemTag = new CompoundTag();
                 itemTag.putInt("Slot", i);
-                stacks.get(i).save(itemTag);
+                stacks.get(i).save(provider, itemTag);
                 nbtTagList.add(itemTag);
             }
         }
@@ -156,7 +159,7 @@ public class ItemStorageCapabilityHandler extends AbstractCapabilityHandler impl
     }
 
     @Override
-    public void deserializeNBT(CompoundTag nbt) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         setSize(nbt.contains("Size", Tag.TAG_INT) ? nbt.getInt("Size") : stacks.size());
         ListTag tagList = nbt.getList("Items", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {
@@ -164,7 +167,7 @@ public class ItemStorageCapabilityHandler extends AbstractCapabilityHandler impl
             int slot = itemTags.getInt("Slot");
 
             if (slot >= 0 && slot < stacks.size()) {
-                stacks.set(slot, ItemStack.of(itemTags));
+                stacks.set(slot, ItemStack.parseOptional(provider, itemTags));
             }
         }
     }

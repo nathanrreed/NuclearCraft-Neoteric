@@ -1,12 +1,12 @@
 package igentuman.nc.block.turbine;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import igentuman.nc.block.entity.turbine.TurbinePortBE;
 import igentuman.nc.container.TurbinePortContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -27,7 +27,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +42,7 @@ public class TurbinePortBlock extends HorizontalDirectionalBlock implements Enti
                 .strength(2.0f)
                 .requiresCorrectToolForDrops());
     }
+
     public TurbinePortBlock(Properties pProperties) {
         super(pProperties.sound(SoundType.METAL));
         this.registerDefaultState(
@@ -51,6 +51,16 @@ public class TurbinePortBlock extends HorizontalDirectionalBlock implements Enti
                         .setValue(POWERED, false)
         );
     }
+
+    public static final MapCodec<TurbinePortBlock> CODEC = RecordCodecBuilder.mapCodec(instance ->
+            instance.group(propertiesCodec()).apply(instance, TurbinePortBlock::new)
+    );
+
+    @Override
+    protected MapCodec<? extends TurbinePortBlock> codec() {
+        return CODEC;
+    }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
@@ -69,12 +79,11 @@ public class TurbinePortBlock extends HorizontalDirectionalBlock implements Enti
     }
 
     @Override
-    public InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, InteractionHand hand, BlockHitResult result) {
-
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
 
-            if (be instanceof TurbinePortBE)  {
+            if (be instanceof TurbinePortBE) {
                 MenuProvider containerProvider = new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
@@ -83,10 +92,10 @@ public class TurbinePortBlock extends HorizontalDirectionalBlock implements Enti
 
                     @Override
                     public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player playerEntity) {
-                            return new TurbinePortContainer(windowId, pos, playerInventory);
+                        return new TurbinePortContainer(windowId, pos, playerInventory);
                     }
                 };
-                NetworkHooks.openScreen((ServerPlayer) player, containerProvider, be.getBlockPos());
+                player.openMenu(containerProvider, be.getBlockPos());
             }
         }
         return InteractionResult.SUCCESS;
@@ -102,7 +111,7 @@ public class TurbinePortBlock extends HorizontalDirectionalBlock implements Enti
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof TurbinePortBE tile) {
                 tile.tickServer();
             }

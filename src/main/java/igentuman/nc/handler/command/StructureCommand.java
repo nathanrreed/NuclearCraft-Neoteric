@@ -2,7 +2,6 @@ package igentuman.nc.handler.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import igentuman.nc.setup.registration.WorldGeneration;
@@ -15,8 +14,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
-public class StructureCommand  {
-
+public class StructureCommand {
     public static void register(CommandDispatcher<CommandSourceStack> command) {
         command.register(Commands.literal("nc_build")
                 .then(Commands.argument("structure", StringArgumentType.word())
@@ -73,7 +71,8 @@ public class StructureCommand  {
         HitResult hitResult = player.pick(rayTraceRange, 0.0F, false);
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockHitResult blockHitResult = (BlockHitResult) hitResult;
-            BlockPos blockPos = blockHitResult.getBlockPos().offset(-5, 3, -5);;
+            BlockPos blockPos = blockHitResult.getBlockPos().offset(-5, 3, -5);
+            ;
             WorldGeneration.StructurePlacer.placeStructure((ServerLevel) player.level(), blockPos, "fusion_reactor");
             player.sendSystemMessage(Component.literal("Placing fusion reactor!"));
         } else {

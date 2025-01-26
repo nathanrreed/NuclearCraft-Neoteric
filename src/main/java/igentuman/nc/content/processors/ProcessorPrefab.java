@@ -3,7 +3,6 @@ package igentuman.nc.content.processors;
 import igentuman.nc.block.entity.processor.NCProcessorBE;
 import igentuman.nc.container.NCProcessorContainer;
 import igentuman.nc.content.processors.config.ProcessorSlots;
-import igentuman.nc.handler.config.CommonConfig;
 import igentuman.nc.recipes.AbstractRecipe;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
@@ -11,7 +10,6 @@ import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -22,13 +20,12 @@ import java.util.function.Supplier;
 
 import static igentuman.nc.handler.config.ProcessorsConfig.PROCESSOR_CONFIG;
 
-public class ProcessorPrefab <M extends NCProcessorContainer, U extends Screen & MenuAccess<M>> {
-
+public class ProcessorPrefab<M extends NCProcessorContainer, U extends Screen & MenuAccess<M>> {
     public int progressBar = 0;
     public Supplier<RecipeSerializer<? extends AbstractRecipe>> recipeSerializerSupplier;
     public boolean supportsCatalyst;
-    private  Class  container;
-    private  MenuScreens.ScreenConstructor<M, U>  screenConstructor;
+    private Class container;
+    private MenuScreens.ScreenConstructor<M, U> screenConstructor;
     private boolean initialized;
     private boolean has_recipes = true;
     private Boolean registered = true;
@@ -47,15 +44,16 @@ public class ProcessorPrefab <M extends NCProcessorContainer, U extends Screen &
     protected Class recipeManager;
 
 
-    public BlockEntityType.BlockEntitySupplier<? extends NCProcessorBE>  getBlockEntity() {
+    public BlockEntityType.BlockEntitySupplier<? extends NCProcessorBE> getBlockEntity() {
         return blockEntity;
     }
 
-    public ProcessorPrefab<M, U> setBlockEntity(BlockEntityType.BlockEntitySupplier<? extends NCProcessorBE>  blockEntity) {
+    public ProcessorPrefab<M, U> setBlockEntity(BlockEntityType.BlockEntitySupplier<? extends NCProcessorBE> blockEntity) {
         this.blockEntity = blockEntity;
         return this;
     }
-    private BlockEntityType.BlockEntitySupplier<? extends NCProcessorBE>  blockEntity;
+
+    private BlockEntityType.BlockEntitySupplier<? extends NCProcessorBE> blockEntity;
 
     public MenuScreens.ScreenConstructor<M, U> getScreenConstructor() {
         return screenConstructor;
@@ -65,8 +63,7 @@ public class ProcessorPrefab <M extends NCProcessorContainer, U extends Screen &
         this.screenConstructor = screenConstructor;
     }
 
-    public boolean isSlotHidden(int slot)
-    {
+    public boolean isSlotHidden(int slot) {
         return hiddenSlots.contains(slot);
     }
 
@@ -74,14 +71,12 @@ public class ProcessorPrefab <M extends NCProcessorContainer, U extends Screen &
         this.container = container;
     }
 
-    public ProcessorPrefab(String name)
-    {
+    public ProcessorPrefab(String name) {
         this.name = name;
         slotsConfig = new ProcessorSlots();
     }
 
-    public ProcessorPrefab(String name, int inFluids, int inItems, int outFluids, int outItems)
-    {
+    public ProcessorPrefab(String name, int inFluids, int inItems, int outFluids, int outItems) {
         this(name);
         slotsConfig
                 .setInputFluids(inFluids)
@@ -114,19 +109,17 @@ public class ProcessorPrefab <M extends NCProcessorContainer, U extends Screen &
         return slotsConfig;
     }
 
-    public int getTotalItemSlots()
-    {
+    public int getTotalItemSlots() {
         return getSlotsConfig().getInputItems()
-                +getSlotsConfig().getOutputItems()
-                +(supportSpeedUpgrade ? 1 : 0)
-                +(supportEnergyUpgrade ? 1 : 0);
+                + getSlotsConfig().getOutputItems()
+                + (supportSpeedUpgrade ? 1 : 0)
+                + (supportEnergyUpgrade ? 1 : 0);
     }
 
     protected ProcessorSlots slotsConfig;
 
-    public ProcessorPrefab<M, U> config()
-    {
-        if(!initialized) {
+    public ProcessorPrefab<M, U> config() {
+        if (!initialized) {
             registered = PROCESSOR_CONFIG.PROCESSOR_CONFIG.get(name).register.get();
             power = PROCESSOR_CONFIG.PROCESSOR_CONFIG.get(name).base_power.get();
             time = PROCESSOR_CONFIG.PROCESSOR_CONFIG.get(name).base_time.get();
@@ -136,7 +129,7 @@ public class ProcessorPrefab <M extends NCProcessorContainer, U extends Screen &
     }
 
     public boolean isRegistered() {
-        return  registered;
+        return registered;
     }
 
     public Constructor<M> getContainerConstructor() {
@@ -158,5 +151,4 @@ public class ProcessorPrefab <M extends NCProcessorContainer, U extends Screen &
     public Supplier<RecipeSerializer<? extends AbstractRecipe>> getRecipeSerializer() {
         return recipeSerializerSupplier;
     }
-
 }

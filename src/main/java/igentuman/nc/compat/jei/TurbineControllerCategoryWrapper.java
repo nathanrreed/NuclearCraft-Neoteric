@@ -3,12 +3,12 @@ package igentuman.nc.compat.jei;
 import igentuman.nc.block.entity.turbine.TurbineControllerBE;
 import igentuman.nc.compat.jei.util.TickTimer;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableAnimated;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
@@ -29,14 +29,13 @@ import static net.minecraft.world.item.Items.AIR;
 
 @SuppressWarnings("removal")
 public class TurbineControllerCategoryWrapper<T extends TurbineControllerBE.Recipe> implements IRecipeCategory<T> {
-    public final static ResourceLocation TEXTURE =
-            new ResourceLocation(MODID, "textures/gui/processor_jei.png");
+    public final static ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/processor_jei.png");
 
     private final IDrawable background;
     private final IDrawable icon;
     protected RecipeType<T> recipeType;
     IDrawable arrow;
-    private  IDrawable[] slots;
+    private IDrawable[] slots;
 
     IGuiHelper guiHelper;
 
@@ -44,9 +43,9 @@ public class TurbineControllerCategoryWrapper<T extends TurbineControllerBE.Reci
         this.recipeType = recipeType;
         this.guiHelper = guiHelper;
         this.background = guiHelper.createDrawable(TEXTURE, 0, 0, 105, 32);
-        if(CATALYSTS.containsKey(getRecipeType().getUid().getPath())) {
+        if (CATALYSTS.containsKey(getRecipeType().getUid().getPath())) {
             this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, CATALYSTS.get(getRecipeType().getUid().getPath()).get(0));
-        } else{
+        } else {
             this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(AIR));
         }
     }
@@ -58,7 +57,7 @@ public class TurbineControllerCategoryWrapper<T extends TurbineControllerBE.Reci
 
     @Override
     public @NotNull Component getTitle() {
-        return Component.translatable("nc_jei_cat."+getRecipeType().getUid().getPath());
+        return Component.translatable("nc_jei_cat." + getRecipeType().getUid().getPath());
     }
 
     @Override
@@ -83,8 +82,8 @@ public class TurbineControllerCategoryWrapper<T extends TurbineControllerBE.Reci
     @Override
     public @NotNull List<Component> getTooltipStrings(@NotNull T recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         List<Component> lines = new ArrayList<>();
-        if(mouseX > 34 && mouseX < 76 && mouseY > 6 && mouseY < 20) {
-          //  lines.add(Component.translatable("boiling.recipe.heat_required", (int)recipe.rarityModifier).withStyle(ChatFormatting.GOLD));
+        if (mouseX > 34 && mouseX < 76 && mouseY > 6 && mouseY < 20) {
+            //  lines.add(Component.translatable("boiling.recipe.heat_required", (int)recipe.rarityModifier).withStyle(ChatFormatting.GOLD));
         }
         return lines;
     }
@@ -96,14 +95,14 @@ public class TurbineControllerCategoryWrapper<T extends TurbineControllerBE.Reci
                 .buildAnimated(new TickTimer(100, 36, true), IDrawableAnimated.StartDirection.LEFT);
 
         builder.addSlot(RecipeIngredientRole.INPUT, 12, 6)
-                .addIngredients(ForgeTypes.FLUID_STACK, recipe.getInputFluids(0))
+                .addIngredients(NeoForgeTypes.FLUID_STACK, recipe.getInputFluids(0))
                 .setFluidRenderer(recipe.getInputFluids()[0].getAmount(), false, 16, 16);
         slots[0] = guiHelper.createDrawable(rl("textures/gui/widgets.png"), 18, 0, 18, 18);
 
 
         builder.addSlot(RecipeIngredientRole.OUTPUT, 75, 6)
-                .addIngredients(ForgeTypes.FLUID_STACK, recipe.getOutputFluids(0))
-                .setFluidRenderer(recipe.getOutputFluids().get(0).getAmount(), false, 16, 16);
+                .addIngredients(NeoForgeTypes.FLUID_STACK, recipe.getOutputFluids(0))
+                .setFluidRenderer(recipe.getOutputFluids().getFirst().getAmount(), false, 16, 16);
         slots[1] = guiHelper.createDrawable(rl("textures/gui/widgets.png"), 18, 0, 18, 18);
 
     }

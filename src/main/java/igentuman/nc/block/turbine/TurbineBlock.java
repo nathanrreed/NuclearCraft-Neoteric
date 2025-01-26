@@ -2,9 +2,9 @@ package igentuman.nc.block.turbine;
 
 import igentuman.nc.block.MultiblockBlock;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 public class TurbineBlock extends MultiblockBlock {
@@ -24,8 +24,7 @@ public class TurbineBlock extends MultiblockBlock {
         return adjacentBlockState.getBlock().equals(this) && codeID().matches(".*glass.*|.*slope.*");
     }
 
-    private String codeID()
-    {
-        return ForgeRegistries.BLOCKS.getKey(this).getPath();
+    private String codeID() {
+        return BuiltInRegistries.BLOCK.getKey(this).getPath();
     }
 }

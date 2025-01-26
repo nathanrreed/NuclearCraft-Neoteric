@@ -8,13 +8,13 @@ import igentuman.nc.util.annotation.NBTField;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,13 +52,11 @@ public class NuclearCraftBE extends BlockEntity {
         return pBlockState.getBlock().asItem().toString();
     }
 
-    protected void trackChanges(boolean was, boolean now)
-    {
+    protected void trackChanges(boolean was, boolean now) {
         changed = was != now || changed;
     }
 
-    protected void trackChanges(boolean was)
-    {
+    protected void trackChanges(boolean was) {
         changed = was || changed;
     }
 
@@ -77,7 +75,7 @@ public class NuclearCraftBE extends BlockEntity {
     public void saveTagData(CompoundTag tag) {
         try {
             for (Field f : blockPosFields) {
-                if((f.get(this)) != null) {
+                if ((f.get(this)) != null) {
                     tag.putLong(f.getName(), ((BlockPos) f.get(this)).asLong());
                 }
             }
@@ -116,13 +114,14 @@ public class NuclearCraftBE extends BlockEntity {
                 }
                 tag.put(f.getName(), tagList);
             }
-        } catch (IllegalAccessException ignore) { }
+        } catch (IllegalAccessException ignore) {
+        }
     }
 
     @Override
     public void setRemoved() {
         super.setRemoved();
-        if(Objects.requireNonNull(getLevel()).isClientSide()) {
+        if (Objects.requireNonNull(getLevel()).isClientSide()) {
             stopSound();
         }
     }
@@ -136,37 +135,37 @@ public class NuclearCraftBE extends BlockEntity {
 
     public void readTagData(CompoundTag tag) {
         try {
-            for(Field f: directionFields) {
+            for (Field f : directionFields) {
                 f.set(this, Direction.byName(tag.getString(f.getName())));
             }
-            for(Field f: blockPosFields) {
+            for (Field f : blockPosFields) {
                 f.set(this, BlockPos.of(tag.getLong(f.getName())));
             }
-            for(Field f: booleanFields) {
+            for (Field f : booleanFields) {
                 f.setBoolean(this, tag.getBoolean(f.getName()));
             }
-            for(Field f: intFields) {
+            for (Field f : intFields) {
                 f.setInt(this, tag.getInt(f.getName()));
             }
-            for(Field f: stringFields) {
+            for (Field f : stringFields) {
                 f.set(this, tag.getString(f.getName()));
             }
-            for(Field f: doubleFields) {
+            for (Field f : doubleFields) {
                 f.setDouble(this, tag.getDouble(f.getName()));
             }
-            for(Field f: floatFields) {
+            for (Field f : floatFields) {
                 f.setFloat(this, tag.getFloat(f.getName()));
             }
-            for(Field f: byteFields) {
+            for (Field f : byteFields) {
                 f.setByte(this, tag.getByte(f.getName()));
             }
-            for(Field f: longFields) {
+            for (Field f : longFields) {
                 f.setLong(this, tag.getLong(f.getName()));
             }
-            for(Field f: intArrayFields) {
+            for (Field f : intArrayFields) {
                 f.set(this, tag.getIntArray(f.getName()));
             }
-            for(Field f: intArrayFields) {
+            for (Field f : intArrayFields) {
                 ListTag tagList = tag.getList(f.getName(), 8);
                 String[] stringArray = new String[tagList.size()];
                 for (int i = 0; i < tagList.size(); i++) {
@@ -174,7 +173,8 @@ public class NuclearCraftBE extends BlockEntity {
                 }
                 f.set(this, stringArray);
             }
-        } catch (IllegalAccessException ignore) { }
+        } catch (IllegalAccessException ignore) {
+        }
     }
 
     private List<Field> initFields(Class<?> fieldClass) {
@@ -183,7 +183,7 @@ public class NuclearCraftBE extends BlockEntity {
             if (!field.isAnnotationPresent(NBTField.class)) {
                 continue;
             }
-            if(field.getType().equals(fieldClass)) {
+            if (field.getType().equals(fieldClass)) {
                 fields.add(field);
             }
         }
@@ -201,26 +201,26 @@ public class NuclearCraftBE extends BlockEntity {
     public void handleSliderUpdate(int buttonId, int ratio) {
     }
 
-    public void loadClientData(CompoundTag tag) {
+    public void loadClientData(CompoundTag tag, HolderLookup.Provider lookupProvider) {
     }
 
-    protected void saveClientData(CompoundTag tag) {
+    protected void saveClientData(CompoundTag tag, HolderLookup.Provider registries) {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        CompoundTag tag = super.getUpdateTag();
-        saveClientData(tag);
-        if(playerUID != null) {
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = super.getUpdateTag(registries);
+        saveClientData(tag, registries);
+        if (playerUID != null) {
             tag.putUUID("playerUID", playerUID);
         }
         return tag;
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         if (tag != null) {
-            loadClientData(tag);
+            loadClientData(tag, lookupProvider);
             if (tag.contains("playerUID")) {
                 playerUID = tag.getUUID("playerUID");
             }
@@ -234,9 +234,9 @@ public class NuclearCraftBE extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
         CompoundTag tag = pkt.getTag();
-        handleUpdateTag(tag);
+        handleUpdateTag(tag, lookupProvider);
     }
 
     public void setPlayer(ServerPlayer player) {

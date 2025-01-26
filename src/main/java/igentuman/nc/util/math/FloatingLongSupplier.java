@@ -1,6 +1,6 @@
 package igentuman.nc.util.math;
 
-import net.minecraftforge.common.util.NonNullSupplier;
+import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;

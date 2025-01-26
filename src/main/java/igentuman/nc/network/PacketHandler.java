@@ -1,33 +1,27 @@
 package igentuman.nc.network;
 
-import igentuman.nc.NuclearCraft;
 import igentuman.nc.network.toClient.PacketPlayerRadiationData;
+import igentuman.nc.network.toClient.PacketPlayerRadiationHandler;
 import igentuman.nc.network.toClient.PacketWorldRadiationData;
+import igentuman.nc.network.toClient.PacketWorldRadiationHandler;
 import igentuman.nc.network.toServer.*;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
-public class PacketHandler extends BasePacketHandler {
+public class PacketHandler {
 
-    private final SimpleChannel netHandler = createChannel(NuclearCraft.rl(NuclearCraft.MODID));
-
-    @Override
-    protected SimpleChannel getChannel() {
-        return netHandler;
-    }
-
-    @Override
-    public void initialize() {
+    @SubscribeEvent
+    public void clientToServerUpdate(RegisterPayloadHandlersEvent event) {
         //Client to server messages
-
-        registerClientToServer(PacketSliderChanged.class, PacketSliderChanged::decode);
-        registerClientToServer(PacketGuiButtonPress.class, PacketGuiButtonPress::decode);
-        registerClientToServer(PacketSideConfigToggle.class, PacketSideConfigToggle::decode);
-        registerClientToServer(PacketFlushSlotContent.class, PacketFlushSlotContent::decode);
-
+        PayloadRegistrar registrar = event.registrar("1");
+        registrar.playToServer(PacketSliderChanged.TYPE, PacketSliderChanged.STREAM_CODEC, PacketSliderChangedHandler::handle);
+        registrar.playToServer(PacketGuiButtonPress.TYPE, PacketGuiButtonPress.STREAM_CODEC, PacketGuiButtonPressHandler::handle);
+        registrar.playToServer(PacketSideConfigToggle.TYPE, PacketSideConfigToggle.STREAM_CODEC, PacketSideConfigToggleHandler::handle);
+        registrar.playToServer(PacketFlushSlotContent.TYPE, PacketFlushSlotContent.STREAM_CODEC, PacketFlushSlotContentHandler::handle);
 
         //Server to client messages
-
-        registerServerToClient(PacketWorldRadiationData.class, PacketWorldRadiationData::decode);
-        registerServerToClient(PacketPlayerRadiationData.class, PacketPlayerRadiationData::decode);
+        registrar.playToClient(PacketPlayerRadiationData.TYPE, PacketPlayerRadiationData.STREAM_CODEC, PacketPlayerRadiationHandler::handle);
+        registrar.playToClient(PacketWorldRadiationData.TYPE, PacketWorldRadiationData.STREAM_CODEC, PacketWorldRadiationHandler::handle);
     }
 }

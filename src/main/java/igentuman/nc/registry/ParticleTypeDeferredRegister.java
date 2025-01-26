@@ -3,14 +3,14 @@ package igentuman.nc.registry;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.function.Supplier;
 
 public class ParticleTypeDeferredRegister extends WrappedDeferredRegister<ParticleType<?>> {
 
     public ParticleTypeDeferredRegister(String modid) {
-        super(modid, ForgeRegistries.PARTICLE_TYPES);
+        super(modid, BuiltInRegistries.PARTICLE_TYPE);
     }
 
     public ParticleTypeRegistryObject<SimpleParticleType, SimpleParticleType> registerBasicParticle(String name) {

@@ -1,21 +1,21 @@
 package igentuman.nc.client.gui.element.button;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import igentuman.nc.NuclearCraft;
+import igentuman.nc.client.gui.ImageButtonSingleSprite;
 import igentuman.nc.client.gui.element.NCGuiElement;
 import igentuman.nc.client.gui.processor.side.SideConfigScreen;
-import igentuman.nc.network.toServer.PacketSideConfigToggle;
 import igentuman.nc.handler.sided.SidedContentHandler;
+import igentuman.nc.network.toServer.PacketSideConfigToggle;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 
 import static igentuman.nc.util.TextUtils.applyFormat;
-import static net.minecraft.ChatFormatting.*;
+import static net.minecraft.ChatFormatting.AQUA;
+import static net.minecraft.ChatFormatting.GOLD;
 
 public class SideConfig extends NCGuiElement {
     protected SideConfigScreen screen;
@@ -24,7 +24,7 @@ public class SideConfig extends NCGuiElement {
     private int slotId;
     private int direction;
 
-    public SideConfig(int xPos, int yPos, int slotId, SideConfigScreen screen, int direction, ResourceLocation btnTexture)  {
+    public SideConfig(int xPos, int yPos, int slotId, SideConfigScreen screen, int direction, ResourceLocation btnTexture) {
         super(xPos, yPos, 16, 16, Component.empty());
         x = xPos;
         y = yPos;
@@ -33,7 +33,7 @@ public class SideConfig extends NCGuiElement {
         this.screen = screen;
         this.slotId = slotId;
         btn = new SideBtn(X(), Y(), btnTexture, pButton -> {
-            NuclearCraft.packetHandler().sendToServer(new PacketSideConfigToggle(screen.getPosition(), slotId, direction));
+            PacketDistributor.sendToServer(new PacketSideConfigToggle(screen.getPosition(), slotId, direction));
         });
 
         this.direction = direction;
@@ -57,8 +57,8 @@ public class SideConfig extends NCGuiElement {
     @Override
     public List<Component> getTooltips() {
         tooltips.clear();
-        tooltips.add(applyFormat(Component.translatable("side_config."+getDirectionName()), AQUA)
-                .append(applyFormat(Component.translatable("side_config."+screen.getSlotMode(direction, slotId).name().toLowerCase()),GOLD)));
+        tooltips.add(applyFormat(Component.translatable("side_config." + getDirectionName()), AQUA)
+                .append(applyFormat(Component.translatable("side_config." + screen.getSlotMode(direction, slotId).name().toLowerCase()), GOLD)));
         return tooltips;
     }
 
@@ -71,15 +71,15 @@ public class SideConfig extends NCGuiElement {
         RenderSystem.enableDepthTest();
         getColorOverlay();
         btn.render(graphics, pMouseX, pMouseY, pPartialTick);
-        graphics.fill( X(), Y(), X() + this.width, Y() + this.height, color);
+        graphics.fill(X(), Y(), X() + this.width, Y() + this.height, color);
         if (this.isHovered) {
             this.renderToolTip(graphics, pMouseX, pMouseY);
         }
     }
 
-    public static class SideBtn extends ImageButton {
+    public static class SideBtn extends ImageButtonSingleSprite {
         public SideBtn(int x, int y, ResourceLocation btnTexture, OnPress onPress) {
-            super(x, y, 16, 16, 0, 0, 0, btnTexture, 16, 16, onPress);
+            super(x, y, 16, 16, 0, 0, 16, btnTexture, onPress); //super(x, y, 16, 16, 0, 0, 0, btnTexture, 16, 16, onPress)
         }
     }
 }

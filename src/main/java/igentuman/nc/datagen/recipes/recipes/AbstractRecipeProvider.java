@@ -2,28 +2,26 @@ package igentuman.nc.datagen.recipes.recipes;
 
 import igentuman.nc.datagen.recipes.builder.NcRecipeBuilder;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
-import igentuman.nc.recipes.ingredient.NcIngredient;
 import igentuman.nc.recipes.ingredient.creator.IngredientCreatorAccess;
 import igentuman.nc.setup.registration.FissionFuel;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import static igentuman.nc.NuclearCraft.rl;
 import static igentuman.nc.setup.registration.FissionFuel.*;
 import static igentuman.nc.setup.registration.NCFluids.ALL_FLUID_ENTRIES;
 import static igentuman.nc.setup.registration.NCItems.*;
 import static igentuman.nc.setup.registration.Tags.*;
-import static igentuman.nc.util.DataGenUtil.*;
 import static net.minecraft.world.item.Items.AIR;
 import static net.minecraft.world.item.Items.BARRIER;
 
@@ -31,25 +29,25 @@ public abstract class AbstractRecipeProvider {
 
     public static String ID;
 
-    public static Consumer<FinishedRecipe> consumer;
-    private static List<NcIngredient> input;
-    private static List<NcIngredient> output;
+    public static RecipeOutput consumer;
+    private static List<Ingredient> input;
+    private static List<Ingredient> output;
     private static double[] params;
 
-    protected static NcIngredient ingredient(TagKey<Item> item, int...count) {
-        return NcIngredient.of(item, count);
+    protected static Ingredient ingredient(TagKey<Item> item, int... count) {
+        return Ingredient.of(item);//Arrays.stream(Ingredient.of(item).getItems()).map(itemStack -> itemStack.copyWithCount(Arrays.stream(count).findFirst().orElse(1)))); //TODO CHECK
     }
 
-    protected static NcIngredient ingredient(Item item, int...pCount) {
+    protected static Ingredient ingredient(Item item, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
-        return NcIngredient.stack(stack(item, count));
+        if (pCount.length > 0) count = pCount[0];
+        return Ingredient.of(stack(item, count));
     }
 
-    protected static NcIngredient blockStack(String name, int...pCount) {
+    protected static Ingredient blockStack(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
-        return NcIngredient.stack(stack(blockItem(name), count));
+        if (pCount.length > 0) count = pCount[0];
+        return Ingredient.of(stack(blockItem(name), count));
     }
 
     protected static ItemStack stack(Item item, int count) {
@@ -61,18 +59,17 @@ public abstract class AbstractRecipeProvider {
     }
 
     protected static ItemStack stack(String item, int count) {
-        return new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(item)), count);
+        return new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(item)), count);
     }
 
     public static ItemStack[] stackArray(ItemStack... stacks) {
         return stacks;
     }
 
-    protected static void doubleToItem(String id, NcIngredient input1, NcIngredient input2, NcIngredient output, double... params) {
-
-        double timeModifier = params.length>0 ? params[0] : 1.0;
-        double powerModifier = params.length>1 ? params[1] : 1.0;
-        double radiation = params.length>2 ? params[2] : 1.0;
+    protected static void doubleToItem(String id, Ingredient input1, Ingredient input2, Ingredient output, double... params) {
+        double timeModifier = params.length > 0 ? params[0] : 1.0;
+        double powerModifier = params.length > 1 ? params[1] : 1.0;
+        double radiation = params.length > 2 ? params[2] : 1.0;
         NcRecipeBuilder.get(id)
                 .items(List.of(input1, input2), List.of(output))
                 .modifiers(timeModifier, radiation, powerModifier)
@@ -81,15 +78,15 @@ public abstract class AbstractRecipeProvider {
 
     protected static FluidStack fluidStack(Fluid fluid, int amount) {
         try {
-            return IngredientCreatorAccess.fluid().from(fluid, amount).getRepresentations().get(0);
+            return IngredientCreatorAccess.fluid().from(fluid, amount).getRepresentations().getFirst();
         } catch (NullPointerException e) {
-            throw new NullPointerException("Fluid " + fluid.getFluidType().toString() + " does not exist");
+            throw new NullPointerException("Fluid " + fluid.getFluidType() + " does not exist");
         }
     }
 
     protected static FluidStack fluidStack(String name, int amount) {
         try {
-            return IngredientCreatorAccess.fluid().from(name, amount).getRepresentations().get(0);
+            return IngredientCreatorAccess.fluid().from(name, amount).getRepresentations().getFirst();
         } catch (NullPointerException e) {
             System.out.println("Fluid " + name + " does not exist");
         }
@@ -104,52 +101,52 @@ public abstract class AbstractRecipeProvider {
         return IngredientCreatorAccess.fluid().from(fluidStack(name, amount));
     }
 
-    public static void itemToItem(NcIngredient input, NcIngredient output, double...params) {
-        double timeModifier = params.length>0 ? params[0] : 1.0;
-        double powerModifier = params.length>1 ? params[1] : 1.0;
-        double radiation = params.length>2 ? params[2] : 1.0;
+    public static void itemToItem(Ingredient input, Ingredient output, double... params) {
+        double timeModifier = params.length > 0 ? params[0] : 1.0;
+        double powerModifier = params.length > 1 ? params[1] : 1.0;
+        double radiation = params.length > 2 ? params[2] : 1.0;
         NcRecipeBuilder.get(ID)
                 .items(List.of(input), List.of(output))
                 .modifiers(timeModifier, radiation, powerModifier)
                 .build(consumer);
     }
 
-    public static void itemsToItems(List<NcIngredient> input, List<NcIngredient> output, double...params) {
-        double timeModifier = params.length>0 ? params[0] : 1.0;
-        double powerModifier = params.length>1 ? params[1] : 1.0;
-        double radiation = params.length>2 ? params[2] : 1.0;
+    public static void itemsToItems(List<Ingredient> input, List<Ingredient> output, double... params) {
+        double timeModifier = params.length > 0 ? params[0] : 1.0;
+        double powerModifier = params.length > 1 ? params[1] : 1.0;
+        double radiation = params.length > 2 ? params[2] : 1.0;
         NcRecipeBuilder.get(ID)
                 .items(input, output)
                 .modifiers(timeModifier, radiation, powerModifier)
                 .build(consumer);
     }
 
-    public static void itemsToItemsString(List<NcIngredient> input, List<String> output, double...params) {
-        double timeModifier = params.length>0 ? params[0] : 1.0;
-        double powerModifier = params.length>1 ? params[1] : 1.0;
-        double radiation = params.length>2 ? params[2] : 1.0;
+    public static void itemsToItemsString(List<Ingredient> input, List<String> output, double... params) {
+        double timeModifier = params.length > 0 ? params[0] : 1.0;
+        double powerModifier = params.length > 1 ? params[1] : 1.0;
+        double radiation = params.length > 2 ? params[2] : 1.0;
         NcRecipeBuilder.get(ID)
                 .itemsString(input, output)
                 .modifiers(timeModifier, radiation, powerModifier)
                 .build(consumer);
     }
 
-    public static void oreVein(List<NcIngredient> input, NcIngredient output, String nameKey, double...params) {
-        double timeModifier = params.length>0 ? params[0] : 1.0;
-        double powerModifier = params.length>1 ? params[1] : 1.0;
-        double radiation = params.length>2 ? params[2] : 1.0;
-        double rarity = params.length>3 ? params[3] : 1.0;
+    public static void oreVein(List<Ingredient> input, Ingredient output, String nameKey, double... params) {
+        double timeModifier = params.length > 0 ? params[0] : 1.0;
+        double powerModifier = params.length > 1 ? params[1] : 1.0;
+        double radiation = params.length > 2 ? params[2] : 1.0;
+        double rarity = params.length > 3 ? params[3] : 1.0;
         NcRecipeBuilder.get(ID)
                 .items(input, List.of(output))
                 .modifiers(timeModifier, radiation, powerModifier, rarity)
-                .build(consumer, rl(ID+"/"+nameKey));
+                .build(consumer, rl(ID + "/" + nameKey));
     }
 
 
-    public static void fluidsAndFluids(List<FluidStackIngredient> input, List<FluidStackIngredient> output, double...params) {
-        double timeModifier = params.length>0 ? params[0] : 1.0;
-        double powerModifier = params.length>1 ? params[1] : 1.0;
-        double radiation = params.length>2 ? params[2] : 1.0;
+    public static void fluidsAndFluids(List<FluidStackIngredient> input, List<FluidStackIngredient> output, double... params) {
+        double timeModifier = params.length > 0 ? params[0] : 1.0;
+        double powerModifier = params.length > 1 ? params[1] : 1.0;
+        double radiation = params.length > 2 ? params[2] : 1.0;
         NcRecipeBuilder.get(ID)
                 .fluids(input, output)
                 .modifiers(timeModifier, radiation, powerModifier)
@@ -159,7 +156,7 @@ public abstract class AbstractRecipeProvider {
     public static void coolantRecipe(List<FluidStackIngredient> input, List<FluidStackIngredient> output, double coolingRate) {
         NcRecipeBuilder.get(ID)
                 .fluids(input, output)
-                .modifiers(0,0,0, 0)
+                .modifiers(0, 0, 0, 0)
                 .coolingRate(coolingRate)
                 .build(consumer);
     }
@@ -167,19 +164,19 @@ public abstract class AbstractRecipeProvider {
     public static void boilingRecipe(List<FluidStackIngredient> input, List<FluidStackIngredient> output, double heatRequired) {
         NcRecipeBuilder.get(ID)
                 .fluids(input, output)
-                .modifiers(0,0,0, 0)
+                .modifiers(0, 0, 0, 0)
                 .heatRequired(heatRequired)
                 .useInputForId(true)
                 .build(consumer);
     }
 
     public static void itemsAndFluids(
-            List<NcIngredient> inputItems, List<NcIngredient> outputItems,
+            List<Ingredient> inputItems, List<Ingredient> outputItems,
             List<FluidStackIngredient> inputFluids, List<FluidStackIngredient> outputFluids,
-            double...params) {
-        double timeModifier = params.length>0 ? params[0] : 1.0;
-        double powerModifier = params.length>1 ? params[1] : 1.0;
-        double radiation = params.length>2 ? params[2] : 1.0;
+            double... params) {
+        double timeModifier = params.length > 0 ? params[0] : 1.0;
+        double powerModifier = params.length > 1 ? params[1] : 1.0;
+        double radiation = params.length > 2 ? params[2] : 1.0;
         NcRecipeBuilder.get(ID)
                 .items(inputItems, outputItems)
                 .fluids(inputFluids, outputFluids)
@@ -188,18 +185,17 @@ public abstract class AbstractRecipeProvider {
     }
 
     public static TagKey<Fluid> forgeFluid(String name) {
-        String key = "forge";
-        if(name.contains(":")) {
+        String key = "c";
+        if (name.contains(":")) {
             key = name.split(":")[0];
             name = name.split(":")[1];
         }
-        return TagKey.create(ForgeRegistries.FLUIDS.getRegistryKey(), new ResourceLocation(key, name));
+        return TagKey.create(BuiltInRegistries.FLUID.key(), ResourceLocation.fromNamespaceAndPath(key, name));
     }
 
-    public static Item blockItem(String name)
-    {
-        for(String key: List.of(name, "block_"+name, name+"_block")) {
-            if(ALL_NC_ITEMS.get(name) != null) {
+    public static Item blockItem(String name) {
+        for (String key : List.of(name, "block_" + name, name + "_block")) {
+            if (ALL_NC_ITEMS.get(name) != null) {
                 return ALL_NC_ITEMS.get(key).get();
             }
         }
@@ -207,102 +203,90 @@ public abstract class AbstractRecipeProvider {
         return BARRIER;
     }
 
-    public static Item nuggetItem(String name)
-    {
-        if(NC_NUGGETS.get(name) == null) {
+    public static Item nuggetItem(String name) {
+        if (NC_NUGGETS.get(name) == null) {
             System.out.println("null nugget: " + name);
         }
         return NC_NUGGETS.get(name).get();
     }
 
-    public static Item dustItem(String name)
-    {
-        if(NC_DUSTS.get(name) == null) {
+    public static Item dustItem(String name) {
+        if (NC_DUSTS.get(name) == null) {
             System.out.println("null dust: " + name);
         }
         return NC_DUSTS.get(name).get();
     }
 
-    public static TagKey<Item> dustTag(String name)
-    {
-        if(DUSTS_TAG.get(name) == null) {
+    public static TagKey<Item> dustTag(String name) {
+        if (DUSTS_TAG.get(name) == null) {
             System.out.println("null dust tag: " + name);
         }
         return DUSTS_TAG.get(name);
     }
 
-    public static NcIngredient dustStack(String name, int count)
-    {
-        return NcIngredient.stack(stack(dustItem(name), count));
+    public static Ingredient dustStack(String name, int count) {
+        return Ingredient.of(stack(dustItem(name), count));
     }
 
-    public static NcIngredient nuggetStack(String name, int...pCount)
-    {
+    public static Ingredient nuggetStack(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
-        return NcIngredient.stack(stack(nuggetItem(name), count));
+        if (pCount.length > 0) count = pCount[0];
+        return Ingredient.of(stack(nuggetItem(name), count));
     }
 
-    public static NcIngredient ingotStack(String name, int...pCount)
-    {
+    public static Ingredient ingotStack(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
-        return NcIngredient.stack(stack(ingotItem(name), count));
+        if (pCount.length > 0) count = pCount[0];
+        return Ingredient.of(stack(ingotItem(name), count));
     }
 
-    public static NcIngredient gemStack(String name, int...pCount)
-    {
+    public static Ingredient gemStack(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
-        return NcIngredient.stack(stack(gemItem(name), count));
+        if (pCount.length > 0) count = pCount[0];
+        return Ingredient.of(stack(gemItem(name), count));
     }
 
-    public static NcIngredient plateStack(String name, int...pCount)
-    {
+    public static Ingredient plateStack(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
-        return NcIngredient.stack(stack(plateItem(name), count));
+        if (pCount.length > 0) count = pCount[0];
+        return Ingredient.of(stack(plateItem(name), count));
     }
 
-    public static NcIngredient isotopeStack(String name, int...pCount)
-    {
+    public static Ingredient isotopeStack(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
-        return NcIngredient.stack(stack(isotopeItem(name), count));
+        if (pCount.length > 0) count = pCount[0];
+        return Ingredient.of(stack(isotopeItem(name), count));
     }
 
-    static NcIngredient blockIngredient(String name, int... pCount) {
+    static Ingredient blockIngredient(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
+        if (pCount.length > 0) count = pCount[0];
         return ingredient(forgeBlock(name), count);
     }
 
-    public static NcIngredient dustIngredient(String name, int...pCount)
-    {
+    public static Ingredient dustIngredient(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
+        if (pCount.length > 0) count = pCount[0];
         return ingredient(forgeDust(name), count);
     }
 
-    public static FluidStackIngredient moltenFuelIngredient(List<String> name, int...pCount)
-    {
+    public static FluidStackIngredient moltenFuelIngredient(List<String> name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
+        if (pCount.length > 0) count = pCount[0];
         return IngredientCreatorAccess.fluid().from(ALL_FLUID_ENTRIES.get(fuelItem(name).toString()).getStill(), count);
     }
 
-    public static NcIngredient fuelIngredient(List<String> name, int...pCount)
-    {
+    public static Ingredient fuelIngredient(List<String> name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
+        if (pCount.length > 0) count = pCount[0];
         return ingredient(fuelItem(name), count);
     }
 
     public static Item fuelItem(List<String> name) {
-        if(NC_FUEL.get(name) != null) {
+        if (NC_FUEL.get(name) != null) {
             return NC_FUEL.get(name).get();
         }
-        if(NC_DEPLETED_FUEL.get(name) != null) {
+        if (NC_DEPLETED_FUEL.get(name) != null) {
             return NC_DEPLETED_FUEL.get(name).get();
         }
         System.out.println("null fuel: " + String.join("-", name));
@@ -310,115 +294,103 @@ public abstract class AbstractRecipeProvider {
     }
 
 
-    public static NcIngredient isotopeIngredient(String name, int...pCount)
-    {
+    public static Ingredient isotopeIngredient(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
+        if (pCount.length > 0) count = pCount[0];
         return ingredient(isotopeItem(name), count);
     }
 
-    public static NcIngredient oreIngredient(String name, int...pCount)
-    {
+    public static Ingredient oreIngredient(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
+        if (pCount.length > 0) count = pCount[0];
         return ingredient(forgeOre(name), count);
     }
-    public static NcIngredient chunkIngredient(String name, int...pCount)
-    {
+
+    public static Ingredient chunkIngredient(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
+        if (pCount.length > 0) count = pCount[0];
         return ingredient(forgeChunk(name), count);
     }
 
-    public static NcIngredient ingotIngredient(String name, int...pCount)
-    {
+    public static Ingredient ingotIngredient(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
+        if (pCount.length > 0) count = pCount[0];
         return ingredient(forgeIngot(name), count);
     }
 
-    public static NcIngredient plateIngredient(String name, int...pCount)
-    {
+    public static Ingredient plateIngredient(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
+        if (pCount.length > 0) count = pCount[0];
         return ingredient(forgePlate(name), count);
     }
 
 
-    public static NcIngredient gemIngredient(String name, int...pCount)
-    {
+    public static Ingredient gemIngredient(String name, int... pCount) {
         int count = 1;
-        if(pCount.length > 0) count = pCount[0];
+        if (pCount.length > 0) count = pCount[0];
         return ingredient(forgeGem(name), count);
     }
 
-    public static Item isotopeItem(String name)
-    {
-        if(NC_ISOTOPES.get(name) == null) {
+    public static Item isotopeItem(String name) {
+        if (NC_ISOTOPES.get(name) == null) {
             System.out.println("null isotope: " + name);
         }
         return NC_ISOTOPES.get(name).get();
     }
 
-    public static Item plateItem(String name)
-    {
-        if(NC_PLATES.get(name) == null) {
+    public static Item plateItem(String name) {
+        if (NC_PLATES.get(name) == null) {
             System.out.println("null plate: " + name);
         }
         return NC_PLATES.get(name).get();
     }
 
-    public static TagKey<Item> plateTag(String name)
-    {
-        if(PLATES_TAG.get(name) == null) {
+    public static TagKey<Item> plateTag(String name) {
+        if (PLATES_TAG.get(name) == null) {
             System.out.println("null plate tag: " + name);
         }
         return PLATES_TAG.get(name);
     }
 
-    public static Item ingotItem(String name)
-    {
-        if(NC_INGOTS.get(name) == null) {
+    public static Item ingotItem(String name) {
+        if (NC_INGOTS.get(name) == null) {
             System.out.println("null ingot: " + name);
         }
         return NC_INGOTS.get(name).get();
     }
 
-    public static TagKey<Item> ingotTag(String name)
-    {
-        if(INGOTS_TAG.get(name) == null) {
+    public static TagKey<Item> ingotTag(String name) {
+        if (INGOTS_TAG.get(name) == null) {
             System.out.println("null ingot tag: " + name);
         }
         return INGOTS_TAG.get(name);
     }
 
     public static TagKey<Item> gemTag(String name) {
-        if(GEMS_TAG.get(name) == null) {
+        if (GEMS_TAG.get(name) == null) {
             System.out.println("null gem tag: " + name);
         }
         return GEMS_TAG.get(name);
     }
 
-    public static Item gemItem(String name)
-    {
-        if(NC_GEMS.get(name) == null) {
+    public static Item gemItem(String name) {
+        if (NC_GEMS.get(name) == null) {
             System.out.println("null gem: " + name);
         }
         return NC_GEMS.get(name).get();
     }
 
-    public static Item getIsotope(String name, String id, String type)
-    {
-        if(!type.isEmpty()) {
-            type = "_"+type;
+    public static Item getIsotope(String name, String id, String type) {
+        if (!type.isEmpty()) {
+            type = "_" + type;
         }
-        if(!FissionFuel.NC_ISOTOPES.containsKey(name+"/"+id+type)) {
-            for(String isotope: FissionFuel.NC_ISOTOPES.keySet()) {
-                if(isotope.contains(id)) {
-                    return  FissionFuel.NC_ISOTOPES.get(isotope).get();
+        if (!FissionFuel.NC_ISOTOPES.containsKey(name + "/" + id + type)) {
+            for (String isotope : FissionFuel.NC_ISOTOPES.keySet()) {
+                if (isotope.contains(id)) {
+                    return FissionFuel.NC_ISOTOPES.get(isotope).get();
                 }
             }
         }
-        return FissionFuel.NC_ISOTOPES.get(name+"/"+id+type).get();
+        return FissionFuel.NC_ISOTOPES.get(name + "/" + id + type).get();
     }
 }

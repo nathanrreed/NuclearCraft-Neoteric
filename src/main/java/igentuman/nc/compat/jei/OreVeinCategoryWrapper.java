@@ -13,18 +13,14 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-
 
 import static igentuman.nc.NuclearCraft.MODID;
 import static igentuman.nc.compat.GlobalVars.CATALYSTS;
-import static net.minecraft.world.item.Items.AIR;
 
 @SuppressWarnings("removal")
 public class OreVeinCategoryWrapper<T extends OreVeinRecipe> implements IRecipeCategory<T> {
-    public final static ResourceLocation TEXTURE =
-            new ResourceLocation(MODID, "textures/gui/ore_veins_jei.png");
+    public final static ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/ore_veins_jei.png");
 
     private final IDrawable background;
     private final IDrawable icon;
@@ -35,12 +31,11 @@ public class OreVeinCategoryWrapper<T extends OreVeinRecipe> implements IRecipeC
         this.recipeType = recipeType;
         this.guiHelper = guiHelper;
         this.background = guiHelper.createDrawable(TEXTURE, 0, 0, 142, 40);
-        if(CATALYSTS.containsKey(getRecipeType().getUid().getPath())) {
-            this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, CATALYSTS.get(getRecipeType().getUid().getPath()).get(0));
-        } else{
-            this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(AIR));
+        if (CATALYSTS.containsKey(getRecipeType().getUid().getPath())) {
+            this.icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, CATALYSTS.get(getRecipeType().getUid().getPath()).getFirst());
+        } else {
+            this.icon = guiHelper.createBlankDrawable(16, 16);
         }
-
     }
 
     @Override
@@ -50,7 +45,7 @@ public class OreVeinCategoryWrapper<T extends OreVeinRecipe> implements IRecipeC
 
     @Override
     public @NotNull Component getTitle() {
-        return Component.translatable("nc_jei_cat."+getRecipeType().getUid().getPath());
+        return Component.translatable("nc_jei_cat." + getRecipeType().getUid().getPath());
     }
 
     @Override
@@ -64,17 +59,15 @@ public class OreVeinCategoryWrapper<T extends OreVeinRecipe> implements IRecipeC
     }
 
     @Override
-    public void draw(T recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX,
-                     double mouseY) {
-
+    public void draw(T recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
     }
+
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, T recipe, IFocusGroup focuses) {
-
-        for(int i = 0; i < recipe.getItemIngredients().size(); i++) {
-            builder.addSlot(RecipeIngredientRole.INPUT, 5+18*i, 7).addIngredients(recipe.getItemIngredients().get(i));
+        for (int i = 0; i < recipe.getItemIngredients().size(); i++) {
+            builder.addSlot(RecipeIngredientRole.INPUT, 5 + 18 * i, 7).addIngredients(recipe.getItemIngredients().get(i));
         }
 
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 142-26, 7).addItemStack(recipe.getResultItem());
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 142 - 26, 7).addItemStack(recipe.getResultItem());
     }
 }

@@ -5,24 +5,22 @@ import igentuman.nc.content.storage.BarrelBlocks;
 import igentuman.nc.handler.sided.capability.NcFluidTank;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.client.model.data.ModelProperty;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import static igentuman.nc.setup.registration.NCStorageBlocks.STORAGE_BE;
 
@@ -40,21 +38,22 @@ public class BarrelBE extends NuclearCraftBE implements ISizeToggable {
         };
     }
 
-    public LazyOptional<IFluidHandler> getFluidHandler() {
+    public Supplier<IFluidHandler> getFluidHandler() {
         return fluidHandler;
     }
 
-    protected final LazyOptional<IFluidHandler> fluidHandler;
+    protected final Supplier<IFluidHandler> fluidHandler;
 
     public static final ModelProperty<HashMap<Integer, SideMode>> SIDE_CONFIG = new ModelProperty<>();
     public boolean syncSideConfig = true;
+
     public BarrelBE(BlockPos pPos, BlockState pBlockState) {
         super(STORAGE_BE.get(getName(pBlockState)).get(), pPos, pBlockState);
         for (Direction direction : Direction.values()) {
             sideConfig.put(direction.ordinal(), SideMode.DEFAULT);
         }
         fluidTank = createTank();
-        fluidHandler = LazyOptional.of(() -> fluidTank);
+        fluidHandler = () -> fluidTank;
     }
 
     @Nonnull
@@ -68,6 +67,7 @@ public class BarrelBE extends NuclearCraftBE implements ISizeToggable {
     public void tickClient() {
 
     }
+
     public void tickServer() {
         transferFluid();
     }
@@ -79,27 +79,27 @@ public class BarrelBE extends NuclearCraftBE implements ISizeToggable {
         AtomicInteger currentAmount = new AtomicInteger(fluidTank.getFluidAmount());
         boolean wasUpdated = false;
         for (Direction direction : Direction.values()) {
-            if(
+            if (
                     sideConfig.get(direction.ordinal()) == SideMode.DISABLED ||
-                    sideConfig.get(direction.ordinal()) == SideMode.DEFAULT
+                            sideConfig.get(direction.ordinal()) == SideMode.DEFAULT
             ) continue;
             BlockEntity be = level.getBlockEntity(worldPosition.relative(direction));
             if (be != null) {
-                IFluidHandler sideHandler = be.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).orElse(null);
-                if(sideHandler == null) continue;
+                IFluidHandler sideHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, worldPosition.relative(direction), direction.getOpposite());
+                if (sideHandler == null) continue;
                 if (currentAmount.get() > 0 && sideConfig.get(direction.ordinal()) == SideMode.OUT) {
                     int accepted = sideHandler.fill(fluidTank.getFluidInTank(0), IFluidHandler.FluidAction.EXECUTE);
-                    if(accepted > 0) {
+                    if (accepted > 0) {
                         fluidTank.drain(accepted, IFluidHandler.FluidAction.EXECUTE);
                         wasUpdated = true;
                     }
                     currentAmount.addAndGet(-accepted);
                 } else if (currentAmount.get() < getTankCapacity() && sideConfig.get(direction.ordinal()) == SideMode.IN) {
                     FluidStack drain = sideHandler.drain(fluidTank.getCapacity() - currentAmount.get(), IFluidHandler.FluidAction.SIMULATE);
-                    if(drain.isEmpty()) continue;
-                    if(drain.getFluid().isSame(fluidTank.getFluid().getFluid()) || currentAmount.get() == 0) {
+                    if (drain.isEmpty()) continue;
+                    if (drain.getFluid().isSame(fluidTank.getFluid().getFluid()) || currentAmount.get() == 0) {
                         int extracted = fluidTank.fill(drain, IFluidHandler.FluidAction.EXECUTE);
-                        if(extracted > 0) {
+                        if (extracted > 0) {
                             sideHandler.drain(extracted, IFluidHandler.FluidAction.EXECUTE);
                             wasUpdated = true;
                         }
@@ -109,7 +109,7 @@ public class BarrelBE extends NuclearCraftBE implements ISizeToggable {
                 }
             }
         }
-        if(wasUpdated) {
+        if (wasUpdated) {
             level.setBlockAndUpdate(worldPosition, getBlockState());
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
@@ -119,36 +119,36 @@ public class BarrelBE extends NuclearCraftBE implements ISizeToggable {
         return BarrelBlocks.all().get(getName()).config().getCapacity();
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.FLUID_HANDLER && (side != null && sideConfig.get(side.ordinal()) != SideMode.DISABLED)) {
-            return getFluidHandler().cast();
-        }
-        return super.getCapability(cap, side);
-    }
+//    @Nonnull
+//    @Override
+//    public <T> LazyOptional<T> getCapability(@Nonnull DrbgParameters.Capability<T> cap, @Nullable Direction side) {
+//        if (cap == Capabilities.FluidHandler.BLOCK && (side != null && sideConfig.get(side.ordinal()) != SideMode.DISABLED)) {
+//            return getFluidHandler().cast();
+//        }
+//        return super.getCapability(cap, side);
+//    }
 
-    protected void saveClientData(CompoundTag tag) {
+    protected void saveClientData(CompoundTag tag, HolderLookup.Provider registries) {
         CompoundTag tank = new CompoundTag();
-        tag.put("Fluid", fluidTank.getFluid().writeToNBT(tank));
+        tag.put("Fluid", fluidTank.getFluid().save(registries, tank));
         tag.putIntArray("sideConfig", sideConfig.values().stream().mapToInt(Enum::ordinal).toArray());
     }
 
-    public void loadClientData(CompoundTag tag) {
-        if(tag.contains("Fluid")) {
-            fluidTank.setFluid(FluidStack.loadFluidStackFromNBT(tag.getCompound("Fluid")));
+    public void loadClientData(CompoundTag tag, HolderLookup.Provider registries) {
+        if (tag.contains("Fluid")) {
+            fluidTank.setFluid(FluidStack.parseOptional(registries, tag.getCompound("Fluid")));
         }
         if (!tag.contains("sideConfig")) return;
         loadSideConfig(tag.getIntArray("sideConfig"));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        if(tag.contains("Fluid")) {
-            fluidTank.setFluid(FluidStack.loadFluidStackFromNBT(tag.getCompound("Fluid")));
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        if (tag.contains("Fluid")) {
+            fluidTank.setFluid(FluidStack.parseOptional(registries, tag.getCompound("Fluid")));
         }
-        if(!tag.contains("sideConfig")) return;
+        if (!tag.contains("sideConfig")) return;
         loadSideConfig(tag.getIntArray("sideConfig"));
     }
 
@@ -156,26 +156,26 @@ public class BarrelBE extends NuclearCraftBE implements ISizeToggable {
         boolean changed = false;
         for (int i = 0; i < sideConfig.size(); i++) {
             SideMode newMode = SideMode.values()[tagData[i]];
-            if(sideConfig.get(i) != newMode) {
+            if (sideConfig.get(i) != newMode) {
                 changed = true;
                 sideConfig.remove(i);
                 sideConfig.put(i, newMode);
             }
 
         }
-        if(changed) {
+        if (changed) {
             requestModelDataUpdate();
-            if(level == null) return;
+            if (level == null) return;
             level.setBlockAndUpdate(worldPosition, getBlockState());
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         CompoundTag tank = new CompoundTag();
-        tag.put("Fluid", fluidTank.getFluid().writeToNBT(tank));
+        tag.put("Fluid", fluidTank.getFluid().save(registries, tank));
         tag.putIntArray("sideConfig", sideConfig.values().stream().mapToInt(Enum::ordinal).toArray());
     }
 

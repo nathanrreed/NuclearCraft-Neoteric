@@ -1,11 +1,8 @@
 package igentuman.nc.util;
 
-import net.minecraft.core.Direction;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.common.util.NonNullConsumer;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -15,30 +12,34 @@ public final class CapabilityUtils {
     private CapabilityUtils() {
     }
 
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public static void addListener(@NotNull LazyOptional<?> lazyOptional, @NotNull NonNullConsumer listener) {
-        lazyOptional.addListener(listener);
-    }
-
-    public static <T> T getPresentCapability(ICapabilityProvider provider, Capability<T> cap)
-    {
+    public static <O, T, C> T getPresentCapability(ICapabilityProvider<O, C, T> provider, O cap) {
         return Objects.requireNonNull(getCapability(provider, cap, null));
     }
 
     @Nullable
-    public static <T> T getCapability(ICapabilityProvider provider, Capability<T> cap)
-    {
+    public static <O, T, C> T getCapability(ICapabilityProvider<O, C, T> provider, O cap) {
         return getCapability(provider, cap, null);
     }
 
     @Nullable
-    public static <T> T getCapability(ICapabilityProvider provider, Capability<T> cap, @Nullable Direction side)
-    {
-        LazyOptional<T> optional = provider.getCapability(cap, side);
-        if(optional.isPresent())
-            return optional.orElseThrow(RuntimeException::new);
+    public static <O, T, C> T getCapability(ICapabilityProvider<O, C, T> provider, O cap, @Nullable C side) {
+        T object = provider.getCapability(cap, side);
+        if (object != null)
+            throw new RuntimeException();
         else
             return null;
+    }
+
+    @Nullable
+    public static <O extends ItemCapability<T, C>, T, C> T getCapability(ItemStack provider, O cap, @Nullable C side) {
+        T object = provider.getCapability(cap, side);
+        if (object != null)
+            throw new RuntimeException();
+        else
+            return null;
+    }
+
+    public static <O extends ItemCapability<T, C>, T, C> T getPresentCapability(ItemStack provider, O cap) {
+        return Objects.requireNonNull(getCapability(provider, cap, null));
     }
 }

@@ -1,6 +1,7 @@
 package igentuman.nc.world.structure;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import igentuman.nc.setup.Registration;
 import net.minecraft.core.BlockPos;
@@ -17,13 +18,17 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
+import static net.minecraft.world.level.levelgen.structure.structures.JigsawStructure.DEFAULT_DIMENSION_PADDING;
+import static net.minecraft.world.level.levelgen.structure.structures.JigsawStructure.DEFAULT_LIQUID_SETTINGS;
+
 public class PortalStructure extends Structure {
 
-    public static final Codec<PortalStructure> CODEC = RecordCodecBuilder.<PortalStructure>mapCodec(instance ->
+    public static final MapCodec<PortalStructure> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(Structure.settingsCodec(instance),
                     StructureTemplatePool.CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool),
                     ResourceLocation.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(structure -> structure.startJigsawName),
@@ -31,7 +36,7 @@ public class PortalStructure extends Structure {
                     HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
                     Heightmap.Types.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
                     Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter)
-            ).apply(instance, PortalStructure::new)).codec();
+            ).apply(instance, PortalStructure::new));
 
     private final Holder<StructureTemplatePool> startPool;
     private final Optional<ResourceLocation> startJigsawName;
@@ -140,7 +145,10 @@ public class PortalStructure extends Structure {
                 // Here, blockpos's y value is 60 which means the structure spawn 60 blocks above terrain height.
                 // Set this to false for structure to be place only at the passed in blockpos's Y value instead.
                 // Definitely keep this false when placing structures in the nether as otherwise, heightmap placing will put the structure on the Bedrock roof.
-                this.maxDistanceFromCenter); // Maximum
+                this.maxDistanceFromCenter, // Maximum
+                PoolAliasLookup.EMPTY,
+                DEFAULT_DIMENSION_PADDING,
+                DEFAULT_LIQUID_SETTINGS);
     }
 
     @NotNull
@@ -156,7 +164,7 @@ public class PortalStructure extends Structure {
         worldgenrandom.setLargeFeatureSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
 
         // Pick a random y location between a low and a high point
-        y = worldgenrandom.nextIntBetweenInclusive(heightAccessor.getMinBuildHeight()+20, y - 10);
+        y = worldgenrandom.nextIntBetweenInclusive(heightAccessor.getMinBuildHeight() + 20, y - 10);
 
         // Go down until we find a spot that has air. Then go down until we find a spot that is solid again
         NoiseColumn baseColumn = context.chunkGenerator().getBaseColumn(blockpos.getX(), blockpos.getZ(), heightAccessor, context.randomState());

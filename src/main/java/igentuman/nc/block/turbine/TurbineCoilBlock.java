@@ -7,12 +7,12 @@ import igentuman.nc.multiblock.turbine.TurbineRegistration;
 import igentuman.nc.util.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,9 +49,9 @@ public class TurbineCoilBlock extends Block implements EntityBlock {
     public CoilDef def;
 
     private void initParams() {
-        Item item = Item.byBlock(this);
-        if(item.toString().isEmpty()) return;
-        type = item.toString().replaceAll("_coil|turbine_", "");
+        Item item = this.asItem();
+        if (item.toString().isEmpty()) return;
+        type = item.toString().replaceAll("_coil|turbine_|nuclearcraft:", "");
         def = TurbineRegistration.coils.get(type);
         efficiency = def.getEfficiency();
     }
@@ -62,7 +61,7 @@ public class TurbineCoilBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos pPos, @NotNull BlockState pState) {
-        if(def == null) initParams();
+        if (def == null) initParams();
         def.getValidator();
         TurbineCoilBE be = (TurbineCoilBE) TURBINE_BE.get("turbine_coil").get().create(pPos, pState);
         be.setCoilDef(def);
@@ -75,11 +74,11 @@ public class TurbineCoilBlock extends Block implements EntityBlock {
         String[] conditionParts = rawLine.split("=|-|>|<|\\^");
         String[] blocks = conditionParts[0].split("\\|");
 
-        for(String code: blocks) {
+        for (String code : blocks) {
             String id = code;
-            if(!id.contains(":")) {
-                id = MODID+":"+id;
-                Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(id));
+            if (!id.contains(":")) {
+                id = MODID + ":" + id;
+                Block block = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(id));
                 names.add(block.getName().getString());
             } else {
                 names.add(convertToName(id.split(":")[1]));
@@ -88,9 +87,8 @@ public class TurbineCoilBlock extends Block implements EntityBlock {
         return names;
     }
 
-    public Component getPlacementRule()
-    {
-        if(placementRule == null) {
+    public Component getPlacementRule() {
+        if (placementRule == null) {
             List<String> lines = new ArrayList<>();
             int i = 0;
             if (def.getValidator() instanceof CoilDef.Validator) {
@@ -98,16 +96,16 @@ public class TurbineCoilBlock extends Block implements EntityBlock {
                     if (i > 0) {
                         lines.add(Component.translatable("heat_sink.and").getString());
                     }
-                    String blocksLine = String.join(" "+Component.translatable("heat_sink.or").getString()+" ", getBlockNames(condition[2]));
+                    String blocksLine = String.join(" " + Component.translatable("heat_sink.or").getString() + " ", getBlockNames(condition[2]));
                     switch (condition[0]) {
                         case ">":
-                            lines.add(Component.translatable("heat_sink.atleast"+(condition[1].equals("1") ? "":"s") , condition[1], blocksLine).getString());
+                            lines.add(Component.translatable("heat_sink.atleast" + (condition[1].equals("1") ? "" : "s"), condition[1], blocksLine).getString());
                             break;
                         case "-":
                             lines.add(Component.translatable("heat_sink.between", condition[1], blocksLine).getString());
                             break;
                         case "=":
-                            lines.add(Component.translatable("heat_sink.exact"+(condition[1].equals("1") ? "":"s"), condition[1], blocksLine).getString());
+                            lines.add(Component.translatable("heat_sink.exact" + (condition[1].equals("1") ? "" : "s"), condition[1], blocksLine).getString());
                             break;
                         case "<":
                             lines.add(Component.translatable("heat_sink.less_than", condition[1], blocksLine).getString());
@@ -136,7 +134,7 @@ public class TurbineCoilBlock extends Block implements EntityBlock {
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof TurbineCoilBE tile) {
                 tile.tickServer();
             }
@@ -144,20 +142,20 @@ public class TurbineCoilBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor){
-        ((TurbineBE) Objects.requireNonNull(level.getBlockEntity(pos))).onNeighborChange(state,  pos, neighbor);
+    public void onNeighborChange(BlockState state, LevelReader level, BlockPos pos, BlockPos neighbor) {
+        ((TurbineBE) Objects.requireNonNull(level.getBlockEntity(pos))).onNeighborChange(state, pos, neighbor);
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         initParams();
-        if(DESCRIPTIONS_SHOW) {
-            list.add(TextUtils.applyFormat(getPlacementRule(), ChatFormatting.AQUA));
-            list.add(TextUtils.applyFormat(
+        if (DESCRIPTIONS_SHOW) {
+            tooltipComponents.add(TextUtils.applyFormat(getPlacementRule(), ChatFormatting.AQUA));
+            tooltipComponents.add(TextUtils.applyFormat(
                     Component.translatable("tooltip.nc.description.efficiency", TextUtils.numberFormat(def.getEfficiency())),
                     ChatFormatting.GOLD));
         } else {
-            list.add(TextUtils.applyFormat(Component.translatable("tooltip.toggle_description_keys"), ChatFormatting.GRAY));
+            tooltipComponents.add(TextUtils.applyFormat(Component.translatable("tooltip.toggle_description_keys"), ChatFormatting.GRAY));
         }
     }
 }

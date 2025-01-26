@@ -19,7 +19,7 @@ public class FuelManager {
         if (all == null) {
             all = new HashMap<>();
             List<JsonArray> data = JSONUtil.loadAllJsonFromConfig("fission_fuel");
-            if(data == null) {
+            if (data == null) {
                 return all;
             }
             for (JsonArray array : data) {

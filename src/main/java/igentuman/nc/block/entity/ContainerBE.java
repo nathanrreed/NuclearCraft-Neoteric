@@ -1,27 +1,24 @@
 package igentuman.nc.block.entity;
 
 import igentuman.nc.block.ISizeToggable;
-import igentuman.nc.handler.ItemStorageCapabilityHandler;
 import igentuman.nc.content.storage.ContainerBlocks;
+import igentuman.nc.handler.ItemStorageCapabilityHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.client.model.data.ModelProperty;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.function.Supplier;
 
 import static igentuman.nc.setup.registration.NCStorageBlocks.STORAGE_BE;
 
@@ -34,11 +31,11 @@ public class ContainerBE extends NuclearCraftBE implements ISizeToggable {
         return new ItemStorageCapabilityHandler(ContainerBlocks.all().get(getName()).getCapacity(), 64);
     }
 
-    public LazyOptional<ItemStorageCapabilityHandler> getItemHandler() {
+    public Supplier<ItemStorageCapabilityHandler> getItemHandler() {
         return itemHandler;
     }
 
-    protected final LazyOptional<ItemStorageCapabilityHandler> itemHandler;
+    protected final Supplier<ItemStorageCapabilityHandler> itemHandler;
 
     public static final ModelProperty<HashMap<Integer, SideMode>> SIDE_CONFIG = new ModelProperty<>();
 
@@ -48,7 +45,7 @@ public class ContainerBE extends NuclearCraftBE implements ISizeToggable {
             sideConfig.put(direction.ordinal(), SideMode.DEFAULT);
         }
         inventory = createInventory();
-        itemHandler = LazyOptional.of(() -> inventory);
+        itemHandler = () -> inventory;
     }
 
     @Nonnull
@@ -62,6 +59,7 @@ public class ContainerBE extends NuclearCraftBE implements ISizeToggable {
     public void tickClient() {
 
     }
+
     public void tickServer() {
         transferItems();
         updateLoadRate();
@@ -70,12 +68,12 @@ public class ContainerBE extends NuclearCraftBE implements ISizeToggable {
     private void updateLoadRate() {
         double wasRate = loadRate;
         loadRate = 0.05;
-        for(int i = 0; i < inventory.getSlots(); i++) {
+        for (int i = 0; i < inventory.getSlots(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
-            if(stack.isEmpty()) continue;
-            loadRate += (stack.getCount()/(double)stack.getMaxStackSize())/inventory.getSlots();
+            if (stack.isEmpty()) continue;
+            loadRate += (stack.getCount() / (double) stack.getMaxStackSize()) / inventory.getSlots();
         }
-        if(wasRate != loadRate) {
+        if (wasRate != loadRate) {
             setChanged();
             level.setBlockAndUpdate(worldPosition, getBlockState());
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
@@ -83,85 +81,85 @@ public class ContainerBE extends NuclearCraftBE implements ISizeToggable {
     }
 
     private void transferItems() {
+        if (level == null) return;
         for (Direction direction : Direction.values()) {
             if (sideConfig.get(direction.ordinal()) == SideMode.DISABLED) continue;
-            if (level == null) continue;
-            BlockEntity be = level.getBlockEntity(worldPosition.relative(direction));
-            if(be == null) continue;
-            if (be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).isPresent()) {
-                be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite()).ifPresent(cap -> {
-                    boolean transactionDone = false;
-                    switch (sideConfig.get(direction.ordinal())) {
-                        case OUT -> {
-                            for(int i = 0; i < inventory.getSlots(); i++) {
-                                ItemStack stack = inventory.getStackInSlot(i);
-                                if(stack.isEmpty()) continue;
-                                ItemStack copy = stack.copy();
-                                for(int j = 0; j < cap.getSlots(); j++) {
-                                    ItemStack left = cap.insertItem(j, copy, true);
-                                    if(left.getCount() < copy.getCount()) {
-                                        cap.insertItem(j, copy, false);
-                                        inventory.extractItem(i, copy.getCount()-left.getCount(), false);
-                                        transactionDone = true;
-                                        break;
-                                    }
+
+            IItemHandler cap = level.getCapability(Capabilities.ItemHandler.BLOCK, worldPosition.relative(direction), direction.getOpposite());
+            if (cap != null) {
+                boolean transactionDone = false;
+                switch (sideConfig.get(direction.ordinal())) {
+                    case OUT -> {
+                        for (int i = 0; i < inventory.getSlots(); i++) {
+                            ItemStack stack = inventory.getStackInSlot(i);
+                            if (stack.isEmpty()) continue;
+                            ItemStack copy = stack.copy();
+                            for (int j = 0; j < cap.getSlots(); j++) {
+                                ItemStack left = cap.insertItem(j, copy, true);
+                                if (left.getCount() < copy.getCount()) {
+                                    cap.insertItem(j, copy, false);
+                                    inventory.extractItem(i, copy.getCount() - left.getCount(), false);
+                                    transactionDone = true;
+                                    break;
                                 }
-                                if(transactionDone) break;
                             }
-                        }
-                        case IN -> {
-                            for(int i = 0; i < cap.getSlots(); i++) {
-                                ItemStack stack = cap.getStackInSlot(i);
-                                if(stack.isEmpty()) continue;
-                                ItemStack copy = stack.copy();
-                                for(int j = 0; j < inventory.getSlots(); j++) {
-                                    ItemStack left = inventory.insertItem(j, copy, true);
-                                    if(left.getCount() < copy.getCount()) {
-                                        inventory.insertItem(j, copy, false);
-                                        cap.extractItem(i, copy.getCount()-left.getCount(), false);
-                                        transactionDone = true;
-                                        break;
-                                    }
-                                }
-                                if(transactionDone) break;
-                            }
+                            if (transactionDone) break;
                         }
                     }
-                });
+                    case IN -> {
+                        for (int i = 0; i < cap.getSlots(); i++) {
+                            ItemStack stack = cap.getStackInSlot(i);
+                            if (stack.isEmpty()) continue;
+                            ItemStack copy = stack.copy();
+                            for (int j = 0; j < inventory.getSlots(); j++) {
+                                ItemStack left = inventory.insertItem(j, copy, true);
+                                if (left.getCount() < copy.getCount()) {
+                                    inventory.insertItem(j, copy, false);
+                                    cap.extractItem(i, copy.getCount() - left.getCount(), false);
+                                    transactionDone = true;
+                                    break;
+                                }
+                            }
+                            if (transactionDone) break;
+                        }
+                    }
+                }
             }
         }
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ITEM_HANDLER && (side != null && sideConfig.get(side.ordinal()) != SideMode.DISABLED)) {
-            return getItemHandler().cast();
-        }
-        return super.getCapability(cap, side);
-    }
+//    @Nonnull
+//    @Override
+//    public <T> Supplier<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+//        if (cap == Capabilities.ItemHandler.BLOCK && (side != null && sideConfig.get(side.ordinal()) != SideMode.DISABLED)) {
+//            return getItemHandler().cast();
+//        }
+//        return super.getCapability(cap, side);
+//    }
 
-    protected void saveClientData(CompoundTag tag) {
+    @Override
+    protected void saveClientData(CompoundTag tag, HolderLookup.Provider registries) {
         CompoundTag tank = new CompoundTag();
-        tag.put("Inventory", inventory.serializeNBT());
+        tag.put("Inventory", inventory.serializeNBT(registries));
         tag.putIntArray("sideConfig", sideConfig.values().stream().mapToInt(Enum::ordinal).toArray());
     }
 
-    public void loadClientData(CompoundTag tag) {
-        if(tag.contains("Inventory")) {
-            inventory.deserializeNBT(tag.getCompound("Inventory"));
+    @Override
+    public void loadClientData(CompoundTag tag, HolderLookup.Provider lookupProvider) {
+        if (tag.contains("Inventory")) {
+            inventory.deserializeNBT(lookupProvider, tag.getCompound("Inventory"));
         }
         if (!tag.contains("sideConfig")) return;
         loadSideConfig(tag.getIntArray("sideConfig"));
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        if(tag.contains("Inventory")) {
-            inventory.deserializeNBT(tag.getCompound("Inventory"));
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        if (tag.contains("Inventory")) {
+            inventory.deserializeNBT(registries, tag.getCompound("Inventory"));
         }
-        if(!tag.contains("sideConfig")) return;
+        if (!tag.contains("sideConfig")) return;
         loadSideConfig(tag.getIntArray("sideConfig"));
     }
 
@@ -169,24 +167,24 @@ public class ContainerBE extends NuclearCraftBE implements ISizeToggable {
         boolean changed = false;
         for (int i = 0; i < sideConfig.size(); i++) {
             SideMode newMode = SideMode.values()[tagData[i]];
-            if(sideConfig.get(i) != newMode) {
+            if (sideConfig.get(i) != newMode) {
                 changed = true;
                 sideConfig.remove(i);
                 sideConfig.put(i, newMode);
             }
         }
-        if(changed) {
+        if (changed) {
             requestModelDataUpdate();
-            if(level == null) return;
+            if (level == null) return;
             level.setBlockAndUpdate(worldPosition, getBlockState());
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("Inventory", inventory.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.put("Inventory", inventory.serializeNBT(registries));
         tag.putIntArray("sideConfig", sideConfig.values().stream().mapToInt(Enum::ordinal).toArray());
     }
 

@@ -1,18 +1,21 @@
 package igentuman.nc.handler.config;
 
-import igentuman.nc.content.materials.*;
-import net.minecraftforge.common.ForgeConfigSpec;
+import igentuman.nc.content.materials.Ores;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 public class OreGenConfig {
-    public static <T> List<T> toList(Collection<T> vals)
-    {
+    public static <T> List<T> toList(Collection<T> vals) {
         return new ArrayList<>(vals);
     }
-    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+
+    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
     public static final OresConfig ORE_CONFIG = new OresConfig(BUILDER);
-    public static final ForgeConfigSpec spec = BUILDER.build();
+    public static final ModConfigSpec spec = BUILDER.build();
     private static boolean loaded = false;
     private static List<Runnable> loadActions = new ArrayList<>();
 
@@ -37,22 +40,22 @@ public class OreGenConfig {
 
         public HashMap<String, OreGenSpec> ORES;
 
-        public OresConfig(ForgeConfigSpec.Builder builder) {
+        public OresConfig(ModConfigSpec.Builder builder) {
             ORES = new HashMap<>();
-            for(String name: Ores.all().keySet()) {
+            for (String name : Ores.all().keySet()) {
                 ORES.put(name, buildOreConfig(builder, name));
             }
         }
 
         public static class OreGenSpec {
 
-            public ForgeConfigSpec.ConfigValue<Boolean> register;
-            public ForgeConfigSpec.ConfigValue<List<Integer>> dimensions;
-            public ForgeConfigSpec.ConfigValue<Integer> veinSize;
-            public ForgeConfigSpec.ConfigValue<Integer> min_height;
-            public ForgeConfigSpec.ConfigValue<Integer> max_height;
+            public ModConfigSpec.ConfigValue<Boolean> register;
+            public ModConfigSpec.ConfigValue<List<Integer>> dimensions;
+            public ModConfigSpec.ConfigValue<Integer> veinSize;
+            public ModConfigSpec.ConfigValue<Integer> min_height;
+            public ModConfigSpec.ConfigValue<Integer> max_height;
 
-            OreGenSpec(ForgeConfigSpec.Builder builder, boolean register, List<Integer> dimensions, int veinSize, int min_height, int max_height) {
+            OreGenSpec(ModConfigSpec.Builder builder, boolean register, List<Integer> dimensions, int veinSize, int min_height, int max_height) {
                 this.register = builder.define("register", register);
                 this.dimensions = builder.define("dimensions", dimensions, o -> o instanceof ArrayList);
                 this.veinSize = builder.defineInRange("vein_size", veinSize, 0, 64);
@@ -61,12 +64,11 @@ public class OreGenConfig {
             }
         }
 
-        private OreGenSpec buildOreConfig(ForgeConfigSpec.Builder builder, String name) {
+        private OreGenSpec buildOreConfig(ModConfigSpec.Builder builder, String name) {
             builder.push(name).comment("Ore generation settings for " + name);
             OreGenSpec oreGen = new OreGenSpec(builder, true, Ores.all().get(name).dimensions, Ores.all().get(name).veinSize, Ores.all().get(name).height[0], Ores.all().get(name).height[1]);
             builder.pop();
             return oreGen;
         }
     }
-
 }

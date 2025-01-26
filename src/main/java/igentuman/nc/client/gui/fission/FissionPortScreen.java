@@ -15,7 +15,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ import static igentuman.nc.NuclearCraft.MODID;
 import static igentuman.nc.client.gui.element.fluid.FluidTankRenderer.TooltipMode.SHOW_AMOUNT_AND_CAPACITY;
 
 public class FissionPortScreen extends AbstractContainerScreen<FissionPortContainer> implements IProgressScreen, IVerticalBarScreen {
-    protected final ResourceLocation GUI = new ResourceLocation(MODID, "textures/gui/fission/port.png");
+    protected final ResourceLocation GUI = ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/fission/port.png");
     protected int relX;
     protected int relY;
     private int xCenter;
@@ -35,9 +35,8 @@ public class FissionPortScreen extends AbstractContainerScreen<FissionPortContai
     private FluidTankRenderer coolantTank;
     private FluidTankRenderer steamTank;
 
-    public FissionPortContainer container()
-    {
-        return (FissionPortContainer)menu;
+    public FissionPortContainer container() {
+        return (FissionPortContainer) menu;
     }
 
     public List<NCGuiElement> widgets = new ArrayList<>();
@@ -51,8 +50,7 @@ public class FissionPortScreen extends AbstractContainerScreen<FissionPortContai
         imageHeight = 176;
     }
 
-    protected void updateRelativeCords()
-    {
+    protected void updateRelativeCords() {
         relX = (this.width - this.imageWidth) / 2;
         relY = (this.height - this.imageHeight) / 2;
         NCGuiElement.RELATIVE_X = relX;
@@ -64,13 +62,13 @@ public class FissionPortScreen extends AbstractContainerScreen<FissionPortContai
         Minecraft mc = Minecraft.getInstance();
         updateRelativeCords();
         widgets.clear();
-        energyBar = new VerticalBar.Energy(17, 16,  this, container().getMaxEnergy());
-        widgets.add(new ProgressBar(74, 35, this,  7));
+        energyBar = new VerticalBar.Energy(17, 16, this, container().getMaxEnergy());
+        widgets.add(new ProgressBar(74, 35, this, 7));
         redstoneConfigBtn = new Button.ReactorPortRedstoneModeButton(150, 74, this, menu.getPosition());
-        coolantBar = new VerticalBar.Coolant(17, 16,  this, 1000000);
-        hotCoolantBar = new VerticalBar.HotCoolant(26, 16,  this, 1000000);
-        coolantTank = new FluidTankRenderer(getFluidTank(0), SHOW_AMOUNT_AND_CAPACITY,6, 73, 18, 17);
-        steamTank = new FluidTankRenderer(getFluidTank(1), SHOW_AMOUNT_AND_CAPACITY,6, 73, 27, 17);
+        coolantBar = new VerticalBar.Coolant(17, 16, this, 1000000);
+        hotCoolantBar = new VerticalBar.HotCoolant(26, 16, this, 1000000);
+        coolantTank = new FluidTankRenderer(getFluidTank(0), SHOW_AMOUNT_AND_CAPACITY, 6, 73, 18, 17);
+        steamTank = new FluidTankRenderer(getFluidTank(1), SHOW_AMOUNT_AND_CAPACITY, 6, 73, 27, 17);
         widgets.add(redstoneConfigBtn);
     }
 
@@ -80,8 +78,8 @@ public class FissionPortScreen extends AbstractContainerScreen<FissionPortContai
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        xCenter = getGuiLeft()-imageWidth/2;
-        this.renderBackground(graphics);
+        xCenter = getGuiLeft() - imageWidth / 2;
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         super.render(graphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(graphics, mouseX, mouseY);
     }
@@ -89,10 +87,10 @@ public class FissionPortScreen extends AbstractContainerScreen<FissionPortContai
     private void renderWidgets(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         redstoneConfigBtn.setMode(getMenu().getComparatorMode());
         redstoneConfigBtn.strength = getMenu().getAnalogSignalStrength();
-        for(NCGuiElement widget: widgets) {
+        for (NCGuiElement widget : widgets) {
             widget.draw(graphics, mouseX, mouseY, partialTicks);
         }
-        if(!getMenu().getMode()) {
+        if (!getMenu().getMode()) {
             energyBar.draw(graphics, mouseX, mouseY, partialTicks);
         } else {
             coolantBar.draw(graphics, mouseX, mouseY, partialTicks);
@@ -104,13 +102,13 @@ public class FissionPortScreen extends AbstractContainerScreen<FissionPortContai
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        graphics.drawCenteredString(font,  menu.getTitle(), imageWidth/2, titleLabelY, 0xffffff);
-        renderTooltips(graphics, mouseX-relX, mouseY-relY);
+        graphics.drawCenteredString(font, menu.getTitle(), imageWidth / 2, titleLabelY, 0xffffff);
+        renderTooltips(graphics, mouseX - relX, mouseY - relY);
     }
 
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-        for(NCGuiElement widget : widgets) {
-            if(widget.mouseClicked(pMouseX, pMouseY, pButton)) {
+        for (NCGuiElement widget : widgets) {
+            if (widget.mouseClicked(pMouseX, pMouseY, pButton)) {
                 return true;
             }
         }
@@ -127,26 +125,26 @@ public class FissionPortScreen extends AbstractContainerScreen<FissionPortContai
 
     private void renderTooltips(GuiGraphics graphics, int pMouseX, int pMouseY) {
 
-        for(NCGuiElement widget: widgets) {
-           if(widget.isMouseOver(pMouseX, pMouseY)) {
-               graphics.renderTooltip(font, widget.getTooltips(),
-                       Optional.empty(), pMouseX, pMouseY);
-           }
+        for (NCGuiElement widget : widgets) {
+            if (widget.isMouseOver(pMouseX, pMouseY)) {
+                graphics.renderTooltip(font, widget.getTooltips(),
+                        Optional.empty(), pMouseX, pMouseY);
+            }
         }
 
-        if(!container().getMode()) {
+        if (!container().getMode()) {
             energyBar.clearTooltips();
             energyBar.addTooltip(Component.translatable("reactor.forge_energy_per_tick", container().energyPerTick()));
-            if(energyBar.isMouseOver(pMouseX, pMouseY+10)) {
+            if (energyBar.isMouseOver(pMouseX, pMouseY + 10)) {
                 graphics.renderTooltip(font, energyBar.getTooltips(),
                         Optional.empty(), pMouseX, pMouseY);
             }
         } else {
-            if(coolantTank.isMouseOver(pMouseX, pMouseY+10)) {
+            if (coolantTank.isMouseOver(pMouseX, pMouseY + 10)) {
                 graphics.renderTooltip(font, coolantTank.getTooltips(),
                         Optional.empty(), pMouseX, pMouseY);
             }
-            if(steamTank.isMouseOver(pMouseX, pMouseY+10)) {
+            if (steamTank.isMouseOver(pMouseX, pMouseY + 10)) {
                 List<Component> tooltips = steamTank.getTooltips();
                 tooltips.add(Component.translatable("reactor.steam_per_tick", container().getSteamPerTick()));
                 graphics.renderTooltip(font, tooltips,
@@ -180,8 +178,7 @@ public class FissionPortScreen extends AbstractContainerScreen<FissionPortContai
         return 0;
     }
 
-    public int getAnalogSignalStrength()
-    {
+    public int getAnalogSignalStrength() {
         return container().getAnalogSignalStrength();
     }
 }

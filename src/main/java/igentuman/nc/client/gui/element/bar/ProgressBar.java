@@ -14,30 +14,30 @@ import static igentuman.nc.NuclearCraft.MODID;
 public class ProgressBar extends NCGuiElement {
 
     public int bar = 0;
-    protected static ResourceLocation ATLAS = new ResourceLocation(MODID, "textures/gui/progress.png");
+    protected static ResourceLocation ATLAS = ResourceLocation.fromNamespaceAndPath(MODID, "textures/gui/progress.png");
     IProgressScreen container;
 
     public static List<int[]> bars = List.of(
-            new int[] {0, 16},
-            new int[] {0, 16},
-            new int[] {0, 47},
-            new int[] {0, 78},
-            new int[] {0, 109},
-            new int[] {0, 140},
-            new int[] {0, 171},
-            new int[] {0, 202},
-            new int[] {37, 16},
-            new int[] {37, 47},
-            new int[] {37, 78},
-            new int[] {37, 109},
-            new int[] {37, 140},
-            new int[] {37, 171},
-            new int[] {37, 202},
-            new int[] {74, 38},
-            new int[] {111, 38}
+            new int[]{0, 16},
+            new int[]{0, 16},
+            new int[]{0, 47},
+            new int[]{0, 78},
+            new int[]{0, 109},
+            new int[]{0, 140},
+            new int[]{0, 171},
+            new int[]{0, 202},
+            new int[]{37, 16},
+            new int[]{37, 47},
+            new int[]{37, 78},
+            new int[]{37, 109},
+            new int[]{37, 140},
+            new int[]{37, 171},
+            new int[]{37, 202},
+            new int[]{74, 38},
+            new int[]{111, 38}
     );
 
-    public ProgressBar(int xMin, int yMin, IProgressScreen container)  {
+    public ProgressBar(int xMin, int yMin, IProgressScreen container) {
         super(xMin, yMin, 36, 15, Component.empty());
         x = xMin;
         y = yMin;
@@ -47,10 +47,10 @@ public class ProgressBar extends NCGuiElement {
 
     }
 
-    public ProgressBar(int xMin, int yMin, IProgressScreen container, int barNumber)  {
+    public ProgressBar(int xMin, int yMin, IProgressScreen container, int barNumber) {
         this(xMin, yMin, container);
         bar = barNumber;
-        if(bar > 14) {
+        if (bar > 14) {
             height = 36;
             y -= 10;
         }
@@ -68,7 +68,7 @@ public class ProgressBar extends NCGuiElement {
         RenderSystem.setShaderTexture(0, ATLAS);
         int texOffset = bars.get(bar)[0];
         int teyOffset = bars.get(bar)[1];
-        graphics.blit(ATLAS, X(), Y(), texOffset, teyOffset,  width, height);
-        graphics.blit(ATLAS, X(), Y(), texOffset, teyOffset-height-1, (int) (container.getProgress()*width), height);
+        graphics.blit(ATLAS, X(), Y(), texOffset, teyOffset, width, height);
+        graphics.blit(ATLAS, X(), Y(), texOffset, teyOffset - height - 1, (int) (container.getProgress() * width), height);
     }
 }

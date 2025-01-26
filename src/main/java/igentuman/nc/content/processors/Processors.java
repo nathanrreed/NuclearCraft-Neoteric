@@ -1,14 +1,11 @@
 package igentuman.nc.content.processors;
 
-import igentuman.nc.client.gui.processor.LeacherScreen;
 import igentuman.nc.block.entity.processor.*;
+import igentuman.nc.client.gui.processor.LeacherScreen;
 import igentuman.nc.container.LeacherContainer;
-import igentuman.nc.container.NCProcessorContainer;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.fml.DistExecutor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +14,6 @@ import java.util.List;
 
 @SuppressWarnings("ALL")
 public class Processors {
-
     private static HashMap<String, ProcessorPrefab> all = new HashMap<>();
     private static HashMap<String, ProcessorPrefab> registered = new HashMap<>();
     public static String GAS_SCRUBBER = "gas_scrubber";
@@ -53,7 +49,7 @@ public class Processors {
     }
 
     public static HashMap<String, ProcessorPrefab> all() {
-        if(all.isEmpty()) {
+        if (all.isEmpty()) {
             all.put(GAS_SCRUBBER,
                     ProcessorBuilder
                             .make(GAS_SCRUBBER, 1, 0, 1, 0)
@@ -78,7 +74,8 @@ public class Processors {
                             .withCatalyst()
                             .build()
             );
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ()-> Processors.setScreen(LEACHER, LeacherScreen::new));
+
+            Processors.setScreen(LEACHER, LeacherScreen::new); //TODO should only be on client
 
             all.put(PUMP,
                     ProcessorBuilder
@@ -267,10 +264,10 @@ public class Processors {
     }
 
     public static HashMap<String, ProcessorPrefab> registered() {
-        if(registered.isEmpty()) {
-            for(String name: all().keySet()) {
+        if (registered.isEmpty()) {
+            for (String name : all().keySet()) {
                 if (all().get(name).config().isRegistered()) {
-                    registered.put(name,all().get(name));
+                    registered.put(name, all().get(name));
                 }
             }
         }
@@ -279,7 +276,7 @@ public class Processors {
 
     public static List<Boolean> initialRegistered() {
         List<Boolean> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(true);
         }
         return tmp;
@@ -287,7 +284,7 @@ public class Processors {
 
     public static List<Integer> initialPower() {
         List<Integer> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(all().get(name).power);
         }
         return tmp;
@@ -295,7 +292,7 @@ public class Processors {
 
     public static List<Integer> initialTime() {
         List<Integer> tmp = new ArrayList<>();
-        for(String name: all().keySet()) {
+        for (String name : all().keySet()) {
             tmp.add(all().get(name).time);
         }
         return tmp;

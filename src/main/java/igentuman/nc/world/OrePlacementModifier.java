@@ -1,29 +1,24 @@
 package igentuman.nc.world;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import igentuman.nc.setup.registration.WorldGeneration;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.levelgen.placement.PlacementContext;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
-import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static dev.latvian.mods.rhino.TopLevel.Builtins.Array;
 import static igentuman.nc.handler.config.OreGenConfig.ORE_CONFIG;
 
 public class OrePlacementModifier extends PlacementModifier {
 
-    public static final Codec<OrePlacementModifier> CODEC = Codec.INT.fieldOf("count")
-            .xmap(OrePlacementModifier::new, (modifier) -> modifier.count)
-            .codec();
+    public static final MapCodec<OrePlacementModifier> CODEC = Codec.INT.fieldOf("count").xmap(OrePlacementModifier::new, (modifier) -> modifier.count);
 
     private int count;
     private final HashMap<String, Integer> countMap;
@@ -35,7 +30,7 @@ public class OrePlacementModifier extends PlacementModifier {
         this.countMap = new HashMap<>();
         this.heightMap = new HashMap<>();
         this.dimensionsMap = new HashMap<>();
-        for(String name: ORE_CONFIG.ORES.keySet()) {
+        for (String name : ORE_CONFIG.ORES.keySet()) {
             boolean register;
             int amount;
             int minHeight;
@@ -54,7 +49,7 @@ public class OrePlacementModifier extends PlacementModifier {
                 maxHeight = ORE_CONFIG.ORES.get(name).max_height.getDefault();
                 dims = ORE_CONFIG.ORES.get(name).dimensions.getDefault();
             }
-            if(!register) {
+            if (!register) {
                 amount = 0;
             }
             this.heightMap.put(name, new Integer[]{minHeight, maxHeight});
@@ -86,10 +81,10 @@ public class OrePlacementModifier extends PlacementModifier {
             name = context.topFeature().get().feature().unwrapKey().get().location().getPath().replace("_ore", "");
             int dimensionId = context.getLevel().getServer().registryAccess().registry(Registries.DIMENSION_TYPE).get().getId(context.getLevel().getLevel().dimensionType());
             int veinSize = countMap.get(name);
-            if(!dimensionsMap.get(name).contains(dimensionId)) {
+            if (!dimensionsMap.get(name).contains(dimensionId)) {
                 veinSize = 0;
             }
-            if(veinSize == 0) return 0;
+            if (veinSize == 0) return 0;
             return random.nextInt(veinSize);
         } catch (Exception e) {
             return 0;

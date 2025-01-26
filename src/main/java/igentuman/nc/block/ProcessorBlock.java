@@ -1,6 +1,7 @@
 package igentuman.nc.block;
 
-import igentuman.nc.block.entity.energy.BatteryBE;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import igentuman.nc.block.entity.processor.NCProcessorBE;
 import igentuman.nc.content.processors.Processors;
 import igentuman.nc.setup.registration.NCProcessors;
@@ -8,11 +9,11 @@ import igentuman.nc.util.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,11 +21,12 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -39,7 +41,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
@@ -48,6 +49,7 @@ import java.util.List;
 public class ProcessorBlock extends HorizontalDirectionalBlock implements EntityBlock {
     public static final DirectionProperty HORIZONTAL_FACING = FACING;
     public static final BooleanProperty ACTIVE = BlockStateProperties.POWERED;
+
     public ProcessorBlock() {
         this(Properties.of()
                 .sound(SoundType.METAL)
@@ -55,6 +57,7 @@ public class ProcessorBlock extends HorizontalDirectionalBlock implements Entity
                 .noOcclusion()
                 .requiresCorrectToolForDrops());
     }
+
     public ProcessorBlock(Properties pProperties) {
         super(pProperties.sound(SoundType.METAL));
         this.registerDefaultState(
@@ -63,6 +66,16 @@ public class ProcessorBlock extends HorizontalDirectionalBlock implements Entity
                         .setValue(ACTIVE, false)
         );
     }
+
+    public static final MapCodec<ProcessorBlock> CODEC = RecordCodecBuilder.mapCodec(instance ->
+            instance.group(propertiesCodec()).apply(instance, ProcessorBlock::new)
+    );
+
+    @Override
+    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
+        return CODEC;
+    }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
@@ -80,20 +93,20 @@ public class ProcessorBlock extends HorizontalDirectionalBlock implements Entity
         return NCProcessors.PROCESSORS_BE.get(processorCode()).get().create(pPos, pState);
     }
 
-    public String processorCode()
-    {
-        return asItem().toString();
+    public String processorCode() {
+        return asItem().toString().replace("nuclearcraft:", "");
     }
 
     @Override
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(world, pos, state, placer, stack);
         NCProcessorBE<?> tileEntity = (NCProcessorBE<?>) world.getBlockEntity(pos);
-        if (stack.hasTag()) {
-            CompoundTag nbtData = stack.getTag();
-            tileEntity.load(nbtData);
+
+        CustomData data = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+        if (!data.isEmpty()) {
+            data.loadInto(tileEntity, world.registryAccess());
         }
-        if(placer instanceof ServerPlayer player) {
+        if (placer instanceof ServerPlayer player) {
             tileEntity.setPlayer(player);
         }
     }
@@ -103,10 +116,10 @@ public class ProcessorBlock extends HorizontalDirectionalBlock implements Entity
         pPlayer.awardStat(Stats.BLOCK_MINED.get(this));
         pPlayer.causeFoodExhaustion(0.005F);
         NCProcessorBE<?> processorBe = (NCProcessorBE<?>) pBlockEntity;
-        CompoundTag data = processorBe.getTagForStack();
+        CompoundTag data = processorBe.getTagForStack(pLevel.registryAccess());
 
         ItemStack drop = new ItemStack(this);
-        drop.setTag(data);
+        drop.set(DataComponents.CUSTOM_DATA, CustomData.of(data));
         if (!pLevel.isClientSide()) {
             ItemEntity itemEntity = new ItemEntity(pLevel, pPos.getX(), pPos.getY(), pPos.getZ(), drop, pLevel.random.nextDouble() * 0.1D - 0.05D, 0.15D, pLevel.random.nextDouble() * 0.1D - 0.05D);
             itemEntity.setDefaultPickUpDelay();
@@ -115,10 +128,10 @@ public class ProcessorBlock extends HorizontalDirectionalBlock implements Entity
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof NCProcessorBE)  {
+            if (be instanceof NCProcessorBE) {
                 MenuProvider containerProvider = new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
@@ -131,11 +144,12 @@ public class ProcessorBlock extends HorizontalDirectionalBlock implements Entity
                             return (AbstractContainerMenu) Processors.all()
                                     .get(processorCode()).getContainerConstructor()
                                     .newInstance(windowId, pos, playerInventory, playerEntity, processorCode());
-                        } catch (InstantiationException | IllegalAccessException | InvocationTargetException ignored) { }
+                        } catch (InstantiationException | IllegalAccessException | InvocationTargetException ignored) {
+                        }
                         return null;
                     }
                 };
-                NetworkHooks.openScreen((ServerPlayer) player, containerProvider, be.getBlockPos());
+                player.openMenu(containerProvider, be.getBlockPos());
             }
         }
         return InteractionResult.SUCCESS;
@@ -152,7 +166,7 @@ public class ProcessorBlock extends HorizontalDirectionalBlock implements Entity
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof NCProcessorBE<?> tile) {
                 tile.tickServer();
             }
@@ -160,9 +174,8 @@ public class ProcessorBlock extends HorizontalDirectionalBlock implements Entity
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag) {
-        if(asItem().toString().contains("empty") || this.asItem().equals(Items.AIR)) return;
-        list.add(TextUtils.applyFormat(Component.translatable("processor.description."+processorCode()), ChatFormatting.AQUA));
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        if (asItem().toString().contains("empty") || this.asItem().equals(Items.AIR)) return;
+        tooltipComponents.add(TextUtils.applyFormat(Component.translatable("processor.description." + processorCode()), ChatFormatting.AQUA));
     }
-
 }

@@ -5,7 +5,7 @@ import igentuman.nc.content.energy.RTGs;
 import igentuman.nc.content.energy.SolarPanels;
 import igentuman.nc.content.storage.BarrelBlocks;
 import igentuman.nc.multiblock.turbine.TurbineRegistration;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,13 +13,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public class TurbineConfig {
-    public static <T> List<T> toList(Collection<T> vals)
-    {
+    public static <T> List<T> toList(Collection<T> vals) {
         return new ArrayList<>(vals);
     }
-    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+
+    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
     public static final TurbineConf TURBINE_CONFIG = new TurbineConf(BUILDER);
-    public static final ForgeConfigSpec spec = BUILDER.build();
+    public static final ModConfigSpec spec = BUILDER.build();
     private static boolean loaded = false;
     private static List<Runnable> loadActions = new ArrayList<>();
 
@@ -41,14 +41,14 @@ public class TurbineConfig {
     }
 
     public static class TurbineConf {
-        public ForgeConfigSpec.ConfigValue<Integer> MIN_SIZE;
-        public ForgeConfigSpec.ConfigValue<Integer> MAX_SIZE;
-        public ForgeConfigSpec.ConfigValue<Double> ENERGY_GEN;
-        public ForgeConfigSpec.ConfigValue<Integer> BLADE_FLOW;
-        public ForgeConfigSpec.ConfigValue<List<Double>> EFFICIENCY;
-        public HashMap<String, ForgeConfigSpec.ConfigValue<List<String>>> PLACEMENT_RULES = new HashMap<>();
+        public ModConfigSpec.ConfigValue<Integer> MIN_SIZE;
+        public ModConfigSpec.ConfigValue<Integer> MAX_SIZE;
+        public ModConfigSpec.ConfigValue<Double> ENERGY_GEN;
+        public ModConfigSpec.ConfigValue<Integer> BLADE_FLOW;
+        public ModConfigSpec.ConfigValue<List<Double>> EFFICIENCY;
+        public HashMap<String, ModConfigSpec.ConfigValue<List<String>>> PLACEMENT_RULES = new HashMap<>();
 
-        public TurbineConf(ForgeConfigSpec.Builder builder) {
+        public TurbineConf(ModConfigSpec.Builder builder) {
             builder.comment("Settings for Turbine").push("turbine");
 
             MIN_SIZE = builder
@@ -85,27 +85,26 @@ public class TurbineConfig {
                     .comment("Default placement rules have all examples")
                     .define("placement_explanations", "");
 
-            for(String name: TurbineRegistration.coils().keySet()) {
-                if(name.contains("empty")) continue;
+            for (String name : TurbineRegistration.coils().keySet()) {
+                if (name.contains("empty")) continue;
                 PLACEMENT_RULES.put(name, builder
                         .define(name, TurbineRegistration.initialPlacementRules(name), o -> o instanceof ArrayList));
             }
 
             builder.pop();
         }
-
     }
 
     public static class EnergyGenerationConfig {
-        public ForgeConfigSpec.ConfigValue<List<Boolean>> REGISTER_SOLAR_PANELS;
-        public ForgeConfigSpec.ConfigValue<List<Integer>> SOLAR_PANELS_GENERATION;
-        public ForgeConfigSpec.ConfigValue<List<Boolean>> REGISTER_RTG;
-        public ForgeConfigSpec.ConfigValue<List<Integer>> RTG_GENERATION;
-        public ForgeConfigSpec.ConfigValue<List<Integer>> RTG_RADIATION;
-        public ForgeConfigSpec.ConfigValue<Integer> STEAM_TURBINE;
+        public ModConfigSpec.ConfigValue<List<Boolean>> REGISTER_SOLAR_PANELS;
+        public ModConfigSpec.ConfigValue<List<Integer>> SOLAR_PANELS_GENERATION;
+        public ModConfigSpec.ConfigValue<List<Boolean>> REGISTER_RTG;
+        public ModConfigSpec.ConfigValue<List<Integer>> RTG_GENERATION;
+        public ModConfigSpec.ConfigValue<List<Integer>> RTG_RADIATION;
+        public ModConfigSpec.ConfigValue<Integer> STEAM_TURBINE;
 
 
-        public EnergyGenerationConfig(ForgeConfigSpec.Builder builder) {
+        public EnergyGenerationConfig(ModConfigSpec.Builder builder) {
             builder.push("energy_generation");
 
             REGISTER_SOLAR_PANELS = builder
@@ -137,10 +136,10 @@ public class TurbineConfig {
     }
 
     public static class StorageBlocksConfig {
-        public ForgeConfigSpec.ConfigValue<List<Boolean>> REGISTER_BARREL;
-        public ForgeConfigSpec.ConfigValue<List<Integer>> BARREL_CAPACITY;
+        public ModConfigSpec.ConfigValue<List<Boolean>> REGISTER_BARREL;
+        public ModConfigSpec.ConfigValue<List<Integer>> BARREL_CAPACITY;
 
-        public StorageBlocksConfig(ForgeConfigSpec.Builder builder) {
+        public StorageBlocksConfig(ModConfigSpec.Builder builder) {
             builder.push("storage_blocks")
                     .comment("Blocks to store items, fluids, etc...");
 
@@ -152,7 +151,6 @@ public class TurbineConfig {
                     .comment("Barrel capacity in Buckets: " + String.join(", ", BarrelBlocks.all().keySet()))
                     .define("barrel_capacity", BarrelBlocks.initialCapacity(), o -> o instanceof ArrayList);
 
-
             builder.pop();
         }
 
@@ -162,13 +160,13 @@ public class TurbineConfig {
     }
 
     public static class EnergyStorageConfig {
-        public ForgeConfigSpec.ConfigValue<List<Boolean>> REGISTER_ENERGY_BLOCK;
-        public ForgeConfigSpec.ConfigValue<List<Integer>> ENERGY_BLOCK_STORAGE;
-        public ForgeConfigSpec.ConfigValue<Integer> LITHIUM_ION_BATTERY_STORAGE;
-        public ForgeConfigSpec.ConfigValue<Integer> QNP_ENERGY_STORAGE;
-        public ForgeConfigSpec.ConfigValue<Integer> QNP_ENERGY_PER_BLOCK;
+        public ModConfigSpec.ConfigValue<List<Boolean>> REGISTER_ENERGY_BLOCK;
+        public ModConfigSpec.ConfigValue<List<Integer>> ENERGY_BLOCK_STORAGE;
+        public ModConfigSpec.ConfigValue<Integer> LITHIUM_ION_BATTERY_STORAGE;
+        public ModConfigSpec.ConfigValue<Integer> QNP_ENERGY_STORAGE;
+        public ModConfigSpec.ConfigValue<Integer> QNP_ENERGY_PER_BLOCK;
 
-        public EnergyStorageConfig(ForgeConfigSpec.Builder builder) {
+        public EnergyStorageConfig(ModConfigSpec.Builder builder) {
             builder.push("energy_storage");
 
             REGISTER_ENERGY_BLOCK = builder
@@ -192,7 +190,7 @@ public class TurbineConfig {
         }
 
         public int getCapacityFor(String code) {
-            if(code.equals("lithium_ion_cell")) {
+            if (code.equals("lithium_ion_cell")) {
                 return LITHIUM_ION_BATTERY_STORAGE.get();
             }
             return BatteryBlocks.all().get(code).config().getStorage();

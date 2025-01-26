@@ -17,7 +17,6 @@ public interface IIngredientCreator<TYPE, STACK, INGREDIENT extends InputIngredi
      * Creates an Ingredient that matches a given stack.
      *
      * @param instance Stack to match.
-     *
      * @throws NullPointerException     if the given instance is null.
      * @throws IllegalArgumentException if the given instance is empty.
      */
@@ -28,7 +27,6 @@ public interface IIngredientCreator<TYPE, STACK, INGREDIENT extends InputIngredi
      *
      * @param instance Type to match.
      * @param amount   Amount needed.
-     *
      * @throws NullPointerException     if the given instance is null.
      * @throws IllegalArgumentException if the given instance is empty or an amount smaller than one.
      */
@@ -39,7 +37,6 @@ public interface IIngredientCreator<TYPE, STACK, INGREDIENT extends InputIngredi
      *
      * @param tag    Tag to match.
      * @param amount Amount needed.
-     *
      * @throws NullPointerException     if the given tag is null.
      * @throws IllegalArgumentException if the given amount smaller than one.
      */
@@ -49,7 +46,6 @@ public interface IIngredientCreator<TYPE, STACK, INGREDIENT extends InputIngredi
      * Reads an Ingredient from a Packet Buffer.
      *
      * @param buffer Buffer to read from.
-     *
      * @throws NullPointerException if the given buffer is null.
      */
     INGREDIENT read(FriendlyByteBuf buffer);
@@ -58,7 +54,6 @@ public interface IIngredientCreator<TYPE, STACK, INGREDIENT extends InputIngredi
      * Helper to deserialize a Json Object into an Ingredient.
      *
      * @param json Json object to deserialize.
-     *
      * @throws com.google.gson.JsonSyntaxException if the ingredient failed to deserialize or was invalid.
      */
     INGREDIENT deserialize(@Nullable JsonElement json);
@@ -67,9 +62,7 @@ public interface IIngredientCreator<TYPE, STACK, INGREDIENT extends InputIngredi
      * Combines multiple Ingredients into a single Ingredient.
      *
      * @param ingredients Ingredients to combine.
-     *
      * @return Combined Ingredient.
-     *
      * @throws NullPointerException     if the given array is null.
      * @throws IllegalArgumentException if the given array is empty.
      */
@@ -79,9 +72,7 @@ public interface IIngredientCreator<TYPE, STACK, INGREDIENT extends InputIngredi
      * Creates an Ingredient out of a stream of Ingredients.
      *
      * @param ingredients Ingredient(s) to combine.
-     *
      * @return Given Ingredient or Combined Ingredient if multiple were in the stream.
-     *
      * @throws NullPointerException     if the given stream is null.
      * @throws IllegalArgumentException if the given stream is empty.
      */

@@ -52,5 +52,6 @@ public final class Codecs {
         return Util.fixedSize(list, 2).map(l -> Pair.of(l.get(0), l.get(1)));
     }
 
-    private Codecs() {}
+    private Codecs() {
+    }
 }

@@ -1,11 +1,11 @@
 package igentuman.nc.radiation.data;
 
-import igentuman.nc.NuclearCraft;
 import igentuman.nc.compat.mekanism.MekanismRadiation;
 import igentuman.nc.network.toClient.PacketPlayerRadiationData;
 import igentuman.nc.network.toClient.PacketWorldRadiationData;
 import igentuman.nc.util.ModUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,7 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 
@@ -42,47 +42,53 @@ public class RadiationManager extends SavedData {
     public RadiationManager() {
         worldRadiation = new WorldRadiation();
     }
+
+    @Override
+    public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider provider) {
+        return worldRadiation.serializeNBT(provider);
+    }
+
     @Nonnull
     public static RadiationManager get(Level level) {
         if (level.isClientSide) {
             throw new RuntimeException("Don't access this client-side!");
         }
-        DimensionDataStorage storage = ((ServerLevel)level).getDataStorage();
-        return storage.computeIfAbsent(RadiationManager::new, RadiationManager::new, "nc_world_radiation");
+        DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
+        return storage.computeIfAbsent(new SavedData.Factory<>(RadiationManager::new, (tag, provider) -> new RadiationManager(provider, tag)), "nc_world_radiation");
     }
 
     public void tick(Level level) {
-        if(!RADIATION_CONFIG.ENABLED.get()) return;
+        if (!RADIATION_CONFIG.ENABLED.get()) return;
         level.players().forEach(player -> {
             long wasRadiation = 0;
             long playerRadiation = 0;
             if (player instanceof ServerPlayer serverPlayer) {
-                if(serverPlayer.isSpectator() || serverPlayer.isCreative()) return;
+                if (serverPlayer.isSpectator() || serverPlayer.isCreative()) return;
                 int playerChunkX = player.chunkPosition().x;
                 int playerChunkZ = player.chunkPosition().z;
                 long id = pack(playerChunkX, playerChunkZ);
-                PlayerRadiation playerRadiationCap = serverPlayer.getCapability(PlayerRadiationProvider.PLAYER_RADIATION).orElse(null);
-                if(playerRadiationCap != null) {
+                PlayerRadiation playerRadiationCap = serverPlayer.getCapability(PlayerRadiationProvider.PLAYER_RADIATION);
+                if (playerRadiationCap != null) {
                     wasRadiation = playerRadiationCap.getRadiation();
                     playerRadiationCap.updateRadiation(level, player);
                     playerRadiation = playerRadiationCap.getRadiation();
                 }
 
-                if(worldRadiation.chunkRadiation.get(id) != null) {
-                    NuclearCraft.packetHandler().sendTo(new PacketWorldRadiationData(id, worldRadiation.chunkRadiation.get(id)), serverPlayer);
-                } else if(wasRadiation != playerRadiation) {
-                    NuclearCraft.packetHandler().sendTo(new PacketPlayerRadiationData(playerRadiation), serverPlayer);
+                if (worldRadiation.chunkRadiation.get(id) != null) {
+                    PacketDistributor.sendToPlayer(serverPlayer, new PacketWorldRadiationData(id, worldRadiation.chunkRadiation.get(id)));
+                } else if (wasRadiation != playerRadiation) {
+                    PacketDistributor.sendToPlayer(serverPlayer, new PacketPlayerRadiationData(playerRadiation));
                 }
             }
         });
         tickCounter--;
-        if (tickCounter == RADIATION_CONFIG.RADIATION_UPDATE_INTERVAL.get()/2) {
+        if (tickCounter == RADIATION_CONFIG.RADIATION_UPDATE_INTERVAL.get() / 2) {
             worldRadiation.refresh(level);
             return;
         }
         if (tickCounter == 0) {
             tickCounter = RADIATION_CONFIG.RADIATION_UPDATE_INTERVAL.get();
-            if(worldRadiation.updatedChunks.isEmpty()) {
+            if (worldRadiation.updatedChunks.isEmpty()) {
                 return;
             }
 
@@ -90,31 +96,28 @@ public class RadiationManager extends SavedData {
         }
     }
 
-    public RadiationManager(CompoundTag tag) {
-        if(tag.contains("radiation")) {
-            worldRadiation = WorldRadiation.deserialize(tag);
+    public RadiationManager(HolderLookup.Provider provider, CompoundTag tag) {
+        if (tag.contains("radiation")) {
+            worldRadiation = WorldRadiation.deserialize(provider, tag);
         } else {
             worldRadiation = new WorldRadiation();
         }
 
     }
 
-    @Override
-    public @NotNull CompoundTag save(CompoundTag tag) {
-        return worldRadiation.serializeNBT();
-    }
     protected int[] ignoredPos;
+
     public void addRadiation(Level level, double value, int x, int y, int z) {
-        if(!RADIATION_CONFIG.ENABLED.get()) return;
-        if(ignoredPos != null && ignoredPos[0] == x && ignoredPos[1] == y && ignoredPos[2] == z) {
+        if (!RADIATION_CONFIG.ENABLED.get()) return;
+        if (ignoredPos != null && ignoredPos[0] == x && ignoredPos[1] == y && ignoredPos[2] == z) {
             ignoredPos = null;
             return;
         }
         LevelChunk chunk = level.getChunkAt(new BlockPos(x, y, z));
         int appliedRadiation = worldRadiation.addRadiation(level, value, chunk.getPos().x, chunk.getPos().z);
-        if(ModUtil.isMekanismLoadeed() && RADIATION_CONFIG.MEKANISM_RADIATION_INTEGRATION.get()) {
+        if (ModUtil.isMekanismLoadeed() && RADIATION_CONFIG.MEKANISM_RADIATION_INTEGRATION.get()) {
             ignoredPos = new int[]{x, y, z};
-            MekanismRadiation.radiate(x, y, z, appliedRadiation/1000, level);
+            MekanismRadiation.radiate(x, y, z, appliedRadiation / 1000, level);
         }
     }
 }

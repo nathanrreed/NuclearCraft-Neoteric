@@ -1,21 +1,21 @@
 package igentuman.nc.util.insitu_leaching;
 
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.CapabilityToken;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.CapabilityRegistry;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import javax.annotation.Nonnull;
+import java.security.DrbgParameters;
+import java.util.function.Supplier;
 
 public class WorldVeinsProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
-    public static Capability<WorldVeinOres> VEINS_CAP = CapabilityManager.get(new CapabilityToken<>(){});
+    public static CapabilityRegistry<WorldVeinOres> VEINS_CAP = new CapabilityRegistry<>(WorldVeinOres::new);
     private WorldVeinOres veinsData = createVeinData();
-    private final LazyOptional<WorldVeinOres> opt = LazyOptional.of(() -> createVeinData());
+    private final Supplier<WorldVeinOres> opt = this::createVeinData;
 
     @Nonnull
     private WorldVeinOres createVeinData() {
@@ -25,28 +25,21 @@ public class WorldVeinsProvider implements ICapabilityProvider, INBTSerializable
         return veinsData;
     }
 
-    @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap) {
+    public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        return veinsData.serializeNBT(provider);
+    }
+
+    @Override
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag compoundTag) {
+        veinsData.deserializeNBT(provider, compoundTag);
+    }
+
+    @Override
+    public @Nullable Object getCapability(Object cap, Object o2) {
         if (cap == VEINS_CAP) {
-            return opt.cast();
+            return opt;
         }
-        return LazyOptional.empty();
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return getCapability(cap);
-    }
-
-    @Override
-    public CompoundTag serializeNBT() {
-        return veinsData.serializeNBT();
-    }
-
-    @Override
-    public void deserializeNBT(CompoundTag nbt) {
-        veinsData.deserializeNBT(nbt);
+        return null;
     }
 }

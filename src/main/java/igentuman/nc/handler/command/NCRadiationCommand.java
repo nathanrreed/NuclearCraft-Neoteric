@@ -74,7 +74,8 @@ public class NCRadiationCommand {
         HitResult hitResult = player.pick(rayTraceRange, 0.0F, false);
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockHitResult blockHitResult = (BlockHitResult) hitResult;
-            BlockPos blockPos = blockHitResult.getBlockPos().offset(-5, 3, -5);;
+            BlockPos blockPos = blockHitResult.getBlockPos().offset(-5, 3, -5);
+            ;
             WorldGeneration.StructurePlacer.placeStructure((ServerLevel) player.level(), blockPos, "fusion_reactor");
             player.sendSystemMessage(Component.literal("Placing fusion reactor!"));
         } else {

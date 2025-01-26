@@ -7,5 +7,4 @@ import net.minecraft.world.damagesource.DamageType;
 
 public class NCDamageSources {
     public static final DamageSource ACID = new DamageSource(Holder.direct(new DamageType("acid", DamageScaling.ALWAYS, 1f)));
-
 }

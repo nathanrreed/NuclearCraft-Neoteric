@@ -30,4 +30,5 @@ gradle.properties
 .gitignore
 
 /run/
+/runs/
 /server/

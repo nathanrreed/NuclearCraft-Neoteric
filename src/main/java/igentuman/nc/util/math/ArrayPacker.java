@@ -3,7 +3,7 @@ package igentuman.nc.util.math;
 import java.util.Arrays;
 
 public class ArrayPacker {
-    
+
     public static int pack(int[] values) {
         int packedValue = 0;
         for (int value : values) {
@@ -11,7 +11,7 @@ public class ArrayPacker {
         }
         return packedValue;
     }
-    
+
     public static int[] unpack(int packedValue) {
         int[] unpackedValues = new int[6];
         int index = 0;
@@ -22,5 +22,5 @@ public class ArrayPacker {
         }
         return Arrays.copyOf(unpackedValues, index);
     }
-    
+
 }

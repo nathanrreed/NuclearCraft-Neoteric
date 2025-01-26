@@ -5,6 +5,7 @@ import igentuman.nc.setup.registration.NCEnergyBlocks;
 import igentuman.nc.util.CustomEnergyStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -12,15 +13,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.IEnergyStorage;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 public class NCEnergy extends NuclearCraftBE {
 
@@ -28,11 +25,11 @@ public class NCEnergy extends NuclearCraftBE {
     public static String NAME;
     public final CustomEnergyStorage energyStorage = createEnergy();
 
-    public LazyOptional<IEnergyStorage> getEnergy() {
+    public Supplier<IEnergyStorage> getEnergy() {
         return energy;
     }
 
-    protected final LazyOptional<IEnergyStorage> energy = LazyOptional.of(() -> energyStorage);
+    protected final Supplier<IEnergyStorage> energy = () -> energyStorage;
 
     protected int counter;
 
@@ -42,20 +39,13 @@ public class NCEnergy extends NuclearCraftBE {
             for (Direction direction : Direction.values()) {
                 BlockEntity be = level.getBlockEntity(worldPosition.relative(direction));
                 if (be != null) {
-                    boolean doContinue = be.getCapability(ForgeCapabilities.ENERGY, direction.getOpposite()).map(handler -> {
-                                if (handler.canReceive()) {
-                                    int received = handler.receiveEnergy(Math.min(capacity.get(), getEnergyTransferPerTick()), false);
-                                    capacity.addAndGet(-received);
-                                    energyStorage.consumeEnergy(received);
-                                    setChanged();
-                                    return capacity.get() > 0;
-                                } else {
-                                    return true;
-                                }
-                            }
-                    ).orElse(true);
-                    if (!doContinue) {
-                        return;
+                    IEnergyStorage handler = level.getCapability(Capabilities.EnergyStorage.BLOCK, worldPosition.relative(direction), direction.getOpposite());
+                    if (handler != null && handler.canReceive()) {
+                        int received = handler.receiveEnergy(Math.min(capacity.get(), getEnergyTransferPerTick()), false);
+                        capacity.addAndGet(-received);
+                        energyStorage.consumeEnergy(received);
+                        setChanged();
+                        if (capacity.get() <= 0) return;
                     }
                 }
             }
@@ -83,14 +73,14 @@ public class NCEnergy extends NuclearCraftBE {
         return 0;
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY) {
-            return energy.cast();
-        }
-        return super.getCapability(cap, side);
-    }
+//    @Nonnull
+//    @Override
+//    public <T> Consumer<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+//        if (cap == ForgeCapabilities.ENERGY) {
+//            return energy.cast();
+//        }
+//        return super.getCapability(cap, side);
+//    }
 
     public NCEnergy(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState, String name) {
         super(pType, pPos, pBlockState);
@@ -114,55 +104,55 @@ public class NCEnergy extends NuclearCraftBE {
     @Override
     public void setRemoved() {
         super.setRemoved();
-        energy.invalidate();
+        invalidateCapabilities();
     }
 
-    protected void saveClientData(CompoundTag tag) {
+    protected void saveClientData(CompoundTag tag, HolderLookup.Provider registries) {
         CompoundTag infoTag = new CompoundTag();
         saveTagData(infoTag);
 
         tag.put("Info", infoTag);
 
-        tag.put("energy_storage", energyStorage.serializeNBT());
+        tag.put("energy_storage", energyStorage.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
     }
 
-    public void loadClientData(CompoundTag tag) {
+    public void loadClientData(CompoundTag tag, HolderLookup.Provider registries) {
         if (tag.contains("energy_storage")) {
-            energyStorage.deserializeNBT(tag.get("energy_storage"));
+            energyStorage.deserializeNBT(registries, tag.get("energy_storage"));
         }
-        if(tag.contains("energy")) {
+        if (tag.contains("energy")) {
             energyStorage.setEnergy(tag.getInt("energy"));
         }
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
         int oldEnergy = energyStorage.getEnergyStored();
 
         CompoundTag tag = pkt.getTag();
-        handleUpdateTag(tag);
+        handleUpdateTag(tag, lookupProvider);
         if (oldEnergy != energyStorage.getEnergyStored()) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
         }
     }
 
     @Override
-    public void load(CompoundTag tag) {
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         if (tag.contains("energy_storage")) {
-            energyStorage.deserializeNBT(tag.get("energy_storage"));
+            energyStorage.deserializeNBT(registries, tag.get("energy_storage"));
         }
         if (tag.contains("energy")) {
             energyStorage.setEnergy(tag.getInt("energy"));
         }
 
-        super.load(tag);
+        super.loadAdditional(tag, registries);
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        tag.put("energy_storage", energyStorage.serializeNBT());
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.put("energy_storage", energyStorage.serializeNBT(registries));
         tag.putInt("energy", energyStorage.getEnergyStored());
     }
-
 }
