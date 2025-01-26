@@ -2,7 +2,6 @@ package igentuman.nc.block;
 
 import igentuman.nc.block.entity.energy.NCEnergy;
 import igentuman.nc.content.energy.SolarPanels;
-import igentuman.nc.setup.registration.NCEnergyBlocks;
 import igentuman.nc.util.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -34,9 +33,11 @@ public class SolarPanelBlock extends Block implements EntityBlock {
                 .noOcclusion()
                 .requiresCorrectToolForDrops());
     }
+
     public SolarPanelBlock(Properties pProperties) {
         super(pProperties.sound(SoundType.METAL));
     }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState();
@@ -44,7 +45,6 @@ public class SolarPanelBlock extends Block implements EntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-
     }
 
     @Nullable
@@ -53,8 +53,7 @@ public class SolarPanelBlock extends Block implements EntityBlock {
         return ENERGY_BE.get(code()).get().create(pPos, pState);
     }
 
-    public String code()
-    {
+    public String code() {
         return SolarPanels.getCode(asItem().toString());
     }
 
@@ -68,20 +67,18 @@ public class SolarPanelBlock extends Block implements EntityBlock {
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof NCEnergy tile) {
                 tile.tickServer();
             }
         };
     }
 
-
-    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag)
-    {
-        list.add(TextUtils.applyFormat(Component.translatable("solar_panel.fe_generation", TextUtils.numberFormat(SolarPanels.all().get(asItem().toString().replace("solar_panel_","")).getActualGeneration())), ChatFormatting.GOLD));
+    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag) {
+        list.add(TextUtils.applyFormat(Component.translatable("solar_panel.fe_generation", TextUtils.numberFormat(SolarPanels.all().get(asItem().toString().replace("solar_panel_", "")).getActualGeneration())), ChatFormatting.GOLD));
     }
 
     public boolean registered() {
-        return SolarPanels.registered().containsKey(code().replace("solar_panel/",""));
+        return SolarPanels.registered().containsKey(code().replace("solar_panel/", ""));
     }
 }

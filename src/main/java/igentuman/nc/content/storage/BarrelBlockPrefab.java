@@ -10,7 +10,7 @@ public class BarrelBlockPrefab {
     private boolean registered = true;
     private boolean initialized = false;
     private String name;
-    protected int capacity = 0;
+    protected int capacity;
 
     public BarrelBlockPrefab(String name, int capacity) {
         this.capacity = capacity;
@@ -19,7 +19,7 @@ public class BarrelBlockPrefab {
     }
 
     public int getCapacity() {
-        return capacity * 1000;
+        return capacity; // TODO Was x1000 but I think that's wrong
     }
 
     public BarrelBlockPrefab setCapacity(int capacity) {

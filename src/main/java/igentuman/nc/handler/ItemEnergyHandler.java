@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-public class ItemEnergyHandler<O, C extends Direction, T extends ItemEnergyHandler.ItemEnergy> implements ICapabilityProvider<O, C, T> {
+public class ItemEnergyHandler<O, C extends Void, T extends ItemEnergyHandler.ItemEnergy> implements ICapabilityProvider<O, C, T> {
     private final int storage;
     private final int output;
     private final int input;
@@ -53,7 +53,7 @@ public class ItemEnergyHandler<O, C extends Direction, T extends ItemEnergyHandl
     }
 
     @Override
-    public @Nullable T getCapability(O cap, C side) {
+    public @Nullable T getCapability(O cap, C context) {
         if (cap == Capabilities.EnergyStorage.ITEM) {
             return (T) energy.get();
         }

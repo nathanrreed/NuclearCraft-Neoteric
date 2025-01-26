@@ -227,6 +227,5 @@ public class CreativeTabs {
                     .build());
 
     public static void init() {
-
     }
 }

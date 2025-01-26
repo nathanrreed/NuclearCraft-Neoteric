@@ -31,9 +31,11 @@ public class RTGBlock extends Block implements EntityBlock {
                 .noOcclusion()
                 .requiresCorrectToolForDrops());
     }
+
     public RTGBlock(Properties pProperties) {
         super(pProperties.sound(SoundType.METAL));
     }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState();
@@ -45,8 +47,7 @@ public class RTGBlock extends Block implements EntityBlock {
         return NCEnergyBlocks.ENERGY_BE.get(code()).get().create(pPos, pState);
     }
 
-    public String code()
-    {
+    public String code() {
         return asItem().toString();
     }
 
@@ -60,7 +61,7 @@ public class RTGBlock extends Block implements EntityBlock {
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof NCEnergy tile) {
                 tile.tickServer();
             }
@@ -68,8 +69,7 @@ public class RTGBlock extends Block implements EntityBlock {
     }
 
 
-    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag)
-    {
+    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag) {
         list.add(TextUtils.applyFormat(Component.translatable("rtg.fe_generation", TextUtils.numberFormat(RTGs.all().get(code()).config().getActualGeneration())), ChatFormatting.GOLD));
     }
 

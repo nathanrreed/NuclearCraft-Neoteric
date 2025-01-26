@@ -30,6 +30,7 @@ public class Registration {
     public static void init() {
         IEventBus bus = ModLoadingContext.get().getActiveContainer().getEventBus();
         Registries.init();
+        NCComponents.init();
         NCBlocks.init();
         NCStorageBlocks.init();
         NCItems.init();
@@ -45,7 +46,7 @@ public class Registration {
         CreativeTabs.init();
 //        NcRecipeSerializers.init();
         NcRecipeType.init();
-        NcParticleTypes.init();
+        NCParticleTypes.init();
         NCSounds.init();
     }
 

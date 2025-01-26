@@ -1,9 +1,7 @@
 package igentuman.nc.item;
 
 import com.lowdragmc.lowdraglib.misc.ItemHandlerHelper;
-import igentuman.nc.handler.ItemEnergyHandler;
-import igentuman.nc.setup.registration.NcParticleTypes;
-import igentuman.nc.util.CapabilityUtils;
+import igentuman.nc.setup.registration.NCParticleTypes;
 import igentuman.nc.util.CustomEnergyStorage;
 import igentuman.nc.util.RayTraceUtils;
 import igentuman.nc.util.TextUtils;
@@ -11,7 +9,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,7 +37,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.energy.IEnergyStorage;
@@ -81,7 +77,7 @@ public class QNP extends PickaxeItem {
         return Mth.hsvToRgb(Math.max(0.0F, getBarWidth(pStack) / (float) MAX_BAR_WIDTH) / 3.0F, 1.0F, 1.0F);
     }
 
-    protected int getEnergyMaxStorage() {
+    public int getEnergyMaxStorage() {
         return ENERGY_STORAGE.QNP_ENERGY_STORAGE.get();
     }
 
@@ -179,7 +175,7 @@ public class QNP extends PickaxeItem {
                 }
             });
             Random random = new Random();
-            ((ServerLevel) worldIn).sendParticles(NcParticleTypes.RADIATION.get(), pos.getX() + (random.nextFloat() - 0.5), pos.getY() + (random.nextFloat() - 0.5),
+            ((ServerLevel) worldIn).sendParticles(NCParticleTypes.RADIATION.get(), pos.getX() + (random.nextFloat() - 0.5), pos.getY() + (random.nextFloat() - 0.5),
                     pos.getZ() + (random.nextFloat() - 0.5), 3, 0, 0, 0, 0);
             getEnergy(tool).extractEnergy(ENERGY_STORAGE.QNP_ENERGY_PER_BLOCK.get(), false);
             if (veinMode && veinMinedBlocksCounter < 20) {
@@ -280,13 +276,8 @@ public class QNP extends PickaxeItem {
         return super.use(pLevel, pPlayer, pUsedHand);
     }
 
-//    @Override
-//    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag nbt) {
-//        return new ItemEnergyHandler(stack, getEnergyMaxStorage(), 0, getEnergyMaxStorage() / 4);
-//    }
-
     public CustomEnergyStorage getEnergy(ItemStack stack) {
-        return (CustomEnergyStorage) CapabilityUtils.getPresentCapability(stack, Capabilities.EnergyStorage.ITEM);
+        return (CustomEnergyStorage) stack.getCapability(Capabilities.EnergyStorage.ITEM);
     }
 
     @Override

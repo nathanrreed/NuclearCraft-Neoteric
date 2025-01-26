@@ -4,18 +4,14 @@ import com.mojang.serialization.MapCodec;
 import igentuman.nc.NuclearCraft;
 import igentuman.nc.registry.ParticleTypeDeferredRegister;
 import igentuman.nc.registry.RecipeSerializerDeferredRegister;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
@@ -50,6 +46,7 @@ public class Registries {
     public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(net.minecraft.core.registries.Registries.MOB_EFFECT, MODID);
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(net.minecraft.core.registries.Registries.RECIPE_SERIALIZER, MODID);
     public static final RecipeSerializerDeferredRegister RECIPE_SERIALIZERS = new RecipeSerializerDeferredRegister(NuclearCraft.MODID);
+    public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(net.minecraft.core.registries.Registries.DATA_COMPONENT_TYPE, NuclearCraft.MODID);
 
     public static void init() {
         IEventBus bus = ModLoadingContext.get().getActiveContainer().getEventBus();
@@ -71,5 +68,6 @@ public class Registries {
         RECIPE_TYPES.register(bus);
         CREATIVE_TABS.register(bus);
         SOUND_EVENTS.register(bus);
+        DATA_COMPONENTS.register(bus);
     }
 }

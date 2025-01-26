@@ -19,9 +19,8 @@ public class ElectromagnetBlock extends MultiblockBlock {
         super(pProperties);
     }
 
-    public String name()
-    {
-        return asItem().toString().replace("_slope", "");
+    public String name()    {
+        return asItem().toString().replaceAll("_slope|nuclearcraft:", "");
     }
 
     public Electromagnets.MagnetPrefab prefab()

@@ -1,7 +1,6 @@
 package igentuman.nc.item;
 
 import igentuman.nc.content.storage.BarrelBlocks;
-import igentuman.nc.util.CapabilityUtils;
 import igentuman.nc.util.TextUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -38,37 +37,32 @@ public class BarrelBlockItem extends BlockItem {
         return false;
     }
 
-//
-//    @Override
-//    public ICapabilityProvider initCapabilities(ItemStack stack, CompoundTag nbt) {
-//        return new FluidHandlerItemStack(stack, getCapacity());
-//    }
-
     public int getCapacity() {
         return BarrelBlocks.all().get(code()).config().getCapacity();
     }
 
     public IFluidHandlerItem getFluid(ItemStack stack) {
-        return (IFluidHandlerItem) CapabilityUtils.getPresentCapability(stack, Capabilities.FluidHandler.ITEM);
+        return stack.getCapability(Capabilities.FluidHandler.ITEM);
     }
 
     public String code() {
-        return asItem().toString();
+        return asItem().toString().replace("nuclearcraft:", "");
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         int storage = BarrelBlocks.all().get(code()).config().getCapacity();
-        FluidStack fluid = getFluid(stack).getFluidInTank(0);
-        if (fluid == null || FluidStack.isSameFluidSameComponents(fluid, FluidStack.EMPTY)) {
+        IFluidHandlerItem handler = getFluid(stack);
+        if (handler == null || FluidStack.isSameFluidSameComponents(handler.getFluidInTank(0), FluidStack.EMPTY)) {
             tooltipComponents.add(Component.translatable("tooltip.nc.liquid_empty", formatLiquid(storage)).withStyle(ChatFormatting.BLUE));
         } else {
+            FluidStack fluid = handler.getFluidInTank(0);
             tooltipComponents.add(Component.translatable("tooltip.nc.liquid_stored", Component.translatable(fluid.getDescriptionId()).getString(), formatLiquid(fluid.getAmount()), formatLiquid(storage)).withStyle(ChatFormatting.BLUE));
         }
         tooltipComponents.add(Component.translatable("tooltip.nc.use_multitool").withStyle(ChatFormatting.YELLOW));
     }
 
     public String formatLiquid(int val) {
-        return TextUtils.numberFormat(val / 1000) + " B";
+        return TextUtils.numberFormat(val / 1000.0) + " B";
     }
 }

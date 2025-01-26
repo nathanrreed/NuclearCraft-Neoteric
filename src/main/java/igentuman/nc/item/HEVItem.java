@@ -1,6 +1,5 @@
 package igentuman.nc.item;
 
-import igentuman.nc.util.CapabilityUtils;
 import igentuman.nc.util.CustomEnergyStorage;
 import igentuman.nc.util.TextUtils;
 import net.minecraft.ChatFormatting;
@@ -10,8 +9,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
@@ -40,7 +37,7 @@ public class HEVItem extends ArmorItem {
         return false;
     }
 
-    protected int getEnergyMaxStorage() {
+    public int getEnergyMaxStorage() {
         return 1000000;
     }
 
@@ -50,11 +47,6 @@ public class HEVItem extends ArmorItem {
         float chargeRatio = (float) energyStorage.getEnergyStored() / (float) getEnergyMaxStorage();
         return (int) Math.min(13, 13 * chargeRatio);
     }
-
-//    @Override
-//    public Object initCapabilities(ItemStack stack, CompoundTag nbt) {
-//        return new ItemEnergyHandler<>(stack, getEnergyMaxStorage(), 5000, getEnergyMaxStorage() / 4);
-//    }
 
     @Override
     public void inventoryTick(ItemStack st, Level level, Entity player, int slotIndex, boolean selectedIndex) {
@@ -74,16 +66,16 @@ public class HEVItem extends ArmorItem {
     }
 
     private boolean charged(ItemStack st) {
-        return true;//TODO  readd when caps working getEnergy(st).getEnergyStored() > 0;
+        return getEnergy(st).getEnergyStored() > 0;
     }
 
     public CustomEnergyStorage getEnergy(ItemStack stack) {
-        return (CustomEnergyStorage) CapabilityUtils.getPresentCapability(stack, Capabilities.EnergyStorage.ITEM);
+        return (CustomEnergyStorage) stack.getCapability(Capabilities.EnergyStorage.ITEM);
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-//TODO  readd when caps working      tooltipComponents.add(Component.translatable("tooltip.nc.energy_stored", formatEnergy(getEnergy(stack).getEnergyStored()), formatEnergy(getEnergyMaxStorage())).withStyle(ChatFormatting.BLUE));
+        tooltipComponents.add(Component.translatable("tooltip.nc.energy_stored", formatEnergy(getEnergy(stack).getEnergyStored()), formatEnergy(getEnergyMaxStorage())).withStyle(ChatFormatting.BLUE));
         tooltipComponents.add(Component.translatable("tooltip.nc.hev.desc").withStyle(ChatFormatting.AQUA));
     }
 

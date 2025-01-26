@@ -35,6 +35,12 @@ public class BarrelBE extends NuclearCraftBE implements ISizeToggable {
                 super.setFluid(fluid);
                 setChanged();
             }
+
+            @Override
+            protected void onContentsChanged() {
+                super.onContentsChanged();
+                setChanged();
+            }
         };
     }
 
@@ -65,7 +71,6 @@ public class BarrelBE extends NuclearCraftBE implements ISizeToggable {
     }
 
     public void tickClient() {
-
     }
 
     public void tickServer() {
@@ -119,18 +124,8 @@ public class BarrelBE extends NuclearCraftBE implements ISizeToggable {
         return BarrelBlocks.all().get(getName()).config().getCapacity();
     }
 
-//    @Nonnull
-//    @Override
-//    public <T> LazyOptional<T> getCapability(@Nonnull DrbgParameters.Capability<T> cap, @Nullable Direction side) {
-//        if (cap == Capabilities.FluidHandler.BLOCK && (side != null && sideConfig.get(side.ordinal()) != SideMode.DISABLED)) {
-//            return getFluidHandler().cast();
-//        }
-//        return super.getCapability(cap, side);
-//    }
-
     protected void saveClientData(CompoundTag tag, HolderLookup.Provider registries) {
-        CompoundTag tank = new CompoundTag();
-        tag.put("Fluid", fluidTank.getFluid().save(registries, tank));
+        tag.put("Fluid", fluidTank.getFluid().saveOptional(registries));
         tag.putIntArray("sideConfig", sideConfig.values().stream().mapToInt(Enum::ordinal).toArray());
     }
 
@@ -174,8 +169,7 @@ public class BarrelBE extends NuclearCraftBE implements ISizeToggable {
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        CompoundTag tank = new CompoundTag();
-        tag.put("Fluid", fluidTank.getFluid().save(registries, tank));
+        tag.put("Fluid", fluidTank.getFluid().saveOptional(registries));
         tag.putIntArray("sideConfig", sideConfig.values().stream().mapToInt(Enum::ordinal).toArray());
     }
 

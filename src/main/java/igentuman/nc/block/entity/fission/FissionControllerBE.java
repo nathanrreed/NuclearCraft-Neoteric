@@ -59,7 +59,7 @@ import static igentuman.nc.handler.config.FissionConfig.FISSION_CONFIG;
 import static igentuman.nc.multiblock.fission.FissionReactor.FISSION_BLOCKS;
 import static igentuman.nc.setup.registration.FissionFuel.ITEM_PROPERTIES;
 import static igentuman.nc.setup.registration.NCSounds.FISSION_REACTOR;
-import static igentuman.nc.setup.registration.NcParticleTypes.RADIATION;
+import static igentuman.nc.setup.registration.NCParticleTypes.RADIATION;
 import static net.minecraft.world.item.Items.AIR;
 
 public class FissionControllerBE<RECIPE extends FissionControllerBE.Recipe> extends FissionBE {

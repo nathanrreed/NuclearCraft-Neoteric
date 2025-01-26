@@ -55,7 +55,6 @@ public class ContainerBlock extends Block implements EntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-
     }
 
     public boolean hasAnalogOutputSignal(BlockState pState) {
@@ -125,7 +124,7 @@ public class ContainerBlock extends Block implements EntityBlock {
     }
 
     public String code() {
-        return asItem().toString();
+        return asItem().toString().replace("nuclearcraft:", "");
     }
 
     @javax.annotation.Nullable
@@ -143,7 +142,6 @@ public class ContainerBlock extends Block implements EntityBlock {
                 tile.tickServer();
             }
         };
-
     }
 
     @Override

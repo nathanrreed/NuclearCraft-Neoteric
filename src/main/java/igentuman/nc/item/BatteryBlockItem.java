@@ -1,6 +1,5 @@
 package igentuman.nc.item;
 
-import igentuman.nc.util.CapabilityUtils;
 import igentuman.nc.util.CustomEnergyStorage;
 import igentuman.nc.util.TextUtils;
 import net.minecraft.ChatFormatting;
@@ -44,17 +43,12 @@ public class BatteryBlockItem extends BlockItem {
         return Mth.hsvToRgb(Math.max(0.0F, getBarWidth(pStack) / (float) MAX_BAR_WIDTH) / 3.0F, 1.0F, 1.0F);
     }
 
-    protected int getEnergyMaxStorage() {
-        return ENERGY_STORAGE.getCapacityFor(toString());
+    public int getEnergyMaxStorage() {
+        return ENERGY_STORAGE.getCapacityFor(toString().replace("nuclearcraft:", ""));
     }
 
-//    @Override
-//    public Object initCapabilities(ItemStack stack, CompoundTag nbt) {
-//        return new ItemEnergyHandler(stack, getEnergyMaxStorage(), getEnergyMaxStorage(), getEnergyMaxStorage());
-//    }
-
     public CustomEnergyStorage getEnergy(ItemStack stack) {
-        return (CustomEnergyStorage) CapabilityUtils.getPresentCapability(stack, Capabilities.EnergyStorage.ITEM);
+        return (CustomEnergyStorage) stack.getCapability(Capabilities.EnergyStorage.ITEM);
     }
 
     @Override

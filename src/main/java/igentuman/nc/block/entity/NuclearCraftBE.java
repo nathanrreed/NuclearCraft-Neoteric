@@ -49,7 +49,7 @@ public class NuclearCraftBE extends BlockEntity {
     }
 
     public static String getName(BlockState pBlockState) {
-        return pBlockState.getBlock().asItem().toString();
+        return pBlockState.getBlock().asItem().toString().replace("nuclearcraft:", "");
     }
 
     protected void trackChanges(boolean was, boolean now) {

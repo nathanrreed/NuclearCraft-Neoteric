@@ -25,7 +25,7 @@ import igentuman.nc.radiation.client.WhiteNoiseOverlay;
 import igentuman.nc.setup.registration.NCEnergyBlocks;
 import igentuman.nc.setup.registration.NCFluids;
 import igentuman.nc.setup.registration.NCProcessors;
-import igentuman.nc.setup.registration.NcParticleTypes;
+import igentuman.nc.setup.registration.NCParticleTypes;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -142,8 +142,8 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(NcParticleTypes.RADIATION.get(), RadiationParticle.Factory::new);
-        event.registerSpriteSet(NcParticleTypes.FUSION_BEAM.get(), FusionBeamParticle.Factory::new);
+        event.registerSpriteSet(NCParticleTypes.RADIATION.get(), RadiationParticle.Factory::new);
+        event.registerSpriteSet(NCParticleTypes.FUSION_BEAM.get(), FusionBeamParticle.Factory::new);
     }
 
     public static void setup() {

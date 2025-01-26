@@ -1,7 +1,6 @@
 package igentuman.nc.block;
 
 import igentuman.nc.block.entity.energy.NCEnergy;
-import igentuman.nc.content.energy.RTGs;
 import igentuman.nc.setup.registration.NCEnergyBlocks;
 import igentuman.nc.util.TextUtils;
 import net.minecraft.ChatFormatting;
@@ -23,8 +22,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import static igentuman.nc.handler.config.CommonConfig.ENERGY_GENERATION;
-
 public class DecayGeneratorBlock extends Block implements EntityBlock {
     public DecayGeneratorBlock() {
         this(Properties.of()
@@ -33,9 +30,11 @@ public class DecayGeneratorBlock extends Block implements EntityBlock {
                 .noOcclusion()
                 .requiresCorrectToolForDrops());
     }
+
     public DecayGeneratorBlock(Properties pProperties) {
         super(pProperties.sound(SoundType.METAL));
     }
+
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState();
@@ -47,9 +46,8 @@ public class DecayGeneratorBlock extends Block implements EntityBlock {
         return NCEnergyBlocks.ENERGY_BE.get(code()).get().create(pPos, pState);
     }
 
-    public String code()
-    {
-        return asItem().toString();
+    public String code() {
+        return asItem().toString().replace("nuclearcraft:", "");
     }
 
     @javax.annotation.Nullable
@@ -62,17 +60,14 @@ public class DecayGeneratorBlock extends Block implements EntityBlock {
                 }
             };
         }
-        return (lvl, pos, blockState, t)-> {
+        return (lvl, pos, blockState, t) -> {
             if (t instanceof NCEnergy tile) {
                 tile.tickServer();
             }
         };
     }
 
-
-    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag)
-    {
+    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag) {
         list.add(TextUtils.applyFormat(Component.translatable("decay_generator.fe_generation"), ChatFormatting.GOLD));
     }
-
 }

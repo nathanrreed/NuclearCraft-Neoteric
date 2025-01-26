@@ -3,7 +3,7 @@ package igentuman.nc.client.particle;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import igentuman.nc.setup.registration.NcParticleTypes;
+import igentuman.nc.setup.registration.NCParticleTypes;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -50,7 +50,7 @@ public record FusionBeamParticleData(Direction direction, double distance, float
     @NotNull
     @Override
     public ParticleType<?> getType() {
-        return NcParticleTypes.FUSION_BEAM.get();
+        return NCParticleTypes.FUSION_BEAM.get();
     }
 
 //    @Override

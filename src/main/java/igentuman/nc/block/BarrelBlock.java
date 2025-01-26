@@ -58,7 +58,6 @@ public class BarrelBlock extends Block implements EntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-
     }
 
     public boolean hasAnalogOutputSignal(BlockState pState) {
@@ -156,7 +155,6 @@ public class BarrelBlock extends Block implements EntityBlock {
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (pState.getBlock() != pNewState.getBlock()) {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-
         }
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
     }
@@ -168,7 +166,7 @@ public class BarrelBlock extends Block implements EntityBlock {
     }
 
     public String code() {
-        return asItem().toString();
+        return asItem().toString().replace("nuclearcraft:", "");
     }
 
     @javax.annotation.Nullable
@@ -186,7 +184,6 @@ public class BarrelBlock extends Block implements EntityBlock {
                 tile.tickServer();
             }
         };
-
     }
 
     @Override
@@ -224,7 +221,7 @@ public class BarrelBlock extends Block implements EntityBlock {
     }
 
     public String formatLiquid(int val) {
-        return TextUtils.numberFormat(val / 1000) + " B";
+        return TextUtils.numberFormat(val / 1000.0) + " B";
     }
 
     public boolean registered() {
