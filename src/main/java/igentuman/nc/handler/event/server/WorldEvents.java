@@ -120,7 +120,6 @@ public class WorldEvents {
         return handler != null && handler.getEnergyStored() > 0;
     }
 
-
     public static void onPlayerDamage(LivingDamageEvent.Pre event) {
         if (event.getEntity() instanceof Player player) {
             DamageSource source = event.getSource();

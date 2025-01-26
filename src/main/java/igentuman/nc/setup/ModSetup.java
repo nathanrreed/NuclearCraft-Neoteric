@@ -20,7 +20,7 @@ public class ModSetup {
     public static void setup(FMLCommonSetupEvent event) {
         IEventBus bus = NeoForge.EVENT_BUS;
         bus.addListener(RadiationEvents::onPlayerCloned);
-//        bus.addGenericListener(Entity.class, RadiationEvents::attachPlayerRadiation); TODO FIND ADD
+//        bus.addGenericListener(Entity.class, RadiationEvents::attachPlayerRadiation); TODO find out how to add
 //        bus.addGenericListener(Level.class, RadiationEvents::attachWorldRadiation);
 //        bus.register(NuclearCraft.worldTickHandler);
 //        bus.register(new RadiationEvents());

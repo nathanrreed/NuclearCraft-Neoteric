@@ -11,6 +11,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
@@ -22,6 +23,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import java.util.List;
 
 import static igentuman.nc.setup.registration.NCItems.*;
+import static net.minecraft.world.entity.player.Inventory.INVENTORY_SIZE;
 
 public class HEVItem extends ArmorItem {
     public HEVItem(Holder<ArmorMaterial> armorMaterials, ArmorItem.Type type, Properties hazmatProps) {
@@ -56,7 +58,7 @@ public class HEVItem extends ArmorItem {
 
     @Override
     public void inventoryTick(ItemStack st, Level level, Entity player, int slotIndex, boolean selectedIndex) {
-        if (slotIndex <= EquipmentSlot.HEAD.getIndex() && slotIndex >= 0) {
+        if (slotIndex >= INVENTORY_SIZE && slotIndex < INVENTORY_SIZE + 4) {
             if (charged(st)) {
                 if (st.getItem().equals(HEV_CHEST.get())) {
                     ((Player) player).addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 1, 1, false, false));
@@ -72,7 +74,7 @@ public class HEVItem extends ArmorItem {
     }
 
     private boolean charged(ItemStack st) {
-        return getEnergy(st).getEnergyStored() > 0;
+        return true;//TODO  readd when caps working getEnergy(st).getEnergyStored() > 0;
     }
 
     public CustomEnergyStorage getEnergy(ItemStack stack) {
@@ -81,7 +83,7 @@ public class HEVItem extends ArmorItem {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        tooltipComponents.add(Component.translatable("tooltip.nc.energy_stored", formatEnergy(getEnergy(stack).getEnergyStored()), formatEnergy(getEnergyMaxStorage())).withStyle(ChatFormatting.BLUE));
+//TODO  readd when caps working      tooltipComponents.add(Component.translatable("tooltip.nc.energy_stored", formatEnergy(getEnergy(stack).getEnergyStored()), formatEnergy(getEnergyMaxStorage())).withStyle(ChatFormatting.BLUE));
         tooltipComponents.add(Component.translatable("tooltip.nc.hev.desc").withStyle(ChatFormatting.AQUA));
     }
 
