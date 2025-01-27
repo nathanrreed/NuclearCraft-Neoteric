@@ -6,7 +6,6 @@ import igentuman.nc.handler.command.NCRadiationCommand;
 import igentuman.nc.handler.command.StructureCommand;
 import igentuman.nc.handler.config.*;
 import igentuman.nc.handler.event.server.WorldEvents;
-import igentuman.nc.network.PacketHandler;
 import igentuman.nc.radiation.data.RadiationEvents;
 import igentuman.nc.radiation.data.RadiationManager;
 import igentuman.nc.setup.ClientSetup;
@@ -40,7 +39,6 @@ public class NuclearCraft {
     public static final WorldEvents worldTickHandler = new WorldEvents();
     public static final String MODID = "nuclearcraft";
     public static NuclearCraft instance;
-    private final PacketHandler packetHandler;
 
     public static void registerConfigs(ModContainer modContainer) {
         preFetchProcessorsConfig();
@@ -57,11 +55,9 @@ public class NuclearCraft {
         modContainer.registerConfig(ModConfig.Type.COMMON, WorldConfig.spec, "NuclearCraft/world.toml");
     }
 
-
     public NuclearCraft(IEventBus MOD_BUS, ModContainer modContainer) {
         instance = this;
         registerConfigs(modContainer);
-        packetHandler = new PacketHandler();
 
         Registration.init();
         //forceLoadConfig();
@@ -73,10 +69,6 @@ public class NuclearCraft {
         MOD_BUS.addListener(ModSetup::init);
         MOD_BUS.addListener(ClientSetup::registerScreens);
         MOD_BUS.addListener(NCCapabilities::registerCapabilities);
-    }
-
-    public static PacketHandler packetHandler() {
-        return instance.packetHandler;
     }
 
     @SubscribeEvent

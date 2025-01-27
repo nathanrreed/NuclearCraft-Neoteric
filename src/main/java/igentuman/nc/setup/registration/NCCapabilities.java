@@ -4,10 +4,12 @@ import igentuman.nc.block.entity.BarrelBE;
 import igentuman.nc.content.energy.BatteryBlocks;
 import igentuman.nc.content.energy.RTGs;
 import igentuman.nc.content.energy.SolarPanels;
+import igentuman.nc.content.processors.Processors;
 import igentuman.nc.content.storage.BarrelBlocks;
 import igentuman.nc.handler.ItemEnergyHandler;
 import igentuman.nc.item.*;
 import net.minecraft.world.level.ItemLike;
+import net.neoforged.neoforge.capabilities.Capabilities.ItemHandler;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
 
@@ -76,6 +78,14 @@ public class NCCapabilities {
                 RTGs.all().keySet()
         ).flatMap(Collection::stream).map(name -> NCEnergyBlocks.ENERGY_BE.get(name)).toList()) {
             event.registerBlockEntity(EnergyStorage.BLOCK, type.get(), (entity, context) -> entity.getEnergy().get());
+        }
+
+        // Processor Capabilities
+        for (var type : Processors.all().keySet().stream().map(name -> NCProcessors.PROCESSORS_BE.get(name)).toList()) {
+            event.registerBlockEntity(EnergyStorage.BLOCK, type.get(), (entity, context) -> entity.getEnergy().get());
+            event.registerBlockEntity(ItemHandler.BLOCK, type.get(), (entity, context) -> entity.contentHandler.getItemCapability(context));
+            event.registerBlockEntity(FluidHandler.BLOCK, type.get(), (entity, context) -> entity.contentHandler.getFluidCapability(context));
+//         TODO add CC cap  event.registerBlockEntity(PeripheralCapability.get(), type.get(), (entity, context) -> entity.contentHandler.get(context))
         }
     }
 }

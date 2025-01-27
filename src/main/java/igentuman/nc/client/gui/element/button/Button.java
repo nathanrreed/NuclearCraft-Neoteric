@@ -55,7 +55,7 @@ public class Button<T extends AbstractContainerScreen<?>> extends NCGuiElement {
             super(xPos, yPos, screen, 69);//nice
             height = 18;
             width = 18;
-            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 220, 220, 18, TEXTURE, pButton -> {
+            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 220, 220, TEXTURE, pButton -> {
                 Minecraft.getInstance().forceSetScreen(new SideConfigSlotSelectionScreen<>(screen));
             });
             tooltipKey = Component.translatable("gui.nc.side_config.tooltip");
@@ -81,7 +81,7 @@ public class Button<T extends AbstractContainerScreen<?>> extends NCGuiElement {
 
         public void setMode(int redstoneMode) {
             mode = redstoneMode;
-            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 184, 220 - redstoneMode * 36, 18, TEXTURE, pButton -> {
+            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 184, 220 - redstoneMode * 36, TEXTURE, pButton -> {
                 PacketDistributor.sendToServer(new PacketGuiButtonPress(pos, BTN_ID));
             });
 //            184, 220 - redstoneMode * 36, 18,
@@ -96,7 +96,7 @@ public class Button<T extends AbstractContainerScreen<?>> extends NCGuiElement {
             super(xPos, yPos, screen, 70);
             height = 18;
             width = 18;
-            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 238, 76, 18, TEXTURE, pButton -> {
+            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 238, 76, TEXTURE, pButton -> {
 
             });
         }
@@ -111,7 +111,7 @@ public class Button<T extends AbstractContainerScreen<?>> extends NCGuiElement {
             super(xPos, yPos, screen, 71);
             height = 18;
             width = 18;
-            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 202, 220, 18, TEXTURE, pButton -> {
+            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 202, 220, TEXTURE, pButton -> {
                 this.screen.onClose();
             });
         }
@@ -129,7 +129,7 @@ public class Button<T extends AbstractContainerScreen<?>> extends NCGuiElement {
             this.pos = pos;
             height = 18;
             width = 18;
-            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 220, 184, 18, TEXTURE, pButton -> {
+            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 220, 184, TEXTURE, pButton -> {
                 PacketDistributor.sendToServer(new PacketGuiButtonPress(pos, BTN_ID));
             });
         }
@@ -149,7 +149,7 @@ public class Button<T extends AbstractContainerScreen<?>> extends NCGuiElement {
         public void setMode(boolean reactorMode) {
             mode = reactorMode;
             int y = reactorMode ? 1 : 0;
-            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 220, 184 - (y + 1) * 36, 18, TEXTURE, pButton -> {
+            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 220, 184 - (y + 1) * 36, TEXTURE, pButton -> {
                 PacketDistributor.sendToServer(new PacketGuiButtonPress(pos, BTN_ID));
             });
         }
@@ -169,7 +169,7 @@ public class Button<T extends AbstractContainerScreen<?>> extends NCGuiElement {
         @Override
         public void setMode(byte redstoneMode) {
             mode = redstoneMode;
-            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 238, 256 - (redstoneMode - 10) * 36, 18, TEXTURE, pButton -> {
+            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 238, 256 - (redstoneMode - 10) * 36, TEXTURE, pButton -> {
                 PacketDistributor.sendToServer(new PacketGuiButtonPress(pos, BTN_ID));
             });
         }
@@ -186,7 +186,7 @@ public class Button<T extends AbstractContainerScreen<?>> extends NCGuiElement {
             this.pos = pos;
             height = 18;
             width = 18;
-            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 238, 256, 18, TEXTURE, pButton -> {
+            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 238, 256, TEXTURE, pButton -> {
                 PacketDistributor.sendToServer(new PacketGuiButtonPress(pos, bId));
             });
         }
@@ -196,7 +196,7 @@ public class Button<T extends AbstractContainerScreen<?>> extends NCGuiElement {
             this.pos = pos;
             height = 18;
             width = 18;
-            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 238, 256, 18, TEXTURE, pButton -> {
+            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 238, 256, TEXTURE, pButton -> {
                 PacketDistributor.sendToServer(new PacketGuiButtonPress(pos, bId));
             });
         }
@@ -210,7 +210,7 @@ public class Button<T extends AbstractContainerScreen<?>> extends NCGuiElement {
 
         public void setMode(byte redstoneMode) {
             mode = redstoneMode;
-            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 238, 256 - (redstoneMode + 1) * 36, 18, TEXTURE, pButton -> {
+            btn = new ImageButtonSingleSprite(X(), Y(), width, height, 238, 256 - (redstoneMode + 1) * 36, TEXTURE, pButton -> {
                 PacketDistributor.sendToServer(new PacketGuiButtonPress(pos, BTN_ID));
             });
         }

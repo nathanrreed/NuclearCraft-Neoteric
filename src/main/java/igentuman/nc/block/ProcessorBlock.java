@@ -83,8 +83,7 @@ public class ProcessorBlock extends HorizontalDirectionalBlock implements Entity
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(BlockStateProperties.HORIZONTAL_FACING)
-                .add(BlockStateProperties.POWERED);
+        builder.add(BlockStateProperties.HORIZONTAL_FACING).add(BlockStateProperties.POWERED);
     }
 
     @Nullable

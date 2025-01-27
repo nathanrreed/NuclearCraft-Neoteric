@@ -6,6 +6,7 @@ import igentuman.nc.multiblock.fission.FissionReactor;
 import igentuman.nc.multiblock.fusion.FusionReactor;
 import igentuman.nc.multiblock.kugelblitz.KugelblitzRegistration;
 import igentuman.nc.multiblock.turbine.TurbineRegistration;
+import igentuman.nc.network.PacketHandler;
 import igentuman.nc.recipes.NcRecipeType;
 import igentuman.nc.setup.registration.*;
 import igentuman.nc.world.structure.LaboratoryStructure;

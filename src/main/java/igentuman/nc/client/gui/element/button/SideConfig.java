@@ -79,7 +79,7 @@ public class SideConfig extends NCGuiElement {
 
     public static class SideBtn extends ImageButtonSingleSprite {
         public SideBtn(int x, int y, ResourceLocation btnTexture, OnPress onPress) {
-            super(x, y, 16, 16, 0, 0, 16, btnTexture, onPress); //super(x, y, 16, 16, 0, 0, 0, btnTexture, 16, 16, onPress)
+            super(x, y, 16, 16, 0, 0, btnTexture, onPress);
         }
     }
 }

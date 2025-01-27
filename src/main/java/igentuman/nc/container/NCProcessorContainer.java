@@ -203,7 +203,7 @@ public class NCProcessorContainer<T extends AbstractContainerMenu> extends Abstr
     }
 
     public IEnergyStorage getEnergy() {
-        return (IEnergyStorage) blockEntity.getEnergy();
+        return blockEntity.getEnergy().get();
     }
 
     public double getProgress() {

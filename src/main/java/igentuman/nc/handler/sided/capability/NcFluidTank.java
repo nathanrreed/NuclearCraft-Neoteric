@@ -13,7 +13,7 @@ public class NcFluidTank extends FluidTank {
 
     @Override
     public FluidTank readFromNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
-        FluidStack fluid = FluidStack.parseOptional(lookupProvider, nbt);
+        FluidStack fluid = FluidStack.parseOptional(lookupProvider, nbt.getCompound("Fluid"));
         setFluid(fluid);
         capacity = nbt.getInt("Capacity");
         return this;
@@ -21,7 +21,7 @@ public class NcFluidTank extends FluidTank {
 
     @Override
     public CompoundTag writeToNBT(HolderLookup.Provider lookupProvider, CompoundTag nbt) {
-        fluid.save(lookupProvider, nbt);
+        nbt.put("Fluid", fluid.saveOptional(lookupProvider));
         nbt.putInt("Capacity", capacity);
         return nbt;
     }

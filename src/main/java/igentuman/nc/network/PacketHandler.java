@@ -1,18 +1,20 @@
 package igentuman.nc.network;
 
+import igentuman.nc.NuclearCraft;
 import igentuman.nc.network.toClient.PacketPlayerRadiationData;
 import igentuman.nc.network.toClient.PacketPlayerRadiationHandler;
 import igentuman.nc.network.toClient.PacketWorldRadiationData;
 import igentuman.nc.network.toClient.PacketWorldRadiationHandler;
 import igentuman.nc.network.toServer.*;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+@EventBusSubscriber(modid = NuclearCraft.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class PacketHandler {
-
     @SubscribeEvent
-    public void clientToServerUpdate(RegisterPayloadHandlersEvent event) {
+    public static void clientToServerUpdate(RegisterPayloadHandlersEvent event) {
         //Client to server messages
         PayloadRegistrar registrar = event.registrar("1");
         registrar.playToServer(PacketSliderChanged.TYPE, PacketSliderChanged.STREAM_CODEC, PacketSliderChangedHandler::handle);
