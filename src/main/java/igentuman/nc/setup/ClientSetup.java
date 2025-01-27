@@ -88,6 +88,7 @@ public class ClientSetup {
         }
     }
 
+    @SubscribeEvent
     public static void init(FMLClientSetupEvent event) {
         //new BlackHoleShaderManager();
         event.enqueueWork(() -> {
@@ -95,10 +96,6 @@ public class ClientSetup {
             BlockEntityRenderers.register(FUSION_BE.get("fusion_core").get(), FusionCoreRenderer::new);
             BlockEntityRenderers.register(TURBINE_BE.get("turbine_rotor_shaft").get(), TurbineRotorRenderer::new);
         });
-
-        for (DeferredHolder<Fluid, ? extends Fluid> f : FLUIDS.getEntries())
-            if (NCFluids.NC_GASES.containsKey(f.getId().getPath()))
-                ItemBlockRenderTypes.setRenderLayer(f.get(), RenderType.translucent());
 
         event.enqueueWork(() -> {
             setPropertyOverride(GEIGER_COUNTER.get(), rl("radiation"), (stack, world, entity, seed) -> {

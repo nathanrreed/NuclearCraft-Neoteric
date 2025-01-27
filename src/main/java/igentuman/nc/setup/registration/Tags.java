@@ -37,8 +37,7 @@ public class Tags {
     public static final TagKey<Block> INCORRECT_FOR_TOUGH = BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", "incorrect_for_tough_tool"));
     public static final TagKey<Block> INCORRECT_FOR_THORIUM = BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", "incorrect_for_thorium_tool"));
     public static final TagKey<Block> INCORRECT_FOR_QNP = BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", "incorrect_for_qnp_tool"));
-//    public static TagKey<Item> NC_FUELS_TAG = itemTag("reactor_fuel");
-//    public static TagKey<Item> NC_FUELS_TAG = itemTag("reactor_fuel");
+
 
     public static TagKey<Block> blockTag(String name) {
         return BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, name));

@@ -25,15 +25,15 @@ public final class NCSounds {
     public static final Supplier<SoundEvent> FUSION_RUNNING = SOUND_EVENTS.register("tile.fusion_running", () -> SoundEvent.createVariableRangeEvent(rl("tile.fusion_running")));
     public static final Supplier<SoundEvent> FUSION_SWITCH = SOUND_EVENTS.register("tile.fusion_switch", () -> SoundEvent.createVariableRangeEvent(rl("tile.fusion_switch")));
     public static final Supplier<SoundEvent> FISSION_REACTOR = SOUND_EVENTS.register("tile.fission_reactor", () -> SoundEvent.createVariableRangeEvent(rl("tile.fission_reactor")));
-    public static final Supplier<SoundEvent> RECORD_WANDERER = SOUND_EVENTS.register("music.wanderer", () -> SoundEvent.createVariableRangeEvent(rl("music.wanderer")));
-    public static final Supplier<SoundEvent> RECORD_END_OF_THE_WORLD = SOUND_EVENTS.register("music.end_of_the_world", () -> SoundEvent.createVariableRangeEvent(rl("music.end_of_the_world")));
-    public static final Supplier<SoundEvent> RECORD_MONEY_FOR_NOTHING = SOUND_EVENTS.register("music.money_for_nothing", () -> SoundEvent.createVariableRangeEvent(rl("music.money_for_nothing")));
+    public static final Supplier<SoundEvent> RECORD_WANDERER = SOUND_EVENTS.register("music.wanderer", SoundEvent::createVariableRangeEvent);
+    public static final Supplier<SoundEvent> RECORD_END_OF_THE_WORLD = SOUND_EVENTS.register("music.end_of_the_world", SoundEvent::createVariableRangeEvent);
+    public static final Supplier<SoundEvent> RECORD_MONEY_FOR_NOTHING = SOUND_EVENTS.register("music.money_for_nothing", SoundEvent::createVariableRangeEvent);
     public static final Supplier<SoundEvent> RECORD_HYPERSPACE = SOUND_EVENTS.register("music.hyperspace", () -> SoundEvent.createVariableRangeEvent(rl("music.hyperspace")));
 
     public static final ResourceKey<JukeboxSong> WANDERER_KEY = ResourceKey.create(net.minecraft.core.registries.Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(NuclearCraft.MODID, "wanderer"));
-    public static final ResourceKey<JukeboxSong> END_OF_THE_WORLD_KEY = ResourceKey.create(net.minecraft.core.registries.Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(NuclearCraft.MODID, "wanderer"));
-    public static final ResourceKey<JukeboxSong> MONEY_FOR_NOTHING_KEY = ResourceKey.create(net.minecraft.core.registries.Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(NuclearCraft.MODID, "wanderer"));
-    public static final ResourceKey<JukeboxSong> HYPERSPACE_KEY = ResourceKey.create(net.minecraft.core.registries.Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(NuclearCraft.MODID, "wanderer"));
+    public static final ResourceKey<JukeboxSong> END_OF_THE_WORLD_KEY = ResourceKey.create(net.minecraft.core.registries.Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(NuclearCraft.MODID, "end_of_the_world"));
+    public static final ResourceKey<JukeboxSong> MONEY_FOR_NOTHING_KEY = ResourceKey.create(net.minecraft.core.registries.Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(NuclearCraft.MODID, "money_for_nothing"));
+    public static final ResourceKey<JukeboxSong> HYPERSPACE_KEY = ResourceKey.create(net.minecraft.core.registries.Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(NuclearCraft.MODID, "hyperspace"));
 
     public static final HashMap<String, ResourceKey<JukeboxSong>> SOUND_MAP = initSoundMap();
 
@@ -57,6 +57,5 @@ public final class NCSounds {
     }
 
     public static void init() {
-
     }
 }

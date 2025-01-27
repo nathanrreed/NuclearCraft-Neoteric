@@ -101,6 +101,5 @@ public class NCFluidBlock extends LiquidBlock {
         if (pLevel.getFluidState(pPos).getFluidType().getDensity() == -1000) {
             pLevel.setBlock(pPos, AIR.defaultBlockState(), 3);
         }
-
     }
 }

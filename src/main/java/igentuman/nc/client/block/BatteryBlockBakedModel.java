@@ -1,6 +1,6 @@
 package igentuman.nc.client.block;
 
-import com.mojang.math.Transformation;
+import com.mojang.blaze3d.vertex.PoseStack;
 import igentuman.nc.block.ISizeToggable;
 import igentuman.nc.block.entity.energy.BatteryBE;
 import igentuman.nc.util.ClientTools;
@@ -9,10 +9,12 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.IDynamicBakedModel;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -57,8 +59,6 @@ public class BatteryBlockBakedModel implements IDynamicBakedModel {
             float r = 1;
             float p = 1;
 
-            Transformation rotation = modelState.getRotation();
-
             TextureAtlasSprite textureSide = spriteGetter.apply(batteryModelGeometry.sideDefault);
             TextureAtlasSprite textureTop = spriteGetter.apply(batteryModelGeometry.topDefault);
 
@@ -74,6 +74,7 @@ public class BatteryBlockBakedModel implements IDynamicBakedModel {
         return sideQuads;
     }
 
+
     /**
      * @param state     the blockstate for our block
      * @param side      the six directions or null for quads that are not at a specific direction
@@ -84,7 +85,6 @@ public class BatteryBlockBakedModel implements IDynamicBakedModel {
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull RandomSource rand, @Nonnull ModelData extraData, @Nullable RenderType layer) {
-
         if (side != null || (layer != null && !layer.equals(RenderType.solid()))) {
             return Collections.emptyList();
         }
@@ -101,16 +101,13 @@ public class BatteryBlockBakedModel implements IDynamicBakedModel {
         float r = 1;
         float p = 1;
 
-        Transformation rotation = modelState.getRotation();
+        TextureAtlasSprite textureTop = switch (sideConfig.get(Direction.UP.ordinal())) {
+            case DISABLED -> spriteGetter.apply(batteryModelGeometry.topNone);
+            case IN -> spriteGetter.apply(batteryModelGeometry.topIn);
+            case OUT -> spriteGetter.apply(batteryModelGeometry.topOut);
+            default -> spriteGetter.apply(batteryModelGeometry.topDefault);
+        };
 
-
-        TextureAtlasSprite textureTop;
-        switch (sideConfig.get(Direction.UP.ordinal())) {
-            case DISABLED -> textureTop = spriteGetter.apply(batteryModelGeometry.topNone);
-            case IN -> textureTop = spriteGetter.apply(batteryModelGeometry.topIn);
-            case OUT -> textureTop = spriteGetter.apply(batteryModelGeometry.topOut);
-            default -> textureTop = spriteGetter.apply(batteryModelGeometry.topDefault);
-        }
         quadCache.put(cacheKey,
                 List.of(
                         ClientTools.createQuad(v(r, p, r), v(r, p, l), v(l, p, l), v(l, p, r), textureTop),
@@ -125,23 +122,21 @@ public class BatteryBlockBakedModel implements IDynamicBakedModel {
     }
 
     private String keyFor(Collection<ISizeToggable.SideMode> values) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (ISizeToggable.SideMode value : values) {
-            result += value.ordinal();
+            result.append(value.ordinal());
         }
-        return result;
+        return result.toString();
     }
 
     private TextureAtlasSprite getSideTexture(HashMap<Integer, ISizeToggable.SideMode> sideConfig, Direction direction) {
-        TextureAtlasSprite textureSide = spriteGetter.apply(batteryModelGeometry.sideDefault);
-        switch (sideConfig.get(direction.ordinal())) {
-            case DISABLED -> textureSide = spriteGetter.apply(batteryModelGeometry.sideNone);
-            case IN -> textureSide = spriteGetter.apply(batteryModelGeometry.sideIn);
-            case OUT -> textureSide = spriteGetter.apply(batteryModelGeometry.sideOut);
-        }
-        return textureSide;
+        return switch (sideConfig.get(direction.ordinal())) {
+            case DISABLED -> spriteGetter.apply(batteryModelGeometry.sideNone);
+            case IN -> spriteGetter.apply(batteryModelGeometry.sideIn);
+            case OUT -> spriteGetter.apply(batteryModelGeometry.sideOut);
+            default -> spriteGetter.apply(batteryModelGeometry.sideDefault);
+        };
     }
-
 
     @Override
     public boolean useAmbientOcclusion() {
@@ -158,8 +153,13 @@ public class BatteryBlockBakedModel implements IDynamicBakedModel {
         return false;
     }
 
+    @Override // TODO deprecated
+    public TextureAtlasSprite getParticleIcon() {
+        return spriteGetter.apply(batteryModelGeometry.sideDefault);
+    }
+
     @Override
-    public @NotNull TextureAtlasSprite getParticleIcon() {
+    public TextureAtlasSprite getParticleIcon(ModelData data) {
         return spriteGetter.apply(batteryModelGeometry.sideDefault);
     }
 
@@ -169,7 +169,8 @@ public class BatteryBlockBakedModel implements IDynamicBakedModel {
     }
 
     @Override
-    public @NotNull ItemTransforms getTransforms() {
-        return itemTransforms;
+    public BakedModel applyTransform(ItemDisplayContext transformType, PoseStack poseStack, boolean applyLeftHandTransform) {
+        itemTransforms.getTransform(transformType).apply(applyLeftHandTransform, poseStack);
+        return this;
     }
 }

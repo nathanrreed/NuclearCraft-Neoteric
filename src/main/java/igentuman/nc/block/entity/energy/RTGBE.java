@@ -12,12 +12,12 @@ public class RTGBE extends NCEnergy {
     }
 
     public static String getName(BlockState pBlockState) {
-        return pBlockState.getBlock().asItem().toString();
+        return pBlockState.getBlock().asItem().toString().replace("nuclearcraft:", "");
     }
 
     @Override
     public String getName() {
-        return getBlockState().getBlock().asItem().toString();
+        return getBlockState().getBlock().asItem().toString().replace("nuclearcraft:", "");
     }
 
     protected int radiationTimer = 40;

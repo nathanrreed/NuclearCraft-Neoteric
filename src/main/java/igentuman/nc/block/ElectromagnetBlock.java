@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.*;
+
 import java.util.List;
 
 import static igentuman.nc.util.TextUtils.numberFormat;
@@ -19,29 +19,31 @@ public class ElectromagnetBlock extends MultiblockBlock {
         super(pProperties);
     }
 
-    public String name()    {
+    public String name() {
         return asItem().toString().replaceAll("_slope|nuclearcraft:", "");
     }
 
-    public Electromagnets.MagnetPrefab prefab()
-    {
+    public Electromagnets.MagnetPrefab prefab() {
         return Electromagnets.all().get(name());
     }
+
     public double getStrength() {
         return prefab().getMagneticField();
     }
+
     public double getEfficiency() {
         return prefab().getEfficiency();
     }
+
     public int getPower() {
         return prefab().getPower();
     }
+
     public int getMaxTemperature() {
         return prefab().getMaxTemp();
     }
 
-    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag)
-    {
+    public void appendHoverText(ItemStack pStack, @javax.annotation.Nullable BlockGetter pLevel, List<Component> list, TooltipFlag pFlag) {
         list.add(TextUtils.applyFormat(
                 translatable("tooltip.nc.rf_amplifier.power", numberFormat(prefab().getPower())),
                 ChatFormatting.DARK_AQUA));
@@ -55,7 +57,7 @@ public class ElectromagnetBlock extends MultiblockBlock {
                 translatable("tooltip.nc.electromagnet.heat", numberFormat(prefab().getHeat())),
                 ChatFormatting.YELLOW));
         list.add(TextUtils.applyFormat(
-                translatable("tooltip.nc.electromagnet.max_temp", numberFormat((double) prefab().getMaxTemp() /1000)),
+                translatable("tooltip.nc.electromagnet.max_temp", numberFormat((double) prefab().getMaxTemp() / 1000)),
                 ChatFormatting.RED));
     }
 }

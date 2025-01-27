@@ -3,10 +3,8 @@ package igentuman.nc.setup.registration;
 import igentuman.nc.content.ArmorMaterials;
 import igentuman.nc.content.materials.*;
 import igentuman.nc.item.*;
-import net.minecraft.core.Holder;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
 
@@ -138,7 +136,6 @@ public class NCItems {
                 "foursmore",
                 "dominos",
                 "evenmoresmore"
-
         );
         int i = -18;
         for (String name : items) {

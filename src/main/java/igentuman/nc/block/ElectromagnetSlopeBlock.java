@@ -3,7 +3,10 @@ package igentuman.nc.block;
 import net.minecraft.core.Direction;
 import net.minecraft.core.FrontAndTop;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -41,22 +44,23 @@ public class ElectromagnetSlopeBlock extends ElectromagnetBlock {
         Direction direction = pContext.getClickedFace();
         Direction direction1;
         if (direction.getAxis() == Direction.Axis.Y) {
-            if(direction.equals(Direction.DOWN))
+            if (direction.equals(Direction.DOWN))
                 direction1 = pContext.getHorizontalDirection();
             else
                 direction1 = pContext.getHorizontalDirection().getOpposite();
         } else {
             direction = pContext.getNearestLookingVerticalDirection().getOpposite();
 
-            if(direction.equals(Direction.DOWN))
+            if (direction.equals(Direction.DOWN))
                 direction1 = pContext.getHorizontalDirection();
             else
                 direction1 = pContext.getHorizontalDirection()
                         .getOpposite();
         }
 
-            return this.defaultBlockState().setValue(ORIENTATION, FrontAndTop.fromFrontAndTop(direction, direction1));
+        return this.defaultBlockState().setValue(ORIENTATION, FrontAndTop.fromFrontAndTop(direction, direction1));
     }
+
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
         pBuilder.add(ORIENTATION);

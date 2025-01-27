@@ -14,10 +14,10 @@ public class AbstractSolarPanel extends NCEnergy {
     public void tickServer() {
         super.tickServer();
         sendOutPower();
-        if(energyStorage.getEnergyStored()>=energyStorage.getMaxEnergyStored()) {
+        if (energyStorage.getEnergyStored() >= energyStorage.getMaxEnergyStored()) {
             return;
         }
-        if(getLevel().canSeeSky(getBlockPos().offset(0, 1, 0)) && !getLevel().isRainingAt(getBlockPos().offset(0, 1, 0)) && getLevel().isDay()) {
+        if (getLevel().canSeeSky(getBlockPos().offset(0, 1, 0)) && !getLevel().isRainingAt(getBlockPos().offset(0, 1, 0)) && getLevel().isDay()) {
             energyStorage.addEnergy(energyStorage.getMaxEnergyStored());//panels do not have internal buffer
         }
     }
@@ -26,6 +26,7 @@ public class AbstractSolarPanel extends NCEnergy {
     protected int getEnergyMaxStorage() {
         return SolarPanels.all().get(getName().split("/")[1]).getActualGeneration();
     }
+
     @Override
     protected int getEnergyTransferPerTick() {
         return Math.min(SolarPanels.all().get(getName().split("/")[1]).getActualGeneration(), energyStorage.getEnergyStored());

@@ -84,8 +84,8 @@ public class TurbineRotorRenderer implements BlockEntityRenderer<BlockEntity> {
         angle %= 360;
         pPoseStack.translate(0.5, 0.5, 0.5);
         Direction facing = blockstate.getValue(TurbineRotorBlock.FACING);
-        Quaternionf rotation = new Quaternionf();
-        Quaternionf rotation2 = new Quaternionf();
+        Quaternionf rotation;
+        Quaternionf rotation2;
         switch (facing) {
             case NORTH:
             case SOUTH:
@@ -127,7 +127,6 @@ public class TurbineRotorRenderer implements BlockEntityRenderer<BlockEntity> {
     }
 
     private void renderBlade(Direction facing, PoseStack pPoseStack, MultiBufferSource buffer, int combinedOverlay, BlockRenderDispatcher blockRenderer, Quaternionf rotation, BakedModel blade) {
-
         pPoseStack.translate(0.5, 0.5, 0.5);
         Transformation tr = new Transformation(new Vector3f(0, 0, 0), rotation, new Vector3f(1f, getAttachedBlades() + 1, 1f), null);
         BlockState theBlade = bladeVertical;

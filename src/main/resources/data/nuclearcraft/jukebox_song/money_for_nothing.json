@@ -1,0 +1,8 @@
+{
+    "comparator_output": 15,
+    "description": {
+        "translate": "music.money_for_nothing.desc"
+    },
+    "length_in_seconds": 314.0,
+    "sound_event": "nuclearcraft:music.money_for_nothing"
+}

@@ -25,9 +25,11 @@ public class DecayGeneratorBE extends NCEnergy {
 
     public Block leadBlock;
     public int decayDuration = 36000; // 30 minutes
+
     public static String getName(BlockState pBlockState) {
-        return pBlockState.getBlock().asItem().toString();
+        return pBlockState.getBlock().asItem().toString().replace("nuclearcraft:", "");
     }
+
     private int[] ticks = new int[6];
 
     @Override
@@ -38,7 +40,7 @@ public class DecayGeneratorBE extends NCEnergy {
     private List<Block> allowedBlocks = new ArrayList<>();
 
     private List<Block> getAllowedBlocks() {
-        if(allowedBlocks.isEmpty()) {
+        if (allowedBlocks.isEmpty()) {
             allowedBlocks = getBlocksByTagKey(DECAY_GEN_BLOCK.location().toString());
         }
         return allowedBlocks;
@@ -46,10 +48,11 @@ public class DecayGeneratorBE extends NCEnergy {
 
     /**
      * Get block by tag. Use mod priority
+     *
      * @return Block
      */
     private Block getLeadBlock() {
-        if(leadBlock == null) {
+        if (leadBlock == null) {
             leadBlock = getSingleBlockByTagKey("forge:storage_blocks/lead");
         }
         return leadBlock;
@@ -63,15 +66,15 @@ public class DecayGeneratorBE extends NCEnergy {
      */
     private int getEnergyFromConnectedBlocks() {
         double energy = 0;
-        for(Direction side : Direction.values()) {
+        for (Direction side : Direction.values()) {
             Block connectedBlock = getLevel().getBlockState(getBlockPos().relative(side)).getBlock();
             if (!getAllowedBlocks().contains(connectedBlock)) {
                 ticks[side.ordinal()] = 0;
                 continue;
             }
-            energy += Math.log(ItemRadiation.byItem(connectedBlock.asItem())*5000000)*10;
+            energy += Math.log(ItemRadiation.byItem(connectedBlock.asItem()) * 5000000) * 10;
             ticks[side.ordinal()]++;
-            if(ticks[side.ordinal()] > decayDuration) {
+            if (ticks[side.ordinal()] > decayDuration) {
                 ticks[side.ordinal()] = 0;
                 decayBlock(getBlockPos().relative(side));
             }
@@ -85,16 +88,17 @@ public class DecayGeneratorBE extends NCEnergy {
     }
 
     protected int radiationTimer = 40;
+
     @Override
     public void tickServer() {
-        if(NuclearCraft.instance.isNcBeStopped) return;
+        if (NuclearCraft.instance.isNcBeStopped) return;
         super.tickServer();
         energyStorage.setEnergy(getEnergyFromConnectedBlocks());
         sendOutPower();
         radiationTimer--;
-        if(radiationTimer <= 0) {
+        if (radiationTimer <= 0) {
             radiationTimer = 40;
-            RadiationManager.get(getLevel()).addRadiation(getLevel(), (double) RTGs.all().get("uranium_rtg").config().getRadiation() /500000000, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
+            RadiationManager.get(getLevel()).addRadiation(getLevel(), (double) RTGs.all().get("uranium_rtg").config().getRadiation() / 500000000, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
         }
     }
 
@@ -102,6 +106,7 @@ public class DecayGeneratorBE extends NCEnergy {
     protected int getEnergyMaxStorage() {
         return ENERGY_GENERATION.DECAY_GENERATOR.get();
     }
+
     @Override
     protected int getEnergyTransferPerTick() {
         return energyStorage.getEnergyStored();

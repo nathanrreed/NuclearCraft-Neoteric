@@ -449,17 +449,6 @@ public class NCFluids {
             return makeColoredTypeWithTextures(builder, stillTex, flowingTex, name, CommonColors.WHITE);
         }
 
-//        @SubscribeEvent //TODO CHECK IF NEEDED
-//        public void onClientSetup(FMLClientSetupEvent event) {
-//            for (var fluid : CLIENT_FLUIDTYPE_EXTENSIONS) {
-//                FluidEntry entry = ALL_FLUID_ENTRIES.get(fluid.getName());
-//                if (entry.still.get().getFluidType().getDensity() < 1000) {
-//                    ItemBlockRenderTypes.setRenderLayer(entry.still.get(), RenderType.TRANSLUCENT);
-//                    ItemBlockRenderTypes.setRenderLayer(entry.flowing.get(), RenderType.TRANSLUCENT);
-//                }
-//            }
-//        }
-
         public NCFluid getFlowing() {
             return flowing.get();
         }

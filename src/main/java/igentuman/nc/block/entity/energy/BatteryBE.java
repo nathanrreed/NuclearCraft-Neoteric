@@ -39,15 +39,13 @@ public class BatteryBE extends NCEnergy {
     private int chargeCooldown = 0;
 
     public static String getName(BlockState pBlockState) {
-        return pBlockState.getBlock().asItem().toString();
+        return pBlockState.getBlock().asItem().toString().replace("nuclearcraft:", "");
     }
 
     @Nonnull
     @Override
     public @NotNull ModelData getModelData() {
-        return ModelData.builder()
-                .with(SIDE_CONFIG, sideConfig)
-                .build();
+        return ModelData.builder().with(SIDE_CONFIG, sideConfig).build();
     }
 
     @Override
@@ -88,16 +86,6 @@ public class BatteryBE extends NCEnergy {
         }
     }
 
-    //    @Nonnull
-//    @Override
-//    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-//        if (cap == ForgeCapabilities.ENERGY && (side != null && sideConfig.get(side.ordinal()) != ISizeToggable.SideMode.DISABLED)) {
-//            return energy.cast();
-//        }
-//        return super.getCapability(cap, side);
-//    }
-//
-//
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
         int oldEnergy = energyStorage.getEnergyStored();
@@ -120,7 +108,7 @@ public class BatteryBE extends NCEnergy {
     }
 
     protected int getEnergyMaxStorage() {
-        return BatteryBlocks.all().get(getBlockState().getBlock().asItem().toString()).getStorage();
+        return BatteryBlocks.all().get(getBlockState().getBlock().asItem().toString().replace("nuclearcraft:", "")).getStorage();
     }
 
     @Override
@@ -142,7 +130,6 @@ public class BatteryBE extends NCEnergy {
         if (!tag.contains("sideConfig")) return;
         loadSideConfig(tag.getIntArray("sideConfig"));
     }
-
 
     private void loadSideConfig(int[] tagData) {
         boolean changed = false;

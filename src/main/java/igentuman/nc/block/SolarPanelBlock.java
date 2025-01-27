@@ -54,7 +54,7 @@ public class SolarPanelBlock extends Block implements EntityBlock {
     }
 
     public String code() {
-        return SolarPanels.getCode(asItem().toString());
+        return SolarPanels.getCode(asItem().toString().replace("nuclearcraft:", ""));
     }
 
     @javax.annotation.Nullable

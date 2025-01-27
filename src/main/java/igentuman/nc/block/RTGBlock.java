@@ -48,7 +48,7 @@ public class RTGBlock extends Block implements EntityBlock {
     }
 
     public String code() {
-        return asItem().toString();
+        return asItem().toString().replace("nuclearcraft:", "");
     }
 
     @javax.annotation.Nullable

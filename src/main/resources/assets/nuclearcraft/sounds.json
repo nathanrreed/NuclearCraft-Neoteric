@@ -66,23 +66,19 @@
     "subtitle": "sound_event.nuclearcraft.item.geiger_5"
   },
   "music.wanderer": {
-    "category": "record",
-    "subtitle": "music.wanderer",
+    "subtitle": "music.wanderer.desc",
     "sounds": [ { "name": "nuclearcraft:music/wanderer", "stream": true } ]
   },
   "music.end_of_the_world": {
-    "category": "record",
-    "subtitle": "music.end_of_the_world",
+    "subtitle": "music.end_of_the_world.desc",
     "sounds": [ { "name": "nuclearcraft:music/end_of_the_world", "stream": true } ]
   },
   "music.money_for_nothing": {
-    "category": "record",
-    "subtitle": "music.money_for_nothing",
+    "subtitle": "music.money_for_nothing.desc",
     "sounds": [ { "name": "nuclearcraft:music/money_for_nothing", "stream": true } ]
   },
   "music.hyperspace": {
-    "category": "record",
-    "subtitle": "music.hyperspace",
+    "subtitle": "music.hyperspace.desc",
     "sounds": [ { "name": "nuclearcraft:music/hyperspace", "stream": true } ]
   }
 }

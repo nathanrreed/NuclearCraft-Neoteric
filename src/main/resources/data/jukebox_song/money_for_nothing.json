@@ -1,8 +1,0 @@
-{
-    "comparator_output": 15,
-    "description": {
-        "translate": "item.nuclearcraft.record_money_for_nothing.des0"
-    },
-    "length_in_seconds": 314.0,
-    "sound_event": "nuclearcraft:music_disc.nc.money_for_nothing"
-}

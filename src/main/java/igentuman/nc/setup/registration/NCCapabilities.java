@@ -1,12 +1,12 @@
-package igentuman.nc.setup;
+package igentuman.nc.setup.registration;
 
 import igentuman.nc.block.entity.BarrelBE;
 import igentuman.nc.content.energy.BatteryBlocks;
+import igentuman.nc.content.energy.RTGs;
+import igentuman.nc.content.energy.SolarPanels;
 import igentuman.nc.content.storage.BarrelBlocks;
 import igentuman.nc.handler.ItemEnergyHandler;
 import igentuman.nc.item.*;
-import igentuman.nc.setup.registration.NCEnergyBlocks;
-import igentuman.nc.setup.registration.NCStorageBlocks;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
@@ -20,7 +20,7 @@ import static igentuman.nc.setup.registration.NCItems.*;
 import static net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage;
 import static net.neoforged.neoforge.capabilities.Capabilities.FluidHandler;
 
-public class RegisterCapabilities {
+public class NCCapabilities {
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 //        event.registerEntity(PlayerRadiation, EntityType.PLAYER, ); //TODO
 //        event.register(WorldRadiation.class);
@@ -68,15 +68,14 @@ public class RegisterCapabilities {
         for (var type : BarrelBlocks.all().keySet().stream().map(name -> NCStorageBlocks.STORAGE_BE.get(name)).toList()) {
             event.registerBlockEntity(FluidHandler.BLOCK, type.get(), (entity, context) -> ((BarrelBE) entity).getFluidHandler().get());
         }
+
+        // NCEnergy Capabilities
+        for (var type : Stream.of(List.of("decay_generator"),
+                SolarPanels.all().keySet().stream().map(name -> "solar_panel/" + name).toList(),
+                BatteryBlocks.all().keySet(),
+                RTGs.all().keySet()
+        ).flatMap(Collection::stream).map(name -> NCEnergyBlocks.ENERGY_BE.get(name)).toList()) {
+            event.registerBlockEntity(EnergyStorage.BLOCK, type.get(), (entity, context) -> entity.getEnergy().get());
+        }
     }
-
-    //    @Nonnull
-//    @Override
-//    public <T> LazyOptional<T> getCapability(@Nonnull DrbgParameters.Capability<T> cap, @Nullable Direction side) {
-//        if (cap == Capabilities.FluidHandler.BLOCK && (side != null && sideConfig.get(side.ordinal()) != SideMode.DISABLED)) {
-//            return getFluidHandler().cast();
-//        }
-//        return super.getCapability(cap, side);
-//    }
-
 }

@@ -21,7 +21,7 @@ public class RFAmplifierBlock extends MultiblockBlock {
 
     public String name()
     {
-        return asItem().toString();
+        return asItem().toString().replace("nuclearcraft:", "");
     }
 
     public RFAmplifier.RFAmplifierPrefab prefab()

@@ -1,8 +1,0 @@
-{
-    "comparator_output": 15,
-    "description": {
-        "translate": "item.nuclearcraft.record_hyperspace.des0"
-    },
-    "length_in_seconds": 184.0,
-    "sound_event": "nuclearcraft:music_disc.nc.hyperspace"
-}

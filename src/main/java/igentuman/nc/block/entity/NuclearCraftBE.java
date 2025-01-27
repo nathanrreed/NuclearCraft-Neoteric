@@ -219,7 +219,7 @@ public class NuclearCraftBE extends BlockEntity {
 
     @Override
     public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
-        if (tag != null) {
+        if (!tag.isEmpty()) {
             loadClientData(tag, lookupProvider);
             if (tag.contains("playerUID")) {
                 playerUID = tag.getUUID("playerUID");

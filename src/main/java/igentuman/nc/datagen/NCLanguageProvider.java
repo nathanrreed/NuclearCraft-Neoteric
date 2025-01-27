@@ -73,6 +73,11 @@ public class NCLanguageProvider extends LanguageProvider {
         add("music.wanderer", "Wanderer");
         add("music.money_for_nothing", "Money For Nothing");
 
+        add("music.end_of_the_world.desc", "Skeeter Davis - End of the World");
+        add("music.hyperspace.desc", "Ur-Quan Masters - Hyperspace");
+        add("music.money_for_nothing.desc", "Dire Straits - Money For Nothing");
+        add("music.wanderer.desc", "Dion - Wanderer");
+
         add("sound_event.nuclearcraft.item.geiger_1", "Geiger Counter Ticks Level 1 Intensity");
         add("sound_event.nuclearcraft.item.geiger_2", "Geiger Counter Ticks Level 2 Intensity");
         add("sound_event.nuclearcraft.item.geiger_3", "Geiger Counter Ticks Level 3 Intensity");
@@ -220,7 +225,6 @@ public class NCLanguageProvider extends LanguageProvider {
     }
 
     private void tooltips() {
-
         add("decay_generator.fe_generation", "Result FE generation depends on attached blocks radiation");
         add("tooltip.nc.lightning_rod_charge", "Can charge NC Energy blocks by %s FE");
         add("tooltip.nc.jei.gas_to_fluid.desc", "NC blocks automatically converts Mek Gasses into Fluids during input");

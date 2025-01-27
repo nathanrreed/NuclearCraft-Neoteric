@@ -51,8 +51,7 @@ public class BatteryBlockLoader implements IGeometryLoader<BatteryBlockLoader.Ba
         public final Material topOut;
         public final Material topNone;
 
-        public BatteryModelGeometry(Material side, Material sideIn, Material sideOut, Material sideNone,
-                                    Material top, Material topIn, Material topOut, Material topNone) {
+        public BatteryModelGeometry(Material side, Material sideIn, Material sideOut, Material sideNone, Material top, Material topIn, Material topOut, Material topNone) {
             this.sideDefault = side;
             this.topDefault = top;
             this.sideIn = sideIn;

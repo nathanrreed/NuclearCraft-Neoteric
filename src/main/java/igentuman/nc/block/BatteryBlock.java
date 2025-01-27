@@ -83,7 +83,6 @@ public class BatteryBlock extends Block implements EntityBlock {
         return ItemInteractionResult.SUCCESS;
     }
 
-
     @Override
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (pState.getBlock() != pNewState.getBlock()) {
@@ -102,7 +101,7 @@ public class BatteryBlock extends Block implements EntityBlock {
     }
 
     public String code() {
-        return asItem().toString();
+        return asItem().toString().replace("nuclearcraft:", "");
     }
 
     @javax.annotation.Nullable

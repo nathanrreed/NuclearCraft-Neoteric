@@ -73,15 +73,6 @@ public class NCEnergy extends NuclearCraftBE {
         return 0;
     }
 
-//    @Nonnull
-//    @Override
-//    public <T> Consumer<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-//        if (cap == ForgeCapabilities.ENERGY) {
-//            return energy.cast();
-//        }
-//        return super.getCapability(cap, side);
-//    }
-
     public NCEnergy(BlockEntityType<?> pType, BlockPos pPos, BlockState pBlockState, String name) {
         super(pType, pPos, pBlockState);
     }

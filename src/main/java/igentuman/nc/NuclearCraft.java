@@ -1,21 +1,18 @@
 package igentuman.nc;
 
-import igentuman.nc.handler.ItemEnergyHandler;
 import igentuman.nc.handler.command.CommandNcPatrons;
 import igentuman.nc.handler.command.CommandNcVeinCheck;
 import igentuman.nc.handler.command.NCRadiationCommand;
 import igentuman.nc.handler.command.StructureCommand;
 import igentuman.nc.handler.config.*;
 import igentuman.nc.handler.event.server.WorldEvents;
-import igentuman.nc.item.BatteryItem;
-import igentuman.nc.item.HEVItem;
 import igentuman.nc.network.PacketHandler;
 import igentuman.nc.radiation.data.RadiationEvents;
 import igentuman.nc.radiation.data.RadiationManager;
 import igentuman.nc.setup.ClientSetup;
 import igentuman.nc.setup.ModSetup;
-import igentuman.nc.setup.RegisterCapabilities;
 import igentuman.nc.setup.Registration;
+import igentuman.nc.setup.registration.NCCapabilities;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.IEventBus;
@@ -24,8 +21,6 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -34,7 +29,6 @@ import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static igentuman.nc.setup.registration.NCItems.*;
 import static igentuman.nc.util.FileExtractor.preFetchProcessorsConfig;
 import static igentuman.nc.util.FileExtractor.unpackFilesFromFolderToConfig;
 
@@ -78,10 +72,7 @@ public class NuclearCraft {
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
         MOD_BUS.addListener(ModSetup::init);
         MOD_BUS.addListener(ClientSetup::registerScreens);
-        MOD_BUS.addListener(RegisterCapabilities::registerCapabilities);
-
-//        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> MOD_BUS.addListener(ClientSetup::init));
-//        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> MOD_BUS.addListener(this::registerClientEventHandlers));
+        MOD_BUS.addListener(NCCapabilities::registerCapabilities);
     }
 
     public static PacketHandler packetHandler() {

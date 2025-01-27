@@ -125,22 +125,20 @@ public class BlockOverlayHandler {
             PoseStack stack = new PoseStack();
             stack.pushPose();
             Camera info = event.getCamera();
-            stack.mulPose(XP.rotationDegrees(info.getXRot()));
-            stack.mulPose(YP.rotationDegrees(info.getYRot() + 180));
             double d0 = info.getPosition().x();
             double d1 = info.getPosition().y();
             double d2 = info.getPosition().z();
             VertexConsumer builder = Minecraft.getInstance().renderBuffers().outlineBufferSource().getBuffer(RenderType.lines());
             VoxelShape shape = world.getBlockState(blockPos).getShape(world, blockPos);
             AABB bounds = shape.bounds();
-            switch (hitSide) {
-                case DOWN -> bounds = bounds.setMaxY(0.01);
-                case UP -> bounds = bounds.setMinY(0.99);
-                case NORTH -> bounds = bounds.setMaxZ(0.01);
-                case SOUTH -> bounds = bounds.setMinZ(0.99);
-                case WEST -> bounds = bounds.setMaxX(0.01);
-                case EAST -> bounds = bounds.setMinX(0.99);
-            }
+            bounds = switch (hitSide) {
+                case DOWN -> bounds.setMaxY(0.01);
+                case UP -> bounds.setMinY(0.99);
+                case NORTH -> bounds.setMaxZ(0.01);
+                case SOUTH -> bounds.setMinZ(0.99);
+                case WEST -> bounds.setMaxX(0.01);
+                case EAST -> bounds.setMinX(0.99);
+            };
             LevelRenderer.renderLineBox(stack, builder, bounds.move(blockPos.getX() - d0, blockPos.getY() - d1, blockPos.getZ() - d2), color[0], color[1], color[2], 0.35F);
 
             stack.popPose();

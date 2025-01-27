@@ -34,7 +34,6 @@ public class Registries {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(BuiltInRegistries.FLUID, MODID);
-    public static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS = DeferredRegister.create(BuiltInRegistries.ARMOR_MATERIAL, MODID);
     public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.FLUID_TYPES, MODID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(net.minecraft.core.registries.Registries.BLOCK_ENTITY_TYPE, MODID);
     public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister.create(net.minecraft.core.registries.Registries.MENU, MODID);
@@ -51,6 +50,7 @@ public class Registries {
     public static void init() {
         IEventBus bus = ModLoadingContext.get().getActiveContainer().getEventBus();
         BLOCKS.register(bus);
+        SOUND_EVENTS.register(bus);
         ITEMS.register(bus);
         FLUIDS.register(bus);
         FLUID_TYPES.register(bus);
@@ -67,7 +67,6 @@ public class Registries {
         RECIPE_SERIALIZERS.register(bus);
         RECIPE_TYPES.register(bus);
         CREATIVE_TABS.register(bus);
-        SOUND_EVENTS.register(bus);
         DATA_COMPONENTS.register(bus);
     }
 }
