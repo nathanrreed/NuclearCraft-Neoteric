@@ -1,0 +1,53 @@
+{
+  "type": "nuclearcraft:assembler",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 3,
+      "ingredients": [
+        {
+          "tag": "c:plates/steel"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/lead"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:motor"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:actuator"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:multitool"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

@@ -3,8 +3,8 @@ package igentuman.nc.datagen.recipes.recipes;
 import igentuman.nc.content.materials.Materials;
 import igentuman.nc.content.processors.Processors;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
+import igentuman.nc.recipes.ingredient.ItemStackIngredient;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class LeacherRecipes extends AbstractRecipeProvider {
         }
     }
 
-    protected static void add(FluidStackIngredient inputFluid, Ingredient inputItem, FluidStackIngredient output, double... modifiers) {
+    protected static void add(FluidStackIngredient inputFluid, ItemStackIngredient inputItem, FluidStackIngredient output, double... modifiers) {
         itemsAndFluids(List.of(inputItem), new ArrayList<>(), List.of(inputFluid), List.of(output), modifiers);
     }
 }

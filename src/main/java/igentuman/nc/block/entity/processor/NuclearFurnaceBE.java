@@ -7,7 +7,6 @@ import igentuman.nc.recipes.type.NcRecipe;
 import igentuman.nc.util.annotation.NBTField;
 import igentuman.nc.util.annotation.NothingNullByDefault;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -67,8 +66,8 @@ public class NuclearFurnaceBE extends NCProcessorBE<NuclearFurnaceBE.Recipe> {
         }
 
         @Override
-        public void write(FriendlyByteBuf buffer) {
-            //TODO
+        public String getCodeId() {
+            return Processors.NUCLEAR_FURNACE;
         }
     }
 }

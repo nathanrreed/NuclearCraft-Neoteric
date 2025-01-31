@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "nuclearcraft:assembler/fuel_mixed_mix_241-dusts_graphite-ingots_pyrolitic_carbon-ingots_silicon_carbide"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nuclearcraft:assembler/fuel_mixed_mix_241-dusts_graphite-ingots_pyrolitic_carbon-ingots_silicon_carbide"
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "type": "nuclearcraft:pressurizer",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:ingots/beryllium"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:beryllium_plate"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

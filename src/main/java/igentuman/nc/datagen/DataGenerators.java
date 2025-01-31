@@ -34,7 +34,7 @@ public class DataGenerators {
         generator.addProvider(event.includeServer(), blockTags);
         generator.addProvider(event.includeServer(), new NCItemTags(generator, blockTags, event));
         generator.addProvider(event.includeServer(), new FluidTags(generator, event));
-//        generator.addProvider(event.includeServer(), new NCRecipes(generator.getPackOutput(), lookupProvider)); //TODO READD
+        generator.addProvider(event.includeServer(), new NCRecipes(generator.getPackOutput(), lookupProvider));
         generator.addProvider(event.includeServer(), new NCBiomeTags(generator, event));
         generator.addProvider(event.includeServer(), new NCStructureSetTags(generator, event));
         generator.addProvider(event.includeClient(), new NCBlockStates(generator, event));

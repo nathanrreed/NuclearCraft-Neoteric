@@ -1,0 +1,29 @@
+{
+  "type": "nuclearcraft:manufactory",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 2,
+      "ingredients": [
+        {
+          "item": "minecraft:sugar_cane"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:bioplastic"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 0.5,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

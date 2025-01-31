@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:assembler",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 3,
+      "ingredients": [
+        {
+          "tag": "c:dusts/bscco"
+        }
+      ]
+    },
+    {
+      "amount": 6,
+      "ingredients": [
+        {
+          "tag": "c:ingots/silver"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 3,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:coil_bscco"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

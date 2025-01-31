@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:centrifuge",
+  "inputFluids": [
+    {
+      "ingredients": [
+        {
+          "amount": 1296,
+          "id": "nuclearcraft:depleted_fuel_californium_hecf_249"
+        }
+      ]
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 864,
+      "tag": "c:californium/252"
+    },
+    {
+      "amount": 288,
+      "tag": "c:californium/250"
+    },
+    {
+      "amount": 144,
+      "tag": "c:ruthenium_106"
+    },
+    {
+      "amount": 144,
+      "tag": "c:promethium_147"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.5
+}

@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:isotope_separator",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 10,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:lithium_dust"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 9,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:lithium_7"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:lithium_6"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 5.0
+}

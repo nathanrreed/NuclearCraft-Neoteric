@@ -120,7 +120,6 @@ public class NCRecipes extends RecipeProvider {
     }
 
     private void storageBlocks(RecipeOutput consumer) {
-
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, STORAGE_BLOCKS.get("basic_storage_container").get())
                 .pattern(" P ")
                 .pattern("PCP")
@@ -1237,7 +1236,7 @@ public class NCRecipes extends RecipeProvider {
                 .pattern("PCP")
                 .define('P', NCItems.NC_PARTS.get("plate_advanced").get())
                 .define('S', ENERGY_BLOCKS.get("solar_panel/basic").get())
-                .define('G', dustIngredient(Materials.quartz))
+                .define('G', dustIngredient(Materials.quartz).getInputsRaw().getFirst())
                 .define('C', NCItems.NC_PARTS.get("coil_copper").get())
                 .group(MODID + "_solar_panels")
                 .unlockedBy("item", has(ENERGY_BLOCKS.get("solar_panel/basic").get()))
@@ -1249,7 +1248,7 @@ public class NCRecipes extends RecipeProvider {
                 .pattern("PMP")
                 .define('P', NCItems.NC_PARTS.get("plate_du").get())
                 .define('S', ENERGY_BLOCKS.get("solar_panel/advanced").get())
-                .define('G', dustIngredient(Materials.energetic_blend))
+                .define('G', dustIngredient(Materials.energetic_blend).getInputsRaw().getFirst())
                 .define('M', NCItems.NC_PARTS.get("coil_magnesium_diboride").get())
                 .group(MODID + "_solar_panels")
                 .unlockedBy("item", has(ENERGY_BLOCKS.get("solar_panel/advanced").get()))
@@ -1261,7 +1260,7 @@ public class NCRecipes extends RecipeProvider {
                 .pattern("PMP")
                 .define('P', NCItems.NC_PARTS.get("plate_elite").get())
                 .define('S', ENERGY_BLOCKS.get("solar_panel/du").get())
-                .define('G', dustIngredient(Materials.energetic_blend))
+                .define('G', dustIngredient(Materials.energetic_blend).getInputsRaw().getFirst())
                 .define('M', NCItems.NC_PARTS.get("coil_magnesium_diboride").get())
                 .group(MODID + "_solar_panels")
                 .unlockedBy("item", has(ENERGY_BLOCKS.get("solar_panel/advanced").get()))
@@ -1272,9 +1271,9 @@ public class NCRecipes extends RecipeProvider {
     private void materials(RecipeOutput consumer) {
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, NC_DUSTS.get(Materials.dimensional_blend).get(), 2)
-                .requires(dustIngredient(Materials.enderium), 1)
-                .requires(dustIngredient(Materials.emerald), 1)
-                .requires(dustIngredient(Materials.lapis), 1)
+                .requires(dustIngredient(Materials.enderium).getInputsRaw().getFirst(), 1)
+                .requires(dustIngredient(Materials.emerald).getInputsRaw().getFirst(), 1)
+                .requires(dustIngredient(Materials.lapis).getInputsRaw().getFirst(), 1)
                 .group(MODID + "_dusts")
                 .unlockedBy("dust", has(NC_DUSTS.get(Materials.enderium).get()))
                 .save(consumer);
@@ -1534,7 +1533,6 @@ public class NCRecipes extends RecipeProvider {
                 .group(MODID + "_machines")
                 .unlockedBy("item", has(NCItems.NC_PARTS.get("actuator").get()))
                 .save(consumer);
-
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, NCProcessors.PROCESSORS.get("isotope_separator").get())
                 .pattern("PMP")

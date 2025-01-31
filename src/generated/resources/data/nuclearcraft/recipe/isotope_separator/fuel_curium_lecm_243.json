@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:isotope_separator",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 9,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:fuel_curium_lecm_243"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:curium_243"
+        }
+      ]
+    },
+    {
+      "amount": 8,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:curium_246"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 2.0
+}

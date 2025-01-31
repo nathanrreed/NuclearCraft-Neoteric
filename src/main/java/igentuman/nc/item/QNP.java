@@ -1,6 +1,5 @@
 package igentuman.nc.item;
 
-import com.lowdragmc.lowdraglib.misc.ItemHandlerHelper;
 import igentuman.nc.setup.registration.NCParticleTypes;
 import igentuman.nc.util.CustomEnergyStorage;
 import igentuman.nc.util.RayTraceUtils;
@@ -164,7 +163,7 @@ public class QNP extends PickaxeItem {
             Block.getDrops(tempState, (ServerLevel) worldIn, pos, null, entityLiving, tool).forEach(itemStack -> {
                 boolean combined = false;
                 for (ItemStack drop : totalDrops) {
-                    if (ItemHandlerHelper.canItemStacksStack(drop, itemStack)) {
+                    if (ItemStack.isSameItemSameComponents(drop, itemStack)) {
                         drop.setCount(drop.getCount() + itemStack.getCount());
                         combined = true;
                         break;

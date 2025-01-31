@@ -1,0 +1,69 @@
+{
+  "type": "nuclearcraft:fuel_reprocessor",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:depleted_fuel_uranium_heu_233_tr"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:uranium_235"
+        }
+      ]
+    },
+    {
+      "amount": 2,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:uranium_238"
+        }
+      ]
+    },
+    {
+      "amount": 3,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:plutonium_242"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:americium_243"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/strontium_90"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/caesium_137"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.5
+}

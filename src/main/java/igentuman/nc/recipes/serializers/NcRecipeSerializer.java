@@ -1,258 +1,185 @@
 package igentuman.nc.recipes.serializers;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Function8;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import igentuman.nc.NuclearCraft;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
 import igentuman.nc.recipes.ingredient.ItemStackIngredient;
-import igentuman.nc.recipes.ingredient.creator.IngredientCreatorAccess;
-import igentuman.nc.recipes.type.EmptyRecipe;
+import igentuman.nc.recipes.ingredient.creator.FluidStackIngredientCreator;
+import igentuman.nc.recipes.ingredient.creator.FluidStackIngredientCreator.TaggedFluidStackIngredient;
+import igentuman.nc.recipes.ingredient.creator.ItemStackIngredientCreator;
 import igentuman.nc.recipes.type.NcRecipe;
-import igentuman.nc.util.JsonConstants;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.network.connection.ConnectionType;
 import org.jetbrains.annotations.NotNull;
 
-import static igentuman.nc.recipes.type.NcRecipe.getBarrier;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
 
 public class NcRecipeSerializer<RECIPE extends NcRecipe> implements RecipeSerializer<RECIPE> {
-    final IFactory<RECIPE> factory;
+    IFactory<RECIPE> factory;
 
     public NcRecipeSerializer(IFactory<RECIPE> factory) {
+        assert factory != null;
         this.factory = factory;
     }
 
-    protected FluidStackIngredient[] inputFluidsFromJson(JsonObject json, ResourceLocation recipeId) {
-        FluidStackIngredient[] inputFluids = new FluidStackIngredient[0];
-        if (json.has("inputFluids")) {
-            if (GsonHelper.isArrayNode(json, "inputFluids")) {
-                JsonElement input = GsonHelper.getAsJsonArray(json, "inputFluids");
-                inputFluids = new FluidStackIngredient[input.getAsJsonArray().size()];
-                int i = 0;
-                for (JsonElement in : input.getAsJsonArray()) {
-                    try {
-                        inputFluids[i] = IngredientCreatorAccess.fluid().deserialize(in);
-                    } catch (Exception ex) {
-                        NuclearCraft.LOGGER.warn("Unable to parse input fluid for recipe: " + recipeId);
-                        inputFluids[i] = IngredientCreatorAccess.fluid().from(FluidStack.EMPTY);
-                    }
-                    i++;
-                }
-            } else {
-                JsonElement inputJson = GsonHelper.getAsJsonObject(json, "inputFluids");
-                try {
-                    inputFluids = new FluidStackIngredient[]{IngredientCreatorAccess.fluid().deserialize(inputJson)};
-                } catch (Exception ex) {
-                    NuclearCraft.LOGGER.warn("Unable to parse input fluid for recipe: " + recipeId);
-                    inputFluids[0] = IngredientCreatorAccess.fluid().from(FluidStack.EMPTY);
-                }
+    public static MapCodec<ItemStackIngredient> ITEM_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+            Ingredient.CODEC.listOf().fieldOf("ingredients").forGetter(ItemStackIngredient::getInputsRaw),
+            Codec.INT.fieldOf("amount").forGetter(ItemStackIngredient::getAmount)).apply(inst, ItemStackIngredientCreator.INSTANCE::from));
+
+    public static MapCodec<FluidStackIngredient> FLUID_CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+                    FluidStack.CODEC.listOf().fieldOf("ingredients").forGetter(FluidStackIngredient::getInputsRaw))
+            .apply(inst, FluidStackIngredientCreator.INSTANCE::from));
+
+    public static MapCodec<TaggedFluidStackIngredient> TAG_FLUID = RecordCodecBuilder.mapCodec(inst -> inst.group(
+                    ResourceLocation.CODEC.fieldOf("tag").forGetter(TaggedFluidStackIngredient::getKey),
+                    Codec.INT.fieldOf("amount").forGetter(TaggedFluidStackIngredient::getAmount))
+            .apply(inst, TaggedFluidStackIngredient::new));
+
+    public static MapCodec<Either<TaggedFluidStackIngredient, FluidStackIngredient>> ANY_FLUID = Codec.mapEither(TAG_FLUID, FLUID_CODEC);
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, List<ItemStackIngredient>> LIST_INGREDIENT_STACK = new StreamCodec<>() {
+        @Override
+        public @NotNull List<ItemStackIngredient> decode(RegistryFriendlyByteBuf buffer) {
+            return Arrays.stream(buffer.readArray(ItemStackIngredient[]::new, buf -> ItemStackIngredientCreator.INSTANCE.from(
+                    Ingredient.CONTENTS_STREAM_CODEC.decode(new RegistryFriendlyByteBuf(buf, buffer.registryAccess(), ConnectionType.NEOFORGE)),
+                    ByteBufCodecs.INT.decode(buf))
+            )).toList();
+        }
+
+        @Override
+        public void encode(RegistryFriendlyByteBuf buffer, List<ItemStackIngredient> value) {
+            buffer.writeArray(value.toArray(), (buf, ing) -> {
+                Ingredient.CONTENTS_STREAM_CODEC.encode(new RegistryFriendlyByteBuf(buf, buffer.registryAccess(), ConnectionType.NEOFORGE), ((ItemStackIngredient) ing).getInputsRaw().getFirst());
+                ByteBufCodecs.INT.encode(buf, ((ItemStackIngredient) ing).getAmount());
+            });
+        }
+    };
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, List<Either<TaggedFluidStackIngredient, FluidStackIngredient>>> LIST_FLUID_INGREDIENT_STACK = new StreamCodec<>() {
+        @Override
+        public @NotNull List<Either<TaggedFluidStackIngredient, FluidStackIngredient>> decode(RegistryFriendlyByteBuf buffer) {
+            int read_index = buffer.readerIndex();
+            try {
+                return Arrays.stream(buffer.readArray(FluidStackIngredient[]::new, buf -> FluidStackIngredientCreator.INSTANCE.from(
+                        ResourceLocation.STREAM_CODEC.decode(new RegistryFriendlyByteBuf(buf, buffer.registryAccess(), ConnectionType.NEOFORGE)),
+                        ByteBufCodecs.INT.decode(buf))
+                )).map(i -> Either.<TaggedFluidStackIngredient, FluidStackIngredient>left((TaggedFluidStackIngredient) i)).toList();
+            } catch (Exception exception) {
+                buffer.setIndex(read_index, buffer.writerIndex());
+                return Arrays.stream(buffer.readArray(FluidStackIngredient[]::new, buf -> FluidStackIngredientCreator.INSTANCE.from(
+                        FluidStack.STREAM_CODEC.decode(new RegistryFriendlyByteBuf(buf, buffer.registryAccess(), ConnectionType.NEOFORGE)))
+                )).map(Either::<TaggedFluidStackIngredient, FluidStackIngredient>right).toList();
             }
         }
 
-        return inputFluids;
-    }
-
-    protected FluidStackIngredient[] outputFluidsFromJson(JsonObject json, ResourceLocation recipeId) {
-        FluidStackIngredient[] outputFluids = new FluidStackIngredient[0];
-
-        if (json.has("outputFluids")) {
-            if (GsonHelper.isArrayNode(json, "outputFluids")) {
-                JsonElement output = GsonHelper.getAsJsonArray(json, "outputFluids");
-                outputFluids = new FluidStackIngredient[output.getAsJsonArray().size()];
-                int i = 0;
-                for (JsonElement out : output.getAsJsonArray()) {
-                    try {
-                        outputFluids[i] = IngredientCreatorAccess.fluid().deserialize(out.getAsJsonObject());
-                    } catch (Exception ex) {
-                        NuclearCraft.LOGGER.warn("Unable to parse output fluid for recipe: " + recipeId);
-                        outputFluids[i] = IngredientCreatorAccess.fluid().from(FluidStack.EMPTY);
-                    }
-                    i++;
-                }
-            } else {
-                JsonElement output = GsonHelper.getAsJsonObject(json, "outputFluids");
-                try {
-                    outputFluids = new FluidStackIngredient[]{IngredientCreatorAccess.fluid().deserialize(output.getAsJsonObject())};
-                } catch (Exception ex) {
-                    NuclearCraft.LOGGER.warn("Unable to parse output fluid for recipe: " + recipeId);
-                    outputFluids[0] = IngredientCreatorAccess.fluid().from(FluidStack.EMPTY);
-                }
+        @Override
+        public void encode(RegistryFriendlyByteBuf buffer, List<Either<TaggedFluidStackIngredient, FluidStackIngredient>> value) {
+            int write_index = buffer.writerIndex();
+            try {
+                buffer.writeArray(value.toArray(), (buf, ing) -> {
+                    ResourceLocation.STREAM_CODEC.encode(new RegistryFriendlyByteBuf(buf, buffer.registryAccess(), ConnectionType.NEOFORGE), ((TaggedFluidStackIngredient) ((Either) ing).left().get()).getKey());
+                    ByteBufCodecs.INT.encode(buf, ((TaggedFluidStackIngredient) ((Either) ing).left().get()).getAmount());
+                });
+            } catch (Exception exception) {
+                buffer.setIndex(buffer.readerIndex(), write_index);
+                buffer.writeArray(value.toArray(), (buf, ing) -> {
+                    FluidStack.STREAM_CODEC.encode(new RegistryFriendlyByteBuf(buf, buffer.registryAccess(), ConnectionType.NEOFORGE), ((FluidStackIngredient) ((Either) ing).right().get()).getInputsRaw().getFirst());
+                });
             }
         }
+    };
 
-        return outputFluids;
-    }
-
-    protected ItemStackIngredient[] inputItemsFromJson(JsonObject json, ResourceLocation recipeId) {
-        ItemStackIngredient[] inputItems = new ItemStackIngredient[0];
-
-        if (json.has(JsonConstants.INPUT)) {
-            if (GsonHelper.isArrayNode(json, JsonConstants.INPUT)) {
-                JsonElement input = GsonHelper.getAsJsonArray(json, JsonConstants.INPUT);
-                inputItems = new ItemStackIngredient[input.getAsJsonArray().size()];
-                int i = 0;
-                for (JsonElement in : input.getAsJsonArray()) {
-                    try {
-                        inputItems[i] = IngredientCreatorAccess.item().deserialize(in);
-                    } catch (Exception ex) {
-                        NuclearCraft.LOGGER.warn("Unable to parse input for recipe: " + recipeId);
-                        inputItems[i] = getBarrier();
-                    }
-                    i++;
-                }
-            } else {
-                JsonElement inputJson = GsonHelper.getAsJsonObject(json, JsonConstants.INPUT);
-                try {
-                    inputItems = new ItemStackIngredient[]{IngredientCreatorAccess.item().deserialize(inputJson)};
-                } catch (Exception ex) {
-                    NuclearCraft.LOGGER.warn("Unable to parse input for recipe: " + recipeId);
-                    inputItems[0] = getBarrier();
-                }
+    static <B, C, T1, T2, T3, T4, T5, T6, T7, T8> StreamCodec<B, C> composite(
+            final StreamCodec<? super B, T1> codec1,
+            final Function<C, T1> getter1,
+            final StreamCodec<? super B, T2> codec2,
+            final Function<C, T2> getter2,
+            final StreamCodec<? super B, T3> codec3,
+            final Function<C, T3> getter3,
+            final StreamCodec<? super B, T4> codec4,
+            final Function<C, T4> getter4,
+            final StreamCodec<? super B, T5> codec5,
+            final Function<C, T5> getter5,
+            final StreamCodec<? super B, T6> codec6,
+            final Function<C, T6> getter6,
+            final StreamCodec<? super B, T7> codec7,
+            final Function<C, T7> getter7,
+            final StreamCodec<? super B, T8> codec8,
+            final Function<C, T8> getter8,
+            final Function8<T1, T2, T3, T4, T5, T6, T7, T8, C> factory
+    ) {
+        return new StreamCodec<B, C>() {
+            @Override
+            public C decode(B p_330310_) {
+                T1 t1 = codec1.decode(p_330310_);
+                T2 t2 = codec2.decode(p_330310_);
+                T3 t3 = codec3.decode(p_330310_);
+                T4 t4 = codec4.decode(p_330310_);
+                T5 t5 = codec5.decode(p_330310_);
+                T6 t6 = codec6.decode(p_330310_);
+                T7 t7 = codec7.decode(p_330310_);
+                T8 t8 = codec8.decode(p_330310_);
+                return factory.apply(t1, t2, t3, t4, t5, t6, t7, t8);
             }
-        }
 
-        return inputItems;
-    }
-
-    protected ItemStackIngredient[] outputItemsFromJson(JsonObject json, ResourceLocation recipeId) {
-        ItemStackIngredient[] outputItems = new ItemStackIngredient[0];
-        if (json.has(JsonConstants.OUTPUT)) {
-            if (GsonHelper.isArrayNode(json, JsonConstants.OUTPUT)) {
-                JsonElement output = GsonHelper.getAsJsonArray(json, JsonConstants.OUTPUT);
-                outputItems = new ItemStackIngredient[output.getAsJsonArray().size()];
-
-                int i = 0;
-                for (JsonElement out : output.getAsJsonArray()) {
-                    try {
-                        outputItems[i] = IngredientCreatorAccess.item().deserialize(out);
-                    } catch (JsonSyntaxException ex) {
-                        NuclearCraft.LOGGER.error("Error parsing output itemstack for recipe: " + recipeId.toString());
-                        outputItems[i] = getBarrier();
-                    }
-                    i++;
-                }
-            } else {
-                JsonElement output = GsonHelper.getAsJsonObject(json, JsonConstants.OUTPUT);
-                try {
-                    outputItems = new ItemStackIngredient[]{IngredientCreatorAccess.item().deserialize(output.getAsJsonObject())};
-                } catch (Exception ex) {
-                    NuclearCraft.LOGGER.warn("Unable to parse output for recipe: " + recipeId);
-                    outputItems[0] = getBarrier();
-                }
+            @Override
+            public void encode(B p_332052_, C p_331912_) {
+                codec1.encode(p_332052_, getter1.apply(p_331912_));
+                codec2.encode(p_332052_, getter2.apply(p_331912_));
+                codec3.encode(p_332052_, getter3.apply(p_331912_));
+                codec4.encode(p_332052_, getter4.apply(p_331912_));
+                codec5.encode(p_332052_, getter5.apply(p_331912_));
+                codec6.encode(p_332052_, getter6.apply(p_331912_));
+                codec7.encode(p_332052_, getter7.apply(p_331912_));
+                codec8.encode(p_332052_, getter8.apply(p_331912_));
             }
-        }
-
-        return outputItems;
-    }
-//
-//    @Override
-//    public @NotNull RECIPE fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
-//        String type = GsonHelper.getAsString(json, "type");
-//        if (Processors.all().containsKey(type) && !Processors.all().get(type).config().isRegistered()) {
-//            return emptyRecipe(recipeId);
-//        }
-//
-//        ItemStackIngredient[] inputItems = inputItemsFromJson(json, recipeId);
-//        ItemStackIngredient[] outputItems = outputItemsFromJson(json, recipeId);
-//        FluidStackIngredient[] inputFluids = inputFluidsFromJson(json, recipeId);
-//        FluidStackIngredient[] outputFluids = outputFluidsFromJson(json, recipeId);
-//
-//        double timeModifier = 1D;
-//        double powerModifier = 1D;
-//        double radiation = 1D;
-//        double rarityModifier = 1D;
-//        double temperature = 1D;
-//        try {
-//            timeModifier = GsonHelper.getAsDouble(json, "timeModifier", 1.0);
-//            powerModifier = GsonHelper.getAsDouble(json, "powerModifier", 1.0);
-//            radiation = GsonHelper.getAsDouble(json, "radiation", 1.0);
-//            rarityModifier = GsonHelper.getAsDouble(json, "rarityModifier", 1.0);
-//            temperature = GsonHelper.getAsDouble(json, "temperature", 1.0);
-//            if (temperature > 1) {
-//                rarityModifier = temperature;
-//            }
-//        } catch (Exception ex) {
-//            NuclearCraft.LOGGER.warn("Unable to parse params for recipe: " + recipeId);
-//        }
-//        return this.factory.create(recipeId, inputItems, outputItems, inputFluids, outputFluids, timeModifier, powerModifier, radiation, rarityModifier);
-//    }
-
-    RECIPE emptyRecipe(@NotNull ResourceLocation recipeId) {
-        return (RECIPE) new EmptyRecipe(recipeId);
-    }
-
-    public ItemStackIngredient[] readItems(@NotNull FriendlyByteBuf buffer) {
-        int size = buffer.readInt();
-        ItemStackIngredient[] items = new ItemStackIngredient[size];
-        for (int i = 0; i < size; i++) {
-            items[i] = IngredientCreatorAccess.item().read(buffer);
-        }
-        return items;
-    }
-
-    public FluidStackIngredient[] readFluids(@NotNull FriendlyByteBuf buffer) {
-        int size = buffer.readInt();
-        FluidStackIngredient[] fluids = new FluidStackIngredient[size];
-        for (int i = 0; i < size; i++) {
-            fluids[i] = IngredientCreatorAccess.fluid().read(buffer);
-        }
-        return fluids;
+        };
     }
 
     @Override
     public MapCodec<RECIPE> codec() {
-        return null; //TODO
+        return RecordCodecBuilder.mapCodec(instance -> instance.group(
+                ITEM_CODEC.codec().listOf().fieldOf("inputItems").forGetter(RECIPE::inputItems),
+                ITEM_CODEC.codec().listOf().fieldOf("outputItems").forGetter(RECIPE::outputItems),
+                ANY_FLUID.codec().listOf().fieldOf("inputFluids").forGetter(RECIPE::inputFluids),
+                ANY_FLUID.codec().listOf().fieldOf("outputFluids").forGetter(RECIPE::outputFluids),
+                Codec.DOUBLE.fieldOf("timeModifier").forGetter(RECIPE::timeModifier),
+                Codec.DOUBLE.fieldOf("powerModifier").forGetter(RECIPE::powerModifier),
+                Codec.DOUBLE.fieldOf("radiationModifier").forGetter(RECIPE::radiationModifier),
+                Codec.DOUBLE.fieldOf("rarityModifier").forGetter(RECIPE::rarityModifier)
+        ).apply(instance, factory::create));
     }
 
     @Override
     public StreamCodec<RegistryFriendlyByteBuf, RECIPE> streamCodec() {
-        return null; //TODO
+        return composite(
+                LIST_INGREDIENT_STACK, RECIPE::inputItems,
+                LIST_INGREDIENT_STACK, RECIPE::outputItems,
+                LIST_FLUID_INGREDIENT_STACK, RECIPE::inputFluids,
+                LIST_FLUID_INGREDIENT_STACK, RECIPE::outputFluids,
+                ByteBufCodecs.DOUBLE, RECIPE::timeModifier,
+                ByteBufCodecs.DOUBLE, RECIPE::powerModifier,
+                ByteBufCodecs.DOUBLE, RECIPE::radiationModifier,
+                ByteBufCodecs.DOUBLE, RECIPE::rarityModifier,
+                factory::create
+        );
     }
-
-//    @Override
-//    public RECIPE fromNetwork(@NotNull ResourceLocation recipeId, @NotNull FriendlyByteBuf buffer) {
-//        try {
-//            ItemStackIngredient[] inputItems = readItems(buffer);
-//            ItemStackIngredient[] outputItems = readItems(buffer);
-//            FluidStackIngredient[] inputFluids = readFluids(buffer);
-//            FluidStackIngredient[] outputFluids = readFluids(buffer);
-//
-//            double timeModifier = buffer.readDouble();
-//            double powerModifier = buffer.readDouble();
-//            double radiation = buffer.readDouble();
-//
-//            return this.factory.create(recipeId, inputItems, outputItems, inputFluids, outputFluids, timeModifier, powerModifier, radiation, 1);
-//        } catch (Exception e) {
-//            NuclearCraft.LOGGER.error("Error reading recipe {} from packet. Trace: {}", recipeId, e);
-//        }
-//        NuclearCraft.LOGGER.error("Return empty recipe for: {}", recipeId);
-//
-//        //return invalid recipe
-//        return emptyRecipe(recipeId);
-//    }
-
-//    @Override
-//    public void toNetwork(@NotNull FriendlyByteBuf buffer, @NotNull RECIPE recipe) {
-//        try {
-//            recipe.write(buffer);
-//        } catch (Exception e) {
-//            NuclearCraft.LOGGER.error("Error writing recipe to packet.", e);
-//            throw e;
-//        }
-//    }
-
 
     @FunctionalInterface
     public interface IFactory<RECIPE extends NcRecipe> {
-        RECIPE create(ItemStackIngredient[] inputItems, ItemStackIngredient[] outputItems,
-                      FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids,
+        RECIPE create(List<ItemStackIngredient> inputItems, List<ItemStackIngredient> outputItems,
+                      List<Either<TaggedFluidStackIngredient, FluidStackIngredient>> inputFluids, List<Either<TaggedFluidStackIngredient, FluidStackIngredient>> outputFluids,
                       double timeMultiplier, double powerMultiplier, double radiationMultiplier, double rarityMultiplier);
     }
 }

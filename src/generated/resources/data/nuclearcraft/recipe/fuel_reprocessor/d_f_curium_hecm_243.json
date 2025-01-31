@@ -1,0 +1,69 @@
+{
+  "type": "nuclearcraft:fuel_reprocessor",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:depleted_fuel_curium_hecm_243"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 3,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:curium_245"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:curium_245"
+        }
+      ]
+    },
+    {
+      "amount": 2,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:berkelium_247"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:berkelium_248"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/molybdenum"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/promethium_147"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.5
+}

@@ -15,7 +15,6 @@ public class IngredientCreatorAccess {
     private static IItemStackIngredientCreator ITEM_STACK_INGREDIENT_CREATOR;
     private static IFluidStackIngredientCreator FLUID_STACK_INGREDIENT_CREATOR;
 
-
     /**
      * Gets the item stack ingredient creator.
      */
@@ -37,7 +36,6 @@ public class IngredientCreatorAccess {
         }
         return FLUID_STACK_INGREDIENT_CREATOR;
     }
-
 
     private static <TYPE extends IIngredientCreator<?, ?, ?>> void lookupInstance(Class<TYPE> type, String className, Consumer<TYPE> setter) {
         try {

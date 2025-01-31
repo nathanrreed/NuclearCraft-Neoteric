@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:alloy_smelter",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:ingots/boron_arsenide"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:ingots/extreme"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 2,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:thermoconducting_ingot"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.8,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.5
+}

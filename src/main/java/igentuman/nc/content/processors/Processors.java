@@ -1,11 +1,13 @@
 package igentuman.nc.content.processors;
 
+import com.tterrag.registrate.util.RegistrateDistExecutor;
 import igentuman.nc.block.entity.processor.*;
 import igentuman.nc.client.gui.processor.LeacherScreen;
 import igentuman.nc.container.LeacherContainer;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +77,9 @@ public class Processors {
                             .build()
             );
 
-            Processors.setScreen(LEACHER, LeacherScreen::new); //TODO should only be on client
+            if (Dist.CLIENT == FMLEnvironment.dist) {
+                Processors.setScreen(LEACHER, LeacherScreen::new);
+            }
 
             all.put(PUMP,
                     ProcessorBuilder

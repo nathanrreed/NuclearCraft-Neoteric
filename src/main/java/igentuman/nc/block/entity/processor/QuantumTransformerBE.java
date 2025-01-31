@@ -6,7 +6,6 @@ import igentuman.nc.recipes.ingredient.ItemStackIngredient;
 import igentuman.nc.recipes.type.NcRecipe;
 import igentuman.nc.util.annotation.NothingNullByDefault;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class QuantumTransformerBE extends NCProcessorBE<QuantumTransformerBE.Recipe> {
@@ -28,8 +27,8 @@ public class QuantumTransformerBE extends NCProcessorBE<QuantumTransformerBE.Rec
         }
 
         @Override
-        public void write(FriendlyByteBuf buffer) {
-            //TODO
+        public String getCodeId() {
+            return Processors.QUANTUM_TRANSFORMER;
         }
     }
 }

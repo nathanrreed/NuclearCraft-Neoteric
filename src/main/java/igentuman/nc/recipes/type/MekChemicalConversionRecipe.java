@@ -7,7 +7,6 @@ import mekanism.api.chemical.Chemical;
 import mekanism.api.chemical.ChemicalStack;
 import mekanism.common.recipe.ingredients.creator.FluidStackIngredientCreator;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static igentuman.nc.NuclearCraft.rl;
 import static net.minecraft.world.item.Items.BUCKET;
 
 public class MekChemicalConversionRecipe extends NcRecipe {
@@ -72,18 +70,12 @@ public class MekChemicalConversionRecipe extends NcRecipe {
     }
 
     @Override
-    public @NotNull String getGroup() {
+    public @NotNull String getCodeId() {
         return "mek_chemical_conversion";
     }
 
     @Override
     public @NotNull ItemStack getToastSymbol() {
         return new ItemStack(BUCKET);
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buffer) {
-//        super.write(buffer); TODO
-        buffer.writeDouble(rarityModifier);
     }
 }

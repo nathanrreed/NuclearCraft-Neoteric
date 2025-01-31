@@ -2,6 +2,8 @@ package igentuman.nc.datagen.recipes.recipes;
 
 import igentuman.nc.content.materials.Materials;
 import igentuman.nc.content.processors.Processors;
+import igentuman.nc.recipes.ingredient.ItemStackIngredient;
+import igentuman.nc.recipes.ingredient.creator.ItemStackIngredientCreator;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -47,7 +49,7 @@ public class RockCrusherRecipes extends AbstractRecipeProvider {
 
         add(
                 (ingredient(ANCIENT_DEBRIS, 1)),
-                List.of(Ingredient.of(stack(NETHERITE_SCRAP, 2)), dustIngredient(Materials.titanium, 1))
+                List.of(ItemStackIngredientCreator.INSTANCE.from(stack(NETHERITE_SCRAP, 2)), dustIngredient(Materials.titanium, 1))
         );
 
         add(
@@ -78,7 +80,7 @@ public class RockCrusherRecipes extends AbstractRecipeProvider {
         );
     }
 
-    private static void add(Ingredient input, List<Ingredient> output, double... modifiers) {
+    private static void add(ItemStackIngredient input, List<ItemStackIngredient> output, double... modifiers) {
         itemsToItems(List.of(input), output, modifiers);
     }
 }

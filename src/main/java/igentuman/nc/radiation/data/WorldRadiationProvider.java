@@ -25,7 +25,7 @@ public class WorldRadiationProvider implements ICapabilityProvider, INBTSerializ
         return worldRadiation;
     }
 
-//    @Nonnull
+//    @Nonnull TODO implement
 //    @Override
 //    public <T> Supplier<T> getCapability(@Nonnull Capability<T> cap) {
 //        if (cap == WORLD_RADIATION) {
@@ -39,7 +39,6 @@ public class WorldRadiationProvider implements ICapabilityProvider, INBTSerializ
 //    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 //        return getCapability(cap);
 //    }
-
 
     @Override
     public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {

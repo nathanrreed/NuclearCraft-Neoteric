@@ -1,0 +1,25 @@
+{
+  "type": "nuclearcraft:melter",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:dark_chocolate"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [
+    {
+      "amount": 144,
+      "tag": "c:dark_chocolate"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 0.5,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 0.25
+}

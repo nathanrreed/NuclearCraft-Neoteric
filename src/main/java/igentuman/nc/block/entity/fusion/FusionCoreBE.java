@@ -1,5 +1,6 @@
 package igentuman.nc.block.entity.fusion;
 
+import com.mojang.datafixers.util.Either;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import igentuman.nc.NuclearCraft;
 import igentuman.nc.block.fusion.FusionCoreBlock;
@@ -19,6 +20,7 @@ import igentuman.nc.recipes.NcRecipeType;
 import igentuman.nc.recipes.RecipeInfo;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
 import igentuman.nc.recipes.ingredient.ItemStackIngredient;
+import igentuman.nc.recipes.ingredient.creator.FluidStackIngredientCreator;
 import igentuman.nc.recipes.type.NcRecipe;
 import igentuman.nc.util.CustomEnergyStorage;
 import igentuman.nc.util.NCBlockPos;
@@ -30,7 +32,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -206,7 +207,7 @@ public class FusionCoreBE<RECIPE extends FusionCoreBE.Recipe> extends FusionBE {
         return energy;
     }
 
-//    @Nonnull
+//    @Nonnull TODO implement
 //    @Override
 //    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 //        if (cap == ForgeCapabilities.ITEM_HANDLER) {
@@ -747,7 +748,6 @@ public class FusionCoreBE<RECIPE extends FusionCoreBE.Recipe> extends FusionBE {
         changeReactorHeat((double) Math.min(plasmaTemperature, 100000000) / (10000 * size * getControlPartsEfficiency()));
     }
 
-
     protected void plasmaToEnergyExchange() {
         double optimalTemp = getOptimalTemperature();
         double sizeFactor = Math.log(Math.pow(size + 1, 8)) / 8D;
@@ -993,7 +993,6 @@ public class FusionCoreBE<RECIPE extends FusionCoreBE.Recipe> extends FusionBE {
         isInternalValid = false;
     }
 
-
     protected FusionCoolantRecipe coolantRecipe;
 
     public boolean hasCoolant() {
@@ -1027,13 +1026,8 @@ public class FusionCoreBE<RECIPE extends FusionCoreBE.Recipe> extends FusionBE {
     }
 
     public static class Recipe extends NcRecipe {
-        public Recipe(ItemStackIngredient[] input, ItemStackIngredient[] output, FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids, double timeModifier, double powerModifier, double radiation, double temperature) {
-            super(input, output, inputFluids, outputFluids, timeModifier, powerModifier, radiation, temperature);
-        }
-
-        @Override
-        public @NotNull String getGroup() {
-            return "fusion_core";
+        public Recipe(List<ItemStackIngredient> inputItems, List<ItemStackIngredient> outputItems, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> inputFluids, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> outputFluids, double timeModifier, double powerModifier, double radiationModifier, double temperature) {
+            super(inputItems, outputItems, inputFluids, outputFluids, timeModifier, powerModifier, radiationModifier, temperature);
         }
 
         @Override
@@ -1042,8 +1036,8 @@ public class FusionCoreBE<RECIPE extends FusionCoreBE.Recipe> extends FusionBE {
         }
 
         @Override
-        public RecipeSerializer<?> getSerializer() {
-            return null;
+        public String getCodeId() {
+            return "fusion_core";
         }
 
         public double getEnergy() {
@@ -1058,12 +1052,6 @@ public class FusionCoreBE<RECIPE extends FusionCoreBE.Recipe> extends FusionBE {
             return radiationModifier;
         }
 
-        @Override
-        public void write(FriendlyByteBuf buffer) {
-//            super.write(buffer);
-            buffer.writeDouble(getOptimalTemperature());
-        }
-
         public double getOptimalTemperature() {
             return rarityModifier;
         }
@@ -1072,13 +1060,13 @@ public class FusionCoreBE<RECIPE extends FusionCoreBE.Recipe> extends FusionBE {
     public static class FusionCoolantRecipe extends NcRecipe {
         protected double coolingRate;
 
-        public FusionCoolantRecipe(ItemStackIngredient[] input, ItemStackIngredient[] output, FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids, double temperature, double powerModifier, double radiation, double rar) {
-            super(input, output, inputFluids, outputFluids, temperature, powerModifier, radiation, rar);
+        public FusionCoolantRecipe(List<ItemStackIngredient> inputItems, List<ItemStackIngredient> outputItems, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> inputFluids, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> outputFluids, double temperature, double powerModifier, double radiationModifier, double rarityModifier) {
+            super(inputItems, outputItems, inputFluids, outputFluids, temperature, powerModifier, radiationModifier, rarityModifier);
             coolingRate = temperature;
         }
 
         @Override
-        public @NotNull String getGroup() {
+        public String getCodeId() {
             return "fusion_coolant";
         }
 
@@ -1089,11 +1077,6 @@ public class FusionCoreBE<RECIPE extends FusionCoreBE.Recipe> extends FusionBE {
 
         public double getCoolingRate() {
             return Math.max(rarityModifier, 1);
-        }
-
-        @Override
-        public void write(FriendlyByteBuf buffer) {
-
         }
     }
 

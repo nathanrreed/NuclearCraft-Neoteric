@@ -1,10 +1,11 @@
 package igentuman.nc.datagen.recipes.recipes;
 
+import igentuman.nc.recipes.ingredient.ItemStackIngredient;
+import igentuman.nc.recipes.ingredient.creator.ItemStackIngredientCreator;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -113,12 +114,12 @@ public class OreVeinsRecipes extends AbstractRecipeProvider {
     }
 
     public static void add(HashMap<String, Integer> materials, String name, double... modifiers) {
-        List<Ingredient> ores = new ArrayList<>();
+        List<ItemStackIngredient> ores = new ArrayList<>();
         for (String material : materials.keySet()) {
             ores.add(oreIngredient(material, materials.get(material)));
         }
         ItemStack paper = new ItemStack(NC_PARTS.get("research_paper").get(), 1);
         paper.update(DataComponents.CUSTOM_DATA, CustomData.EMPTY, customData -> customData.update(compoundTag -> compoundTag.putString("vein", "nc.ore_vein." + name)));
-        oreVein(ores, Ingredient.of(paper), name, modifiers);
+        oreVein(ores, ItemStackIngredientCreator.INSTANCE.from(paper), name, modifiers);
     }
 }

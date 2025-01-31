@@ -12,8 +12,8 @@ public class EmptyRecipe extends NcRecipe {
     }
 
     @Override
-    public void write(FriendlyByteBuf buffer) {
-        //TODO
+    public String getCodeId() {
+        return "empty";
     }
 
     @Override

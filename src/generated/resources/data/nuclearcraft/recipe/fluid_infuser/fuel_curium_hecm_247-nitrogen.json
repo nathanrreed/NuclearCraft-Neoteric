@@ -1,0 +1,34 @@
+{
+  "type": "nuclearcraft:fluid_infuser",
+  "inputFluids": [
+    {
+      "amount": 1000,
+      "tag": "c:nitrogen"
+    }
+  ],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:fuel_curium_hecm_247"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:fuel_curium_hecm_247_ni"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

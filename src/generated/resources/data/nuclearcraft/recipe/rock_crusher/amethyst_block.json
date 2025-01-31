@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:rock_crusher",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 32,
+      "ingredients": [
+        {
+          "item": "minecraft:amethyst_block"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/yttrium"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/hafnium"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

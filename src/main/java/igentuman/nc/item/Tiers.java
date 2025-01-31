@@ -14,8 +14,8 @@ import static igentuman.nc.setup.registration.NCItems.LITHIUM_ION_CELL;
 import static igentuman.nc.setup.registration.Tags.*;
 
 public enum Tiers implements Tier {
-    TOUGH(INCORRECT_FOR_TOUGH, 10000, 12.0F, 10.0F, 22, () -> ingotIngredient(Materials.tough_alloy)),
-    THORIUM(INCORRECT_FOR_THORIUM, 10000, 10.0F, 6.0F, 18, () -> ingotIngredient(Materials.thorium)),
+    TOUGH(INCORRECT_FOR_TOUGH, 10000, 12.0F, 10.0F, 22, () -> ingotIngredient(Materials.tough_alloy).getInputsRaw().getFirst()),
+    THORIUM(INCORRECT_FOR_THORIUM, 10000, 10.0F, 6.0F, 18, () -> ingotIngredient(Materials.thorium).getInputsRaw().getFirst()),
     QNP(INCORRECT_FOR_QNP, 50000, 20.0F, 14.0F, 25, () -> Ingredient.of(LITHIUM_ION_CELL.get()));
 
     private final TagKey<Block> incorrectBlocksForDrops;

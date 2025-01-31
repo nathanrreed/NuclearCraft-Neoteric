@@ -1,0 +1,45 @@
+{
+  "type": "nuclearcraft:centrifuge",
+  "inputFluids": [
+    {
+      "ingredients": [
+        {
+          "amount": 1296,
+          "id": "nuclearcraft:depleted_fuel_curium_hecm_247"
+        }
+      ]
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 144,
+      "tag": "c:californium/251"
+    },
+    {
+      "amount": 144,
+      "tag": "c:californium/249"
+    },
+    {
+      "amount": 576,
+      "tag": "c:berkelium/247"
+    },
+    {
+      "amount": 144,
+      "tag": "c:berkelium/248"
+    },
+    {
+      "amount": 144,
+      "tag": "c:molybdenum"
+    },
+    {
+      "amount": 144,
+      "tag": "c:europium_155"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.5
+}

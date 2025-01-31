@@ -1,0 +1,21 @@
+{
+  "type": "nuclearcraft:steam_turbine",
+  "inputFluids": [
+    {
+      "amount": 100,
+      "tag": "c:high_pressure_steam"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 100,
+      "tag": "c:exhaust_steam"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.1,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 0.2
+}

@@ -1,0 +1,21 @@
+{
+  "type": "nuclearcraft:fusion_coolant",
+  "inputFluids": [
+    {
+      "amount": 1000,
+      "tag": "minecraft:water"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 1000,
+      "tag": "c:steam"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 0.0,
+  "radiationModifier": 0.0,
+  "rarityModifier": 0.0,
+  "timeModifier": 0.0
+}

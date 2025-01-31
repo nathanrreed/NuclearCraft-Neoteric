@@ -86,7 +86,7 @@ public class FusionCoreProxyBE extends FusionBE {
         return controller().contentHandler.getFluidCapability(side);
     }
 
-//    @Nonnull
+//    @Nonnull TODO implement
 //    @Override
 //    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 //        if (controller() == null) return super.getCapability(cap, side);

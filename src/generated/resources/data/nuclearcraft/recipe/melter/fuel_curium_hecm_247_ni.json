@@ -1,0 +1,29 @@
+{
+  "type": "nuclearcraft:melter",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:fuel_curium_hecm_247_ni"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [
+    {
+      "ingredients": [
+        {
+          "amount": 144,
+          "id": "nuclearcraft:fuel_curium_hecm_247_ni"
+        }
+      ]
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

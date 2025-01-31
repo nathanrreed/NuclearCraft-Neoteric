@@ -1,0 +1,45 @@
+{
+  "type": "nuclearcraft:centrifuge",
+  "inputFluids": [
+    {
+      "ingredients": [
+        {
+          "amount": 1296,
+          "id": "nuclearcraft:depleted_fuel_neptunium_len_236"
+        }
+      ]
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 576,
+      "tag": "c:uranium/238"
+    },
+    {
+      "amount": 144,
+      "tag": "c:neptunium/237"
+    },
+    {
+      "amount": 144,
+      "tag": "c:plutonium/241"
+    },
+    {
+      "amount": 144,
+      "tag": "c:plutonium/242"
+    },
+    {
+      "amount": 144,
+      "tag": "c:molybdenum"
+    },
+    {
+      "amount": 144,
+      "tag": "c:caesium_137"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 0.5
+}

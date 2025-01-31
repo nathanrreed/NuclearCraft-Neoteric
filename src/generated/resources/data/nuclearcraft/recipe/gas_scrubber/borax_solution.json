@@ -1,0 +1,21 @@
+{
+  "type": "nuclearcraft:gas_scrubber",
+  "inputFluids": [
+    {
+      "amount": 250,
+      "tag": "c:borax_solution"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 250,
+      "tag": "c:irradiated_borax_solution"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 5.0,
+  "radiationModifier": -10000.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

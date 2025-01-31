@@ -1,0 +1,30 @@
+{
+  "type": "nuclearcraft:fluid_enricher",
+  "inputFluids": [
+    {
+      "amount": 500,
+      "tag": "minecraft:water"
+    }
+  ],
+  "inputItems": [
+    {
+      "amount": 3,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:salt"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [
+    {
+      "amount": 500,
+      "tag": "c:chlorine"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

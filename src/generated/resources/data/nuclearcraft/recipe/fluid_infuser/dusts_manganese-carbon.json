@@ -1,0 +1,34 @@
+{
+  "type": "nuclearcraft:fluid_infuser",
+  "inputFluids": [
+    {
+      "amount": 1000,
+      "tag": "c:carbon"
+    }
+  ],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/manganese"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/carbon_manganese"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

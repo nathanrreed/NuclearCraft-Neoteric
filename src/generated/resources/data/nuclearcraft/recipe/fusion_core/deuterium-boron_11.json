@@ -1,0 +1,29 @@
+{
+  "type": "nuclearcraft:fusion_core",
+  "inputFluids": [
+    {
+      "amount": 1000,
+      "tag": "c:deuterium"
+    },
+    {
+      "amount": 144,
+      "tag": "c:boron/11"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 1500,
+      "tag": "c:helium"
+    },
+    {
+      "amount": 1500,
+      "tag": "c:helium"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 452200.0,
+  "radiationModifier": 1.5,
+  "rarityModifier": 1.0,
+  "timeModifier": 65.0
+}

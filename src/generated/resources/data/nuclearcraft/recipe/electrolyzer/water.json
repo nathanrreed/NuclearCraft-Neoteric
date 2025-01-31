@@ -1,0 +1,25 @@
+{
+  "type": "nuclearcraft:electrolyzer",
+  "inputFluids": [
+    {
+      "amount": 500,
+      "tag": "minecraft:water"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 500,
+      "tag": "c:hydrogen"
+    },
+    {
+      "amount": 250,
+      "tag": "c:oxygen"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 0.5
+}

@@ -1,0 +1,53 @@
+{
+  "type": "nuclearcraft:assembler",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 4,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:compact_helium_collector"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:plates/zinc"
+        }
+      ]
+    },
+    {
+      "amount": 4,
+      "ingredients": [
+        {
+          "tag": "c:plates/cobalt"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:motor"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:dense_helium_collector"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

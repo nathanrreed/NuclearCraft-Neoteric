@@ -180,7 +180,7 @@ public class ChamberTerminalBE<RECIPE extends ChamberTerminalBE.Recipe> extends 
         return peripheralCap.get();
     }
 
-//    @Nonnull
+//    @Nonnull TODO implement
 //    @Override
 //    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 //        if (cap == ForgeCapabilities.FLUID_HANDLER) {
@@ -596,7 +596,7 @@ public class ChamberTerminalBE<RECIPE extends ChamberTerminalBE.Recipe> extends 
         }
 
         @Override
-        public @NotNull String getGroup() {
+        public @NotNull String getCodeId() {
             return ChamberTerminalBE.NAME;
         }
 
@@ -607,11 +607,6 @@ public class ChamberTerminalBE<RECIPE extends ChamberTerminalBE.Recipe> extends 
 
         public int getBaseTime() {
             return (int) Math.max(1, timeModifier);
-        }
-
-        @Override
-        public void write(FriendlyByteBuf buffer) {
-            //TODO
         }
 
         public double getEnergy() {

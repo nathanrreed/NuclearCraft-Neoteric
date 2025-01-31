@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:rock_crusher",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 12,
+      "ingredients": [
+        {
+          "item": "minecraft:purpur_block"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 4,
+      "ingredients": [
+        {
+          "tag": "c:dusts/purpur"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/iridium"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

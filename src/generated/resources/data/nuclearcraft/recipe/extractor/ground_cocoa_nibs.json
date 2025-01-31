@@ -1,0 +1,34 @@
+{
+  "type": "nuclearcraft:extractor",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:ground_cocoa_nibs"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [
+    {
+      "amount": 144,
+      "tag": "c:cocoa_butter"
+    }
+  ],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:cocoa_solids"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

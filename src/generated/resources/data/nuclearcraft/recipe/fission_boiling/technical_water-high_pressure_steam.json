@@ -1,0 +1,21 @@
+{
+  "type": "nuclearcraft:fission_boiling",
+  "inputFluids": [
+    {
+      "amount": 10,
+      "tag": "c:technical_water"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 10,
+      "tag": "c:high_pressure_steam"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 0.0,
+  "radiationModifier": 0.0,
+  "rarityModifier": 0.0,
+  "timeModifier": 0.0
+}

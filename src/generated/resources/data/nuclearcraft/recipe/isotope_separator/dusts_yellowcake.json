@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:isotope_separator",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 10,
+      "ingredients": [
+        {
+          "tag": "c:dusts/yellowcake"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 7,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:uranium_238"
+        }
+      ]
+    },
+    {
+      "amount": 2,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:uranium_235"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 5.0
+}

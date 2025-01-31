@@ -4,11 +4,11 @@ import igentuman.nc.content.fuel.FuelManager;
 import igentuman.nc.content.materials.Materials;
 import igentuman.nc.content.materials.NCMaterial;
 import igentuman.nc.content.processors.Processors;
+import igentuman.nc.recipes.ingredient.ItemStackIngredient;
 import igentuman.nc.recipes.ingredient.creator.IngredientCreatorAccess;
 import igentuman.nc.setup.registration.FissionFuel;
 import igentuman.nc.setup.registration.NCItems;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class IngotFormerRecipes extends AbstractRecipeProvider {
         add(ingredient(NCItems.NC_FOOD.get("marshmallow").get()), fluidStack("marshmallow", 144), 0.5D, 0.5D);
     }
 
-    protected static void add(Ingredient outputItem, FluidStack inputFluid, double... modifiers) {
+    protected static void add(ItemStackIngredient outputItem, FluidStack inputFluid, double... modifiers) {
         itemsAndFluids(new ArrayList<>(), List.of(outputItem), List.of(IngredientCreatorAccess.fluid().from(inputFluid)), new ArrayList<>(), modifiers);
     }
 }

@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:alloy_smelter",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/iron"
+        }
+      ]
+    },
+    {
+      "amount": 4,
+      "ingredients": [
+        {
+          "tag": "c:dusts/chromium"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 5,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:nichrome_ingot"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 2.0
+}

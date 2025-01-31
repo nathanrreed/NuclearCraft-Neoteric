@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:alloy_smelter",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 15,
+      "ingredients": [
+        {
+          "tag": "c:ingots/molybdenum"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:ingots/zirconium"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 16,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:zirconium_molybdenum_ingot"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 2.5,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 8.5
+}

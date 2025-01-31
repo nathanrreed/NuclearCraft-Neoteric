@@ -100,11 +100,11 @@ public class ItemCapabilityHandler extends AbstractCapabilityHandler implements 
             }
         } else {
             if (!simulate) {
-                this.stacks.set(slot, com.lowdragmc.lowdraglib.misc.ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
+                this.stacks.set(slot, existing.copyWithCount(existing.getCount() - toExtract));
                 onContentsChanged(slot);
             }
 
-            return com.lowdragmc.lowdraglib.misc.ItemHandlerHelper.copyStackWithSize(existing, toExtract);
+            return existing.copyWithCount(toExtract);
         }
     }
 
@@ -119,7 +119,7 @@ public class ItemCapabilityHandler extends AbstractCapabilityHandler implements 
         int limit = getStackLimit(slot, stack);
 
         if (!existing.isEmpty()) {
-            if (!com.lowdragmc.lowdraglib.misc.ItemHandlerHelper.canItemStacksStack(stack, existing))
+            if (!ItemStack.isSameItemSameComponents(stack, existing))
                 return stack;
 
             limit -= existing.getCount();
@@ -132,14 +132,14 @@ public class ItemCapabilityHandler extends AbstractCapabilityHandler implements 
 
         if (!simulate) {
             if (existing.isEmpty()) {
-                this.stacks.set(slot, reachedLimit ? com.lowdragmc.lowdraglib.misc.ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
+                this.stacks.set(slot, reachedLimit ? stack.copyWithCount(limit) : stack);
             } else {
                 existing.grow(reachedLimit ? limit : stack.getCount());
             }
             onContentsChanged(slot);
         }
 
-        return reachedLimit ? com.lowdragmc.lowdraglib.misc.ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit) : ItemStack.EMPTY;
+        return reachedLimit ? stack.copyWithCount(stack.getCount() - limit) : ItemStack.EMPTY;
     }
 
     @Override
@@ -168,7 +168,7 @@ public class ItemCapabilityHandler extends AbstractCapabilityHandler implements 
         for (int i = 0; i < inputSlots; i++) {
             if (!isItemValid(i, stack)) continue;
             if (getStackInSlot(i).isEmpty()) return i;
-            if (com.lowdragmc.lowdraglib.misc.ItemHandlerHelper.canItemStacksStack(getStackInSlot(i), stack) && getStackInSlot(i).getCount() < getSlotLimit(i)) {
+            if (ItemStack.isSameItemSameComponents(getStackInSlot(i), stack) && getStackInSlot(i).getCount() < getSlotLimit(i)) {
                 return i;
             }
         }
@@ -177,7 +177,7 @@ public class ItemCapabilityHandler extends AbstractCapabilityHandler implements 
 
     protected boolean isValidForSlotInternal(ItemStack stack, int slot) {
         return getStackInSlot(slot).isEmpty()
-                || (com.lowdragmc.lowdraglib.misc.ItemHandlerHelper.canItemStacksStack(getStackInSlot(slot), stack)
+                || (ItemStack.isSameItemSameComponents(getStackInSlot(slot), stack)
                 && getStackInSlot(slot).getCount() < getSlotLimit(slot));
     }
 
@@ -185,7 +185,7 @@ public class ItemCapabilityHandler extends AbstractCapabilityHandler implements 
         for (int i = inputSlots; i < getSlots(); i++) {
             if (!isItemValid(i, stack)) continue;
             if (getStackInSlot(i).isEmpty()) return i;
-            if (com.lowdragmc.lowdraglib.misc.ItemHandlerHelper.canItemStacksStack(getStackInSlot(i), stack) && getStackInSlot(i).getCount() < getSlotLimit(i)) {
+            if (ItemStack.isSameItemSameComponents(getStackInSlot(i), stack) && getStackInSlot(i).getCount() < getSlotLimit(i)) {
                 return i;
             }
         }
@@ -206,8 +206,7 @@ public class ItemCapabilityHandler extends AbstractCapabilityHandler implements 
             if (!stacks.get(i).isEmpty()) {
                 CompoundTag itemTag = new CompoundTag();
                 itemTag.putInt("Slot", i);
-                stacks.get(i).save(provider, itemTag);
-                nbtTagList.add(itemTag);
+                nbtTagList.add(stacks.get(i).save(provider, itemTag));
             }
         }
         CompoundTag nbt = new CompoundTag();
@@ -367,7 +366,7 @@ public class ItemCapabilityHandler extends AbstractCapabilityHandler implements 
         if (outputAllowed(i, null)) {
             ItemStack stack = getStackInSlot(i);
             if (stack.isEmpty()) return true;
-            return com.lowdragmc.lowdraglib.misc.ItemHandlerHelper.canItemStacksStack(stack, outputItem);
+            return ItemStack.isSameItemSameComponents(stack, outputItem);
         }
         return false;
     }
@@ -411,7 +410,7 @@ public class ItemCapabilityHandler extends AbstractCapabilityHandler implements 
     }
 
     public String getCacheKey() {
-        String key = "";
+        StringBuilder key = new StringBuilder();
         if (sortedStacks == null) {
             sortedStacks = new ItemStack[inputSlots];
             for (int i = 0; i < inputSlots; i++) {
@@ -422,10 +421,10 @@ public class ItemCapabilityHandler extends AbstractCapabilityHandler implements 
 
         for (ItemStack stack : sortedStacks) {
             if (!stack.isEmpty()) {
-                key += stack.getItem().toString();
+                key.append(stack.getItem());
             }
         }
-        return key;
+        return key.toString();
     }
 
     public void voidSlot(int i) {

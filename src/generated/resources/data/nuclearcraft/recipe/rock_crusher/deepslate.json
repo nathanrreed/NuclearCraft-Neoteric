@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:rock_crusher",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 7,
+      "ingredients": [
+        {
+          "item": "minecraft:deepslate"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/iodine"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/obsidian"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

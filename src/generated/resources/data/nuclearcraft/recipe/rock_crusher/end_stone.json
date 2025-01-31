@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:rock_crusher",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 3,
+      "ingredients": [
+        {
+          "item": "minecraft:end_stone"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/borax"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/germanium"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

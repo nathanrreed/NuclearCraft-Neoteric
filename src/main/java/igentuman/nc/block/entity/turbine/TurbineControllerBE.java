@@ -1,5 +1,6 @@
 package igentuman.nc.block.entity.turbine;
 
+import com.mojang.datafixers.util.Either;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import igentuman.nc.NuclearCraft;
 import igentuman.nc.client.sound.SoundHandler;
@@ -13,6 +14,7 @@ import igentuman.nc.recipes.NcRecipeType;
 import igentuman.nc.recipes.RecipeInfo;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
 import igentuman.nc.recipes.ingredient.ItemStackIngredient;
+import igentuman.nc.recipes.ingredient.creator.FluidStackIngredientCreator;
 import igentuman.nc.recipes.type.NcRecipe;
 import igentuman.nc.util.CustomEnergyStorage;
 import igentuman.nc.util.annotation.NBTField;
@@ -22,7 +24,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
@@ -200,7 +201,7 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
     }
 
 
-//    @Nonnull
+//    @Nonnull TODO implement
 //    @Override
 //    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 //        if (cap == ForgeCapabilities.FLUID_HANDLER) {
@@ -670,13 +671,13 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
     }
 
     public static class Recipe extends NcRecipe {
-        public Recipe(ItemStackIngredient[] input, ItemStackIngredient[] output, FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids, double timeModifier, double powerModifier, double heatModifier, double rarity) {
-            super(input, output, inputFluids, outputFluids, timeModifier, powerModifier, heatModifier, rarity);
+        public Recipe(List<ItemStackIngredient> inputItems, List<ItemStackIngredient> outputItems, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> inputFluids, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> outputFluids, double timeModifier, double powerModifier, double heatModifier, double rarityModifier) {
+            super(inputItems, outputItems, inputFluids, outputFluids, timeModifier, powerModifier, heatModifier, rarityModifier);
             CATALYSTS.put(TurbineControllerBE.NAME, List.of(getToastSymbol()));
         }
 
         @Override
-        public @NotNull String getGroup() {
+        public @NotNull String getCodeId() {
             return TurbineControllerBE.NAME;
         }
 
@@ -687,11 +688,6 @@ public class TurbineControllerBE<RECIPE extends TurbineControllerBE.Recipe> exte
 
         public int getBaseTime() {
             return (int) Math.max(1, timeModifier);
-        }
-
-        @Override
-        public void write(FriendlyByteBuf buffer) {
-            //TODO
         }
 
         public double getEnergy() {

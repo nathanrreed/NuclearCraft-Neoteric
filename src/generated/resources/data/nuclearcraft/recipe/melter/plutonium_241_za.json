@@ -1,0 +1,25 @@
+{
+  "type": "nuclearcraft:melter",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:plutonium_241_za"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [
+    {
+      "amount": 144,
+      "tag": "c:plutonium/241_za"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

@@ -2,6 +2,7 @@ package igentuman.nc.datagen.recipes.recipes;
 
 import igentuman.nc.content.materials.Materials;
 import igentuman.nc.content.processors.Processors;
+import igentuman.nc.recipes.ingredient.creator.ItemStackIngredientCreator;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -21,7 +22,7 @@ public class IrradiatorRecipes extends AbstractRecipeProvider {
                 List.of(ingredient(Item.byBlock(NETHERRACK))),
                 List.of(fluidIngredient("redstone", 72)),
                 List.of(), 0.5D);
-        itemToItem(ingredient(net.neoforged.neoforge.common.Tags.Items.SANDS, 1), Ingredient.of(stack(GLOWSTONE, 1)), 3D);
+        itemToItem(ingredient(net.neoforged.neoforge.common.Tags.Items.SANDS, 1), ItemStackIngredientCreator.INSTANCE.from(stack(GLOWSTONE, 1)), 3D);
         itemToItem(dustIngredient(Materials.tbp), dustIngredient(Materials.protactinium_233), 2.5D);
         itemToItem(dustIngredient(Materials.bismuth), dustIngredient(Materials.polonium), 2D);
         fluidsAndFluids(List.of(fluidIngredient("lithium", 500)), List.of(fluidIngredient("irradiated_lithium", 500)), 1.5D);

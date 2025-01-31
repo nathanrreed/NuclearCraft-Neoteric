@@ -1,0 +1,30 @@
+{
+  "type": "nuclearcraft:fluid_enricher",
+  "inputFluids": [
+    {
+      "amount": 1000,
+      "tag": "minecraft:water"
+    }
+  ],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/irradiated_borax"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [
+    {
+      "amount": 250,
+      "tag": "c:irradiated_borax_solution"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

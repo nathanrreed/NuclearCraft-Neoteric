@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:alloy_smelter",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/carbon_manganese"
+        }
+      ]
+    },
+    {
+      "amount": 11,
+      "ingredients": [
+        {
+          "tag": "c:dusts/titanium"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 12,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:sic_sic_cmc_ingot"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 4.0
+}

@@ -1,0 +1,34 @@
+{
+  "type": "nuclearcraft:fluid_infuser",
+  "inputFluids": [
+    {
+      "amount": 1000,
+      "tag": "c:oxygen"
+    }
+  ],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:fuel_plutonium_hep_241"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:fuel_plutonium_hep_241_ox"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

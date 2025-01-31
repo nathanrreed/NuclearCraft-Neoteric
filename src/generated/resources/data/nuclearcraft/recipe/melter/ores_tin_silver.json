@@ -1,0 +1,25 @@
+{
+  "type": "nuclearcraft:melter",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:ores/tin_silver"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [
+    {
+      "amount": 288,
+      "tag": "c:tin_silver"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

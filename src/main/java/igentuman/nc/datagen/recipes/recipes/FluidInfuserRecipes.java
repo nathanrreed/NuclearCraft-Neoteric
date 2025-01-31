@@ -4,6 +4,7 @@ import igentuman.nc.content.fuel.FuelManager;
 import igentuman.nc.content.materials.Materials;
 import igentuman.nc.content.processors.Processors;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
+import igentuman.nc.recipes.ingredient.ItemStackIngredient;
 import igentuman.nc.setup.registration.FissionFuel;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -132,7 +133,7 @@ public class FluidInfuserRecipes extends AbstractRecipeProvider {
 
     }
 
-    protected static void add(FluidStackIngredient inputFluid, Ingredient inputItem, Ingredient output, double... modifiers) {
+    protected static void add(FluidStackIngredient inputFluid, ItemStackIngredient inputItem, ItemStackIngredient output, double... modifiers) {
         itemsAndFluids(List.of(inputItem), List.of(output), List.of(inputFluid), new ArrayList<>(), modifiers);
     }
 }

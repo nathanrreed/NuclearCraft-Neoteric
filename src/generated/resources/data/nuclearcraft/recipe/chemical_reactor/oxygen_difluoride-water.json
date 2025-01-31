@@ -1,0 +1,29 @@
+{
+  "type": "nuclearcraft:chemical_reactor",
+  "inputFluids": [
+    {
+      "amount": 250,
+      "tag": "c:oxygen_difluoride"
+    },
+    {
+      "amount": 250,
+      "tag": "minecraft:water"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 250,
+      "tag": "c:liquid_oxygen"
+    },
+    {
+      "amount": 250,
+      "tag": "c:hydrofluoric_acid"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 0.5,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

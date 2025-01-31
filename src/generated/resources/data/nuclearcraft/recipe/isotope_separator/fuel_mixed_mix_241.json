@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:isotope_separator",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 9,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:fuel_mixed_mix_241"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:plutonium_241_ni"
+        }
+      ]
+    },
+    {
+      "amount": 8,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:plutonium_238_ni"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 2.0
+}

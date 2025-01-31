@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "nuclearcraft:assembler/plates_hsla_steel-basic_electric_circuit-lithium_ion_cell-coil_magnesium_diboride-actuator"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nuclearcraft:assembler/plates_hsla_steel-basic_electric_circuit-lithium_ion_cell-coil_magnesium_diboride-actuator"
+    ]
+  }
+}

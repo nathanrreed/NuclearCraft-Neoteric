@@ -1,0 +1,29 @@
+{
+  "type": "nuclearcraft:manufactory",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "minecraft:glowstone"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 4,
+      "ingredients": [
+        {
+          "item": "minecraft:glowstone_dust"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 0.5,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 0.5
+}

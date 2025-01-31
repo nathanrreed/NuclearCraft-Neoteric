@@ -1,0 +1,53 @@
+{
+  "type": "nuclearcraft:assembler",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 9,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:fuel_curium_hecm_243"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:dusts/graphite"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:ingots/pyrolitic_carbon"
+        }
+      ]
+    },
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:ingots/silicon_carbide"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 9,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:fuel_curium_hecm_243_tr"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

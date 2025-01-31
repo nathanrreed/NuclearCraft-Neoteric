@@ -1,0 +1,20 @@
+{
+  "type": "nuclearcraft:fuel_reprocessor",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 3,
+      "ingredients": [
+        {
+          "tag": "c:ingots/cyanite"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 4.5
+}

@@ -1,0 +1,25 @@
+{
+  "type": "nuclearcraft:melter",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "tag": "c:raw_materials/promethium_147"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [
+    {
+      "amount": 216,
+      "tag": "c:promethium_147"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

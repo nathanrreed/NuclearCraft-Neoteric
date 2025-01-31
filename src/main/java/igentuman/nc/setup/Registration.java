@@ -6,7 +6,7 @@ import igentuman.nc.multiblock.fission.FissionReactor;
 import igentuman.nc.multiblock.fusion.FusionReactor;
 import igentuman.nc.multiblock.kugelblitz.KugelblitzRegistration;
 import igentuman.nc.multiblock.turbine.TurbineRegistration;
-import igentuman.nc.network.PacketHandler;
+import igentuman.nc.recipes.NcRecipeSerializers;
 import igentuman.nc.recipes.NcRecipeType;
 import igentuman.nc.setup.registration.*;
 import igentuman.nc.world.structure.LaboratoryStructure;
@@ -45,7 +45,7 @@ public class Registration {
         KugelblitzRegistration.init();
         TurbineRegistration.init();
         CreativeTabs.init();
-//        NcRecipeSerializers.init();
+        NcRecipeSerializers.init();
         NcRecipeType.init();
         NCParticleTypes.init();
         NCSounds.init();

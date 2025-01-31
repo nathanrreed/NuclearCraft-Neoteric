@@ -2,8 +2,8 @@ package igentuman.nc.datagen.recipes.recipes;
 
 import igentuman.nc.content.materials.Materials;
 import igentuman.nc.content.processors.Processors;
+import igentuman.nc.recipes.ingredient.ItemStackIngredient;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.List;
 
@@ -260,15 +260,14 @@ public class FuelReprocessorRecipes extends AbstractRecipeProvider {
                     ), 1.5D
             );
         }
-
     }
 
-    private static void addString(Ingredient input, List<String> output, double... modifiers) {
+    private static void addString(ItemStackIngredient input, List<String> output, double... modifiers) {
         itemsToItemsString(List.of(input), output, modifiers);
     }
 
 
-    private static void add(Ingredient input, List<Ingredient> output, double... modifiers) {
+    private static void add(ItemStackIngredient input, List<ItemStackIngredient> output, double... modifiers) {
         itemsToItems(List.of(input), output, modifiers);
     }
 }

@@ -1,0 +1,45 @@
+{
+  "type": "nuclearcraft:centrifuge",
+  "inputFluids": [
+    {
+      "ingredients": [
+        {
+          "amount": 1296,
+          "id": "nuclearcraft:depleted_fuel_americium_lea_242"
+        }
+      ]
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 432,
+      "tag": "c:americium/243"
+    },
+    {
+      "amount": 144,
+      "tag": "c:curium/243"
+    },
+    {
+      "amount": 432,
+      "tag": "c:curium/246"
+    },
+    {
+      "amount": 144,
+      "tag": "c:berkelium/248"
+    },
+    {
+      "amount": 144,
+      "tag": "c:molybdenum"
+    },
+    {
+      "amount": 144,
+      "tag": "c:promethium_147"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 0.5
+}

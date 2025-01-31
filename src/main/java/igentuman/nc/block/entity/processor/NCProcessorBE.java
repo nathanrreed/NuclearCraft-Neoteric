@@ -230,7 +230,7 @@ public class NCProcessorBE<RECIPE extends AbstractRecipe> extends NuclearCraftBE
         return PROCESSOR_CONFIG.GT_SUPPORT.get() == 2 || PROCESSOR_CONFIG.GT_SUPPORT.get() == 1;
     }
 
-//    @Nonnull
+//    @Nonnull TODO implement
 //    @Override
 //    public <T> Supplier<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 //        if (cap == ForgeCapabilities.ITEM_HANDLER) {

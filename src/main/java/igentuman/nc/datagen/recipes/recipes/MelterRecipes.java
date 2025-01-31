@@ -6,6 +6,7 @@ import igentuman.nc.content.materials.NCMaterial;
 import igentuman.nc.content.processors.Processors;
 import igentuman.nc.datagen.recipes.builder.NcRecipeBuilder;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
+import igentuman.nc.recipes.ingredient.ItemStackIngredient;
 import igentuman.nc.setup.registration.FissionFuel;
 import igentuman.nc.setup.registration.NCItems;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -82,7 +83,7 @@ public class MelterRecipes extends AbstractRecipeProvider {
 
     }
 
-    protected static void add(Ingredient inputItem, FluidStackIngredient outputFluid, double... modifiers) {
+    protected static void add(ItemStackIngredient inputItem, FluidStackIngredient outputFluid, double... modifiers) {
         try {
             itemToFluid(List.of(inputItem), new ArrayList<>(), new ArrayList<>(), List.of(outputFluid), modifiers);
         } catch (IllegalStateException ignored) {
@@ -90,7 +91,7 @@ public class MelterRecipes extends AbstractRecipeProvider {
     }
 
     private static void itemToFluid(
-            List<Ingredient> inputItems, List<Ingredient> outputItems,
+            List<ItemStackIngredient> inputItems, List<ItemStackIngredient> outputItems,
             List<FluidStackIngredient> inputFluids, List<FluidStackIngredient> outputFluids,
             double... params) {
         double timeModifier = params.length > 0 ? params[0] : 1.0;

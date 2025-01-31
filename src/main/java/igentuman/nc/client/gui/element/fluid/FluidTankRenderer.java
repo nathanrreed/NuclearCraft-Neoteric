@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import igentuman.nc.NuclearCraft;
 import igentuman.nc.client.gui.element.NCGuiElement;
 import igentuman.nc.network.toServer.PacketFlushSlotContent;
 import net.minecraft.ChatFormatting;
@@ -16,6 +15,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -134,6 +134,28 @@ public class FluidTankRenderer extends NCGuiElement {
         RenderSystem.disableBlend();
     }
 
+    private static Float[] colorToFloat(int color) {
+        return List.of(FastColor.ARGB32.red(color) / 255.0f, FastColor.ARGB32.green(color) / 255.0f, FastColor.ARGB32.blue(color) / 255.0f, FastColor.ARGB32.alpha(color) / 255.0f).toArray(Float[]::new);
+    }
+
+    private static void blitTile(GuiGraphics guiGraphics, TextureAtlasSprite sprite, int width, int height, int tWidth, int tHeight, int color) {
+        blitTile(guiGraphics, sprite, 0, 0, width, height, tWidth, tHeight, color);
+    }
+
+    private static void blitTile(GuiGraphics guiGraphics, TextureAtlasSprite sprite, int x, int y, int width, int height, int tWidth, int tHeight, int color) {
+        final int xTileCount = width / tWidth;
+        final int xRemainder = width % tWidth;
+        final int yTileCount = height / tHeight;
+        final int yRemainder = height % tHeight;
+
+        Float[] c = colorToFloat(color);
+        for (int i = 0; i <= xTileCount; i++) {
+            for (int j = 0; j <= yTileCount; j++) {
+                guiGraphics.blit(x + i * tWidth, y + j * tHeight, 0, ((i + 1) * tWidth < width) ? tWidth : xRemainder, ((j + 1) * tHeight < height) ? tHeight : yRemainder, sprite, c[0], c[1], c[2], c[3]);
+            }
+        }
+    }
+
     private void drawFluid(GuiGraphics graphics, final int width, final int height, FluidStack fluidStack) {
         Fluid fluid = fluidStack.getFluid();
         if (fluid.isSame(Fluids.EMPTY)) {
@@ -154,8 +176,7 @@ public class FluidTankRenderer extends NCGuiElement {
         if (scaledAmount > height) {
             scaledAmount = height;
         }
-
-        drawTiledSprite(graphics, width, height, fluidColor, scaledAmount, fluidStillSprite);
+        blitTile(graphics, fluidStillSprite, width, ((int) scaledAmount), TEXTURE_SIZE, TEXTURE_SIZE, fluidColor);
     }
 
     private TextureAtlasSprite getStillFluidSprite(FluidStack fluidStack) {
@@ -171,61 +192,6 @@ public class FluidTankRenderer extends NCGuiElement {
         Fluid fluid = ingredient.getFluid();
         IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
         return renderProperties.getTintColor(ingredient);
-    }
-
-    private static void drawTiledSprite(GuiGraphics graphics, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite) {
-        RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
-        Matrix4f matrix = graphics.pose().last().pose();
-        setGLColorFromInt(color);
-
-        final int xTileCount = tiledWidth / TEXTURE_SIZE;
-        final int xRemainder = tiledWidth - (xTileCount * TEXTURE_SIZE);
-        final long yTileCount = scaledAmount / TEXTURE_SIZE;
-        final long yRemainder = scaledAmount - (yTileCount * TEXTURE_SIZE);
-
-        final int yStart = tiledHeight;
-
-        for (int xTile = 0; xTile <= xTileCount; xTile++) {
-            for (int yTile = 0; yTile <= yTileCount; yTile++) {
-                int width = (xTile == xTileCount) ? xRemainder : TEXTURE_SIZE;
-                long height = (yTile == yTileCount) ? yRemainder : TEXTURE_SIZE;
-                int x = (xTile * TEXTURE_SIZE);
-                int y = yStart - ((yTile + 1) * TEXTURE_SIZE);
-                if (width > 0 && height > 0) {
-                    long maskTop = TEXTURE_SIZE - height;
-                    int maskRight = TEXTURE_SIZE - width;
-
-                    drawTextureWithMasking(matrix, x, y, sprite, maskTop, maskRight, 100);
-                }
-            }
-        }
-    }
-
-    private static void setGLColorFromInt(int color) {
-        float red = (color >> 16 & 0xFF) / 255.0F;
-        float green = (color >> 8 & 0xFF) / 255.0F;
-        float blue = (color & 0xFF) / 255.0F;
-        float alpha = ((color >> 24) & 0xFF) / 255F;
-
-        RenderSystem.setShaderColor(red, green, blue, alpha);
-    }
-
-    private static void drawTextureWithMasking(Matrix4f matrix, float xCoord, float yCoord, TextureAtlasSprite textureSprite, long maskTop, long maskRight, float zLevel) {
-        float uMin = textureSprite.getU0();
-        float uMax = textureSprite.getU1();
-        float vMin = textureSprite.getV0();
-        float vMax = textureSprite.getV1();
-        uMax = uMax - (maskRight / 16F * (uMax - uMin));
-        vMax = vMax - (maskTop / 16F * (vMax - vMin));
-
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-
-        Tesselator tessellator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferBuilder.addVertex(matrix, xCoord, yCoord + 16, zLevel).setUv(uMin, vMax);
-        bufferBuilder.addVertex(matrix, xCoord + 16 - maskRight, yCoord + 16, zLevel).setUv(uMax, vMax);
-        bufferBuilder.addVertex(matrix, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).setUv(uMax, vMin);
-        bufferBuilder.addVertex(matrix, xCoord, yCoord + maskTop, zLevel).setUv(uMin, vMin);
     }
 
     public List<Component> getTooltips() {

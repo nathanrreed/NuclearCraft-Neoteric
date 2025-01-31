@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:fusion_core",
+  "inputFluids": [
+    {
+      "amount": 1000,
+      "tag": "c:hydrogen"
+    },
+    {
+      "amount": 1000,
+      "tag": "c:deuterium"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 250,
+      "tag": "c:helium_3"
+    },
+    {
+      "amount": 250,
+      "tag": "c:helium_3"
+    },
+    {
+      "amount": 250,
+      "tag": "c:helium_3"
+    },
+    {
+      "amount": 250,
+      "tag": "c:helium_3"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 220000.0,
+  "radiationModifier": 1.5,
+  "rarityModifier": 1.0,
+  "timeModifier": 15.0
+}

@@ -1,0 +1,21 @@
+{
+  "type": "nuclearcraft:turbine_controller",
+  "inputFluids": [
+    {
+      "amount": 1000,
+      "tag": "c:steam"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 1000,
+      "tag": "minecraft:water"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 0.5,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

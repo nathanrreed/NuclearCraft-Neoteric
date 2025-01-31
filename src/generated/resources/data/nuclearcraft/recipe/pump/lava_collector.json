@@ -1,0 +1,25 @@
+{
+  "type": "nuclearcraft:pump",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:lava_collector"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [
+    {
+      "amount": 1000,
+      "tag": "minecraft:lava"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 3.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.ChunkPos;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -31,7 +32,7 @@ public class WorldVeinOres implements IWorldVeinCapability {
     }
 
     @Override
-    public OreVeinRecipe getVeinForChunk(int chunkX, int chunkZ) {
+    public RecipeHolder<OreVeinRecipe> getVeinForChunk(int chunkX, int chunkZ) {
         return OreVeinProvider.get(level).getVeinForChunk(chunkX, chunkZ);
     }
 
@@ -82,10 +83,10 @@ public class WorldVeinOres implements IWorldVeinCapability {
     }
 
     public ItemStack gatherRandomOre(int x, int z) {
-        OreVeinRecipe vein = getVeinForChunk(x, z);
+        RecipeHolder<OreVeinRecipe> vein = getVeinForChunk(x, z);
         if (vein == null) {
             return ItemStack.EMPTY;
         }
-        return vein.getRandomOre(level, x, z, getBlocksLeft(x, z));
+        return vein.value().getRandomOre(level, x, z, getBlocksLeft(x, z));
     }
 }

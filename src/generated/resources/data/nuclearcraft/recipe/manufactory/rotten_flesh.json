@@ -1,0 +1,29 @@
+{
+  "type": "nuclearcraft:manufactory",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 4,
+      "ingredients": [
+        {
+          "item": "minecraft:rotten_flesh"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "minecraft:leather"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 0.5
+}

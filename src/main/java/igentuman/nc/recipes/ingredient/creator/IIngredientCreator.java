@@ -42,21 +42,21 @@ public interface IIngredientCreator<TYPE, STACK, INGREDIENT extends InputIngredi
      */
     INGREDIENT from(TagKey<TYPE> tag, int amount);
 
-    /**
-     * Reads an Ingredient from a Packet Buffer.
-     *
-     * @param buffer Buffer to read from.
-     * @throws NullPointerException if the given buffer is null.
-     */
-    INGREDIENT read(FriendlyByteBuf buffer);
-
-    /**
-     * Helper to deserialize a Json Object into an Ingredient.
-     *
-     * @param json Json object to deserialize.
-     * @throws com.google.gson.JsonSyntaxException if the ingredient failed to deserialize or was invalid.
-     */
-    INGREDIENT deserialize(@Nullable JsonElement json);
+//    /**
+//     * Reads an Ingredient from a Packet Buffer.
+//     *
+//     * @param buffer Buffer to read from.
+//     * @throws NullPointerException if the given buffer is null.
+//     */
+//    INGREDIENT read(FriendlyByteBuf buffer);
+//
+//    /**
+//     * Helper to deserialize a Json Object into an Ingredient.
+//     *
+//     * @param json Json object to deserialize.
+//     * @throws com.google.gson.JsonSyntaxException if the ingredient failed to deserialize or was invalid.
+//     */
+//    INGREDIENT deserialize(@Nullable JsonElement json);
 
     /**
      * Combines multiple Ingredients into a single Ingredient.

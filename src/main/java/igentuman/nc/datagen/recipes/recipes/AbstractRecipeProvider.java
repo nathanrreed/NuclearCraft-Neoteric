@@ -2,15 +2,17 @@ package igentuman.nc.datagen.recipes.recipes;
 
 import igentuman.nc.datagen.recipes.builder.NcRecipeBuilder;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
+import igentuman.nc.recipes.ingredient.ItemStackIngredient;
 import igentuman.nc.recipes.ingredient.creator.IngredientCreatorAccess;
+import igentuman.nc.recipes.ingredient.creator.ItemStackIngredientCreator;
 import igentuman.nc.setup.registration.FissionFuel;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -30,24 +32,23 @@ public abstract class AbstractRecipeProvider {
     public static String ID;
 
     public static RecipeOutput consumer;
-    private static List<Ingredient> input;
-    private static List<Ingredient> output;
+    private static List<ItemStackIngredient> input;
+    private static List<ItemStackIngredient> output;
     private static double[] params;
 
-    protected static Ingredient ingredient(TagKey<Item> item, int... count) {
-        return Ingredient.of(item);//Arrays.stream(Ingredient.of(item).getItems()).map(itemStack -> itemStack.copyWithCount(Arrays.stream(count).findFirst().orElse(1)))); //TODO CHECK
+    protected static ItemStackIngredient ingredient(TagKey<Item> tag, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
+        return ItemStackIngredientCreator.INSTANCE.from(tag, count);
     }
 
-    protected static Ingredient ingredient(Item item, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
-        return Ingredient.of(stack(item, count));
+    protected static ItemStackIngredient ingredient(Item item, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
+        return ItemStackIngredientCreator.INSTANCE.from(stack(item, count));
     }
 
-    protected static Ingredient blockStack(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
-        return Ingredient.of(stack(blockItem(name), count));
+    protected static ItemStackIngredient blockStack(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
+        return ItemStackIngredientCreator.INSTANCE.from(stack(blockItem(name), count));
     }
 
     protected static ItemStack stack(Item item, int count) {
@@ -66,7 +67,7 @@ public abstract class AbstractRecipeProvider {
         return stacks;
     }
 
-    protected static void doubleToItem(String id, Ingredient input1, Ingredient input2, Ingredient output, double... params) {
+    protected static void doubleToItem(String id, ItemStackIngredient input1, ItemStackIngredient input2, ItemStackIngredient output, double... params) {
         double timeModifier = params.length > 0 ? params[0] : 1.0;
         double powerModifier = params.length > 1 ? params[1] : 1.0;
         double radiation = params.length > 2 ? params[2] : 1.0;
@@ -101,7 +102,7 @@ public abstract class AbstractRecipeProvider {
         return IngredientCreatorAccess.fluid().from(fluidStack(name, amount));
     }
 
-    public static void itemToItem(Ingredient input, Ingredient output, double... params) {
+    public static void itemToItem(ItemStackIngredient input, ItemStackIngredient output, double... params) {
         double timeModifier = params.length > 0 ? params[0] : 1.0;
         double powerModifier = params.length > 1 ? params[1] : 1.0;
         double radiation = params.length > 2 ? params[2] : 1.0;
@@ -111,7 +112,7 @@ public abstract class AbstractRecipeProvider {
                 .build(consumer);
     }
 
-    public static void itemsToItems(List<Ingredient> input, List<Ingredient> output, double... params) {
+    public static void itemsToItems(List<ItemStackIngredient> input, List<ItemStackIngredient> output, double... params) {
         double timeModifier = params.length > 0 ? params[0] : 1.0;
         double powerModifier = params.length > 1 ? params[1] : 1.0;
         double radiation = params.length > 2 ? params[2] : 1.0;
@@ -121,7 +122,7 @@ public abstract class AbstractRecipeProvider {
                 .build(consumer);
     }
 
-    public static void itemsToItemsString(List<Ingredient> input, List<String> output, double... params) {
+    public static void itemsToItemsString(List<ItemStackIngredient> input, List<String> output, double... params) {
         double timeModifier = params.length > 0 ? params[0] : 1.0;
         double powerModifier = params.length > 1 ? params[1] : 1.0;
         double radiation = params.length > 2 ? params[2] : 1.0;
@@ -131,7 +132,7 @@ public abstract class AbstractRecipeProvider {
                 .build(consumer);
     }
 
-    public static void oreVein(List<Ingredient> input, Ingredient output, String nameKey, double... params) {
+    public static void oreVein(List<ItemStackIngredient> input, ItemStackIngredient output, String nameKey, double... params) {
         double timeModifier = params.length > 0 ? params[0] : 1.0;
         double powerModifier = params.length > 1 ? params[1] : 1.0;
         double radiation = params.length > 2 ? params[2] : 1.0;
@@ -171,7 +172,7 @@ public abstract class AbstractRecipeProvider {
     }
 
     public static void itemsAndFluids(
-            List<Ingredient> inputItems, List<Ingredient> outputItems,
+            List<ItemStackIngredient> inputItems, List<ItemStackIngredient> outputItems,
             List<FluidStackIngredient> inputFluids, List<FluidStackIngredient> outputFluids,
             double... params) {
         double timeModifier = params.length > 0 ? params[0] : 1.0;
@@ -190,7 +191,7 @@ public abstract class AbstractRecipeProvider {
             key = name.split(":")[0];
             name = name.split(":")[1];
         }
-        return TagKey.create(BuiltInRegistries.FLUID.key(), ResourceLocation.fromNamespaceAndPath(key, name));
+        return FluidTags.create(ResourceLocation.fromNamespaceAndPath(key, name));
     }
 
     public static Item blockItem(String name) {
@@ -224,61 +225,52 @@ public abstract class AbstractRecipeProvider {
         return DUSTS_TAG.get(name);
     }
 
-    public static Ingredient dustStack(String name, int count) {
-        return Ingredient.of(stack(dustItem(name), count));
+    public static ItemStackIngredient dustStack(String name, int count) {
+        return ItemStackIngredientCreator.INSTANCE.from(stack(dustItem(name), count));
     }
 
-    public static Ingredient nuggetStack(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
-        return Ingredient.of(stack(nuggetItem(name), count));
+    public static ItemStackIngredient nuggetStack(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
+        return ItemStackIngredientCreator.INSTANCE.from(stack(nuggetItem(name), count));
     }
 
-    public static Ingredient ingotStack(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
-        return Ingredient.of(stack(ingotItem(name), count));
+    public static ItemStackIngredient ingotStack(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
+        return ItemStackIngredientCreator.INSTANCE.from(stack(ingotItem(name), count));
     }
 
-    public static Ingredient gemStack(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
-        return Ingredient.of(stack(gemItem(name), count));
+    public static ItemStackIngredient gemStack(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
+        return ItemStackIngredientCreator.INSTANCE.from(stack(gemItem(name), count));
     }
 
-    public static Ingredient plateStack(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
-        return Ingredient.of(stack(plateItem(name), count));
+    public static ItemStackIngredient plateStack(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
+        return ItemStackIngredientCreator.INSTANCE.from(stack(plateItem(name), count));
     }
 
-    public static Ingredient isotopeStack(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
-        return Ingredient.of(stack(isotopeItem(name), count));
+    public static ItemStackIngredient isotopeStack(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
+        return ItemStackIngredientCreator.INSTANCE.from(stack(isotopeItem(name), count));
     }
 
-    static Ingredient blockIngredient(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
+    static ItemStackIngredient blockIngredient(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
         return ingredient(forgeBlock(name), count);
     }
 
-    public static Ingredient dustIngredient(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
+    public static ItemStackIngredient dustIngredient(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
         return ingredient(forgeDust(name), count);
     }
 
     public static FluidStackIngredient moltenFuelIngredient(List<String> name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
-        return IngredientCreatorAccess.fluid().from(ALL_FLUID_ENTRIES.get(fuelItem(name).toString()).getStill(), count);
+        int count = pCount.length > 0 ? pCount[0] : 1;
+        return IngredientCreatorAccess.fluid().from(ALL_FLUID_ENTRIES.get(ResourceLocation.parse(fuelItem(name).toString()).getPath()).getStill(), count);
     }
 
-    public static Ingredient fuelIngredient(List<String> name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
+    public static ItemStackIngredient fuelIngredient(List<String> name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
         return ingredient(fuelItem(name), count);
     }
 
@@ -294,40 +286,34 @@ public abstract class AbstractRecipeProvider {
     }
 
 
-    public static Ingredient isotopeIngredient(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
+    public static ItemStackIngredient isotopeIngredient(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
         return ingredient(isotopeItem(name), count);
     }
 
-    public static Ingredient oreIngredient(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
+    public static ItemStackIngredient oreIngredient(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
         return ingredient(forgeOre(name), count);
     }
 
-    public static Ingredient chunkIngredient(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
+    public static ItemStackIngredient chunkIngredient(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
         return ingredient(forgeChunk(name), count);
     }
 
-    public static Ingredient ingotIngredient(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
+    public static ItemStackIngredient ingotIngredient(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
         return ingredient(forgeIngot(name), count);
     }
 
-    public static Ingredient plateIngredient(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
+    public static ItemStackIngredient plateIngredient(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
         return ingredient(forgePlate(name), count);
     }
 
 
-    public static Ingredient gemIngredient(String name, int... pCount) {
-        int count = 1;
-        if (pCount.length > 0) count = pCount[0];
+    public static ItemStackIngredient gemIngredient(String name, int... pCount) {
+        int count = pCount.length > 0 ? pCount[0] : 1;
         return ingredient(forgeGem(name), count);
     }
 

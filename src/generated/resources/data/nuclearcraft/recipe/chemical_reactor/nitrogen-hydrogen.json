@@ -1,0 +1,25 @@
+{
+  "type": "nuclearcraft:chemical_reactor",
+  "inputFluids": [
+    {
+      "amount": 250,
+      "tag": "c:nitrogen"
+    },
+    {
+      "amount": 750,
+      "tag": "c:hydrogen"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 750,
+      "tag": "c:ammonia"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 0.5,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 0.5
+}

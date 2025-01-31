@@ -1,15 +1,16 @@
 package igentuman.nc.recipes.type;
 
+import com.mojang.datafixers.util.Either;
 import igentuman.nc.recipes.AbstractRecipe;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
 import igentuman.nc.recipes.ingredient.ItemStackIngredient;
+import igentuman.nc.recipes.ingredient.creator.FluidStackIngredientCreator;
 import igentuman.nc.recipes.ingredient.creator.IngredientCreatorAccess;
 import igentuman.nc.util.annotation.NothingNullByDefault;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static igentuman.nc.compat.GlobalVars.CATALYSTS;
@@ -42,10 +43,13 @@ public abstract class NcRecipe extends AbstractRecipe {
         this.powerModifier = powerModifier;
         this.radiationModifier = radiationModifier;
         this.rarityModifier = rarityModifier;
-//        CATALYSTS.put(codeId, List.of(getToastSymbol()));
-//        RECIPE_CLASSES.put(codeId, getClass());
+        CATALYSTS.put(getCodeId(), List.of(getToastSymbol()));
+        RECIPE_CLASSES.put(getCodeId(), getClass());
     }
 
+    public NcRecipe(List<ItemStackIngredient> inputItems, List<ItemStackIngredient> outputItems, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> inputFluids, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> outputFluids, double timeModifier, double powerModifier, double radiationModifier, double rarityModifier) {
+        this(inputItems.toArray(ItemStackIngredient[]::new), outputItems.toArray(ItemStackIngredient[]::new), inputFluids.stream().map(i -> i.right().isPresent() ? i.right().get() : i.left().get()).toArray(FluidStackIngredient[]::new), outputFluids.stream().map(i -> i.right().isPresent() ? i.right().get() : i.left().get()).toArray(FluidStackIngredient[]::new), timeModifier, powerModifier, radiationModifier, rarityModifier);
+    }
 
     public NcRecipe(
             ItemStackIngredient[] inputItems,
@@ -77,42 +81,35 @@ public abstract class NcRecipe extends AbstractRecipe {
         return IngredientCreatorAccess.fluid().from(FluidStack.EMPTY);
     }
 
-//    @Override
-//    public void write(FriendlyByteBuf buffer) {
-//        buffer.writeInt(inputItems.length);
-//        for (ItemStackIngredient input : inputItems) {
-//            if (input == null || input.getRepresentations().isEmpty()) {
-//                input = getBarrier();
-//            }
-//            input.write(buffer);
-//        }
-//
-//        buffer.writeInt(outputItems.length);
-//        for (ItemStackIngredient output : outputItems) {
-//            if (output == null || output.getRepresentations().isEmpty()) {
-//                output = getBarrier();
-//            }
-//            output.write(buffer);
-//        }
-//
-//        buffer.writeInt(inputFluids.length);
-//        for (FluidStackIngredient input : inputFluids) {
-//            if (input == null) {
-//                input = getEmptyFluid();
-//            }
-//            input.write(buffer);
-//        }
-//
-//        buffer.writeInt(outputFluids.length);
-//        for (FluidStackIngredient output : outputFluids) {
-//            if (output == null) {
-//                output = getEmptyFluid();
-//            }
-//            output.write(buffer);
-//        }
-//
-//        buffer.writeDouble(timeModifier);
-//        buffer.writeDouble(powerModifier);
-//        buffer.writeDouble(radiationModifier);
-//    }
+    public List<ItemStackIngredient> inputItems() {
+        return Arrays.stream(inputItems).toList();
+    }
+
+    public List<ItemStackIngredient> outputItems() {
+        return Arrays.stream(outputItems).toList();
+    }
+
+    public List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> inputFluids() {
+        return Arrays.stream(inputFluids).map(i -> i instanceof FluidStackIngredientCreator.TaggedFluidStackIngredient ? Either.<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>left((FluidStackIngredientCreator.TaggedFluidStackIngredient) i) : Either.<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>right(i)).toList();
+    }
+
+    public List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> outputFluids() {
+        return Arrays.stream(outputFluids).map(i -> i instanceof FluidStackIngredientCreator.TaggedFluidStackIngredient ? Either.<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>left((FluidStackIngredientCreator.TaggedFluidStackIngredient) i) : Either.<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>right(i)).toList();
+    }
+
+    public Double timeModifier() {
+        return timeModifier;
+    }
+
+    public Double powerModifier() {
+        return powerModifier;
+    }
+
+    public Double radiationModifier() {
+        return radiationModifier;
+    }
+
+    public Double rarityModifier() {
+        return rarityModifier;
+    }
 }

@@ -8,6 +8,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 
 public class CommandNcVeinCheck {
@@ -24,10 +25,10 @@ public class CommandNcVeinCheck {
         ServerPlayer pl = ctx.getPlayer();
         Level level = pl.level();
         int qty = 0;
-        OreVeinRecipe vein = WorldVeinsManager.get(level).getWorldVeinData((ServerLevel) level).getVeinForChunk(pl.chunkPosition().x, pl.chunkPosition().z);
+        RecipeHolder<OreVeinRecipe> vein = WorldVeinsManager.get(level).getWorldVeinData((ServerLevel) level).getVeinForChunk(pl.chunkPosition().x, pl.chunkPosition().z);
         String name = "none";
         if (vein != null) {
-            name = vein.getGroup().replace("nc_ore_veins/", ""); //TODO CHECK
+            name = vein.id().getPath().replace("nc_ore_veins/", "");
             qty = WorldVeinsManager.get(level).getWorldVeinData((ServerLevel) level).getBlocksLeft(pl.chunkPosition().x, pl.chunkPosition().z);
         }
         pl.sendSystemMessage(Component.translatable("nc.ore_vein." + name));

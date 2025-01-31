@@ -1,6 +1,7 @@
 package igentuman.nc.handler;
 
 import igentuman.nc.recipes.NcRecipeType;
+import igentuman.nc.recipes.type.NcRecipe;
 import igentuman.nc.recipes.type.OreVeinRecipe;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -15,13 +16,13 @@ import static igentuman.nc.handler.config.ProcessorsConfig.IN_SITU_LEACHING;
 
 public class OreVeinProvider {
     private ServerLevel level;
-    protected List<OreVeinRecipe> recipes;
+    protected List<? extends RecipeHolder<? extends NcRecipe>> recipes;
     protected static Map<Level, OreVeinProvider> providers = new HashMap<>();
 
     @SuppressWarnings("unchecked")
     private OreVeinProvider(ServerLevel level) {
         this.level = level;
-        recipes = (List<OreVeinRecipe>) level.getRecipeManager().getAllRecipesFor(NcRecipeType.ALL_RECIPES.get("nc_ore_veins").getRecipeType()).stream().map(RecipeHolder::value).toList();
+        recipes = level.getRecipeManager().getAllRecipesFor(NcRecipeType.ALL_RECIPES.get("nc_ore_veins").getRecipeType());
     }
 
     public boolean chunkContainsVein(int chunkX, int chunkZ) {
@@ -50,9 +51,9 @@ public class OreVeinProvider {
 
     private int rolls = 0;
 
-    public OreVeinRecipe selectRandomVein(Random random, int x, int z) {
-        OreVeinRecipe recipe = recipes.get(random.nextInt(recipes.size()));
-        if (recipe.rarityModifier > rolls) {
+    public RecipeHolder<OreVeinRecipe> selectRandomVein(Random random, int x, int z) {
+        RecipeHolder<OreVeinRecipe> recipe = (RecipeHolder<OreVeinRecipe>) recipes.get(random.nextInt(recipes.size()));
+        if (recipe.value().rarityModifier > rolls) {
             rolls++;
             return selectRandomVein(rand(x, z, rolls), x, z);
         }
@@ -60,7 +61,7 @@ public class OreVeinProvider {
         return recipe;
     }
 
-    public OreVeinRecipe getVeinForChunk(int chunkX, int chunkZ) {
+    public RecipeHolder<OreVeinRecipe> getVeinForChunk(int chunkX, int chunkZ) {
         if (!chunkContainsVein(chunkX, chunkZ)) {
             return null;
         }

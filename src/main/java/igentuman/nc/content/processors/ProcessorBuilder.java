@@ -82,7 +82,6 @@ public class ProcessorBuilder<M extends NCProcessorContainer, U extends Screen &
 
     public ProcessorBuilder<?, ?> recipe(NcRecipeSerializer.IFactory<? extends NcRecipe> factory) {
         processor.recipeSerializerSupplier = () -> new NcRecipeSerializer<>(factory);
-
         return this;
     }
 

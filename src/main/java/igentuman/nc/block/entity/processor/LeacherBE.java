@@ -1,6 +1,7 @@
 package igentuman.nc.block.entity.processor;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.datafixers.util.Either;
 import igentuman.nc.NuclearCraft;
 import igentuman.nc.content.processors.Processors;
 import igentuman.nc.handler.event.client.BlockOverlayHandler;
@@ -8,6 +9,7 @@ import igentuman.nc.handler.sided.SlotModePair;
 import igentuman.nc.recipes.NcRecipeType;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
 import igentuman.nc.recipes.ingredient.ItemStackIngredient;
+import igentuman.nc.recipes.ingredient.creator.FluidStackIngredientCreator;
 import igentuman.nc.recipes.type.NcRecipe;
 import igentuman.nc.util.NCBlockPos;
 import igentuman.nc.util.annotation.NBTField;
@@ -16,7 +18,6 @@ import igentuman.nc.util.insitu_leaching.WorldVeinsManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -132,16 +133,13 @@ public class LeacherBE extends NCProcessorBE<LeacherBE.Recipe> {
 
     @NothingNullByDefault
     public static class Recipe extends NcRecipe {
-        public Recipe(
-                ItemStackIngredient[] input, ItemStackIngredient[] output,
-                FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids,
-                double timeModifier, double powerModifier, double heatModifier, double rarity) {
+        public Recipe(List<ItemStackIngredient> input, List<ItemStackIngredient> output, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> inputFluids, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> outputFluids, double timeModifier, double powerModifier, double heatModifier, double rarity) {
             super(input, output, inputFluids, outputFluids, timeModifier, powerModifier, heatModifier, 1);
         }
 
         @Override
-        public void write(FriendlyByteBuf buffer) {
-            //TODO
+        public String getCodeId() {
+            return Processors.LEACHER;
         }
     }
 

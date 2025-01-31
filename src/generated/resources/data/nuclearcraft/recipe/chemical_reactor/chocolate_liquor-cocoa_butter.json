@@ -1,0 +1,25 @@
+{
+  "type": "nuclearcraft:chemical_reactor",
+  "inputFluids": [
+    {
+      "amount": 72,
+      "tag": "c:chocolate_liquor"
+    },
+    {
+      "amount": 72,
+      "tag": "c:cocoa_butter"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 144,
+      "tag": "c:unsweetened_chocolate"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 0.5,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 0.5
+}

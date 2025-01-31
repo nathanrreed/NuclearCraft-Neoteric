@@ -5,6 +5,7 @@ import igentuman.nc.handler.sided.capability.FluidCapabilityHandler;
 import igentuman.nc.handler.sided.capability.ItemCapabilityHandler;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
 import igentuman.nc.recipes.ingredient.ItemStackIngredient;
+import igentuman.nc.setup.registration.NCProcessors;
 import igentuman.nc.util.IgnoredIInventory;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -16,6 +17,8 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static igentuman.nc.handler.config.MaterialsConfig.MATERIAL_PRODUCTS;
+import static igentuman.nc.recipes.NcRecipeType.ALL_RECIPES;
 import static igentuman.nc.util.NcUtils.getModId;
 import static net.minecraft.world.item.Items.BARRIER;
 import static net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction.EXECUTE;
@@ -38,7 +42,7 @@ public abstract class AbstractRecipe implements Recipe<IgnoredIInventory> {
     protected ItemStackIngredient[] outputItems = new ItemStackIngredient[0];
     protected List<ItemStack> cachedOutputItems;
     protected List<FluidStack> cachedOutputFluids;
-    private @NotNull RecipeType<? extends AbstractRecipe> recipeType;
+//    private @NotNull RecipeType<? extends AbstractRecipe> recipeType;
 
     @Override
     public ItemStack getResultItem(HolderLookup.Provider provider) {
@@ -79,16 +83,7 @@ public abstract class AbstractRecipe implements Recipe<IgnoredIInventory> {
         return cachedOutputFluids;
     }
 
-
-    protected AbstractRecipe() {
-    }
-
-    public String getCodeId() {
-        return recipeType.toString(); //TODO FIX
-
-//                .getPath().split("/")[0];
-    }
-
+    public abstract String getCodeId();
 
     public NonNullList<Ingredient> getItemIngredients() {
         NonNullList<Ingredient> ingredients = NonNullList.create();
@@ -112,26 +107,26 @@ public abstract class AbstractRecipe implements Recipe<IgnoredIInventory> {
         return NcRecipeSerializers.SERIALIZERS.get(getCodeId()).get();
     }
 
-//    @Override
-//    public @NotNull String getGroup() {
-//        return codeId;
-//    }
+    @Override
+    public @NotNull String getGroup() {
+        return getCodeId();
+    }
 
-//    @Override
-//    public @NotNull ItemStack getToastSymbol() {
-//        Block proc = AIR;
-//        if (NCProcessors.PROCESSORS.containsKey(codeId)) {
-//            proc = NCProcessors.PROCESSORS.get(codeId).get();
-//        }
-//        return new ItemStack(proc);
-//    }
+    @Override
+    public @NotNull ItemStack getToastSymbol() {
+        Block proc = Blocks.AIR;
+        if (NCProcessors.PROCESSORS.containsKey(getCodeId())) {
+            proc = NCProcessors.PROCESSORS.get(getCodeId()).get();
+        }
+        return new ItemStack(proc);
+    }
 
     @Override
     public @NotNull RecipeType<? extends AbstractRecipe> getType() {
-        return recipeType;
+        return ALL_RECIPES.get(getCodeId()).getRecipeType();
     }
 
-    public abstract void write(FriendlyByteBuf buffer);
+//    public abstract void write(FriendlyByteBuf buffer);
 
     @Override
     public boolean matches(@NotNull IgnoredIInventory inv, @NotNull Level world) {
@@ -148,13 +143,13 @@ public abstract class AbstractRecipe implements Recipe<IgnoredIInventory> {
         if (empty) return true;
         for (ItemStackIngredient inputItem : inputItems) {
             if (inputItem == null || inputItem.getRepresentations().isEmpty()
-                    || inputItem.getRepresentations().get(0).is(BARRIER)) {
+                    || inputItem.getRepresentations().getFirst().is(BARRIER)) {
                 return true;
             }
         }
         for (ItemStackIngredient output : outputItems) {
             if (output == null || output.getRepresentations().isEmpty()
-                    || output.getRepresentations().get(0).is(BARRIER)) {
+                    || output.getRepresentations().getFirst().is(BARRIER)) {
                 return true;
             }
         }
@@ -188,7 +183,7 @@ public abstract class AbstractRecipe implements Recipe<IgnoredIInventory> {
                 if (outputItem == null) continue;
                 List<ItemStack> items = outputItem.getRepresentations();
                 if (items.size() == 1) {
-                    cachedOutputItems.add(items.get(0));
+                    cachedOutputItems.add(items.getFirst());
                     continue;
                 }
                 resolve:
@@ -227,7 +222,6 @@ public abstract class AbstractRecipe implements Recipe<IgnoredIInventory> {
     public double getRadiation() {
         return radiationModifier;
     }
-
 
     public boolean handleOutputs(SidedContentHandler contentHandler) {
         int i = contentHandler.inputItemSlots;

@@ -1,6 +1,5 @@
 package igentuman.nc.handler;
 
-import com.lowdragmc.lowdraglib.misc.ItemHandlerHelper;
 import igentuman.nc.handler.sided.capability.AbstractCapabilityHandler;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -74,11 +73,11 @@ public class ItemStorageCapabilityHandler extends AbstractCapabilityHandler impl
             }
         } else {
             if (!simulate) {
-                this.stacks.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
+                this.stacks.set(slot, existing.copyWithCount(existing.getCount() - toExtract));
                 // onContentsChanged(slot);
             }
 
-            return ItemHandlerHelper.copyStackWithSize(existing, toExtract);
+            return existing.copyWithCount(toExtract);
         }
     }
 
@@ -95,7 +94,7 @@ public class ItemStorageCapabilityHandler extends AbstractCapabilityHandler impl
         int limit = getStackLimit(slot, stack);
 
         if (!existing.isEmpty()) {
-            if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
+            if (!ItemStack.isSameItemSameComponents(stack, existing))
                 return stack;
 
             limit -= existing.getCount();
@@ -108,13 +107,13 @@ public class ItemStorageCapabilityHandler extends AbstractCapabilityHandler impl
 
         if (!simulate) {
             if (existing.isEmpty()) {
-                this.stacks.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
+                this.stacks.set(slot, reachedLimit ? stack.copyWithCount(limit) : stack);
             } else {
                 existing.grow(reachedLimit ? limit : stack.getCount());
             }
         }
 
-        return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit) : ItemStack.EMPTY;
+        return reachedLimit ? stack.copyWithCount(stack.getCount() - limit) : ItemStack.EMPTY;
     }
 
     @Override

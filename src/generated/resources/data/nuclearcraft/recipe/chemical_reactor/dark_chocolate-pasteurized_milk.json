@@ -1,0 +1,25 @@
+{
+  "type": "nuclearcraft:chemical_reactor",
+  "inputFluids": [
+    {
+      "amount": 144,
+      "tag": "c:dark_chocolate"
+    },
+    {
+      "amount": 250,
+      "tag": "c:pasteurized_milk"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 288,
+      "tag": "c:milk_chocolate"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 0.5,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 0.5
+}

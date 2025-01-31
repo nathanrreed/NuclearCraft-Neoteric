@@ -1,0 +1,37 @@
+{
+  "type": "nuclearcraft:centrifuge",
+  "inputFluids": [
+    {
+      "amount": 500,
+      "tag": "c:fissile_fuel"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 300,
+      "tag": "c:uranium/238"
+    },
+    {
+      "amount": 80,
+      "tag": "c:uranium/235"
+    },
+    {
+      "amount": 80,
+      "tag": "c:uranium/233"
+    },
+    {
+      "amount": 16,
+      "tag": "c:hydrofluoric_acid"
+    },
+    {
+      "amount": 16,
+      "tag": "c:sulfuric_acid"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.9
+}

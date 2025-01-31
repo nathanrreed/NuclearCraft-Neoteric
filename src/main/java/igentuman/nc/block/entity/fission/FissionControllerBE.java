@@ -1,5 +1,6 @@
 package igentuman.nc.block.entity.fission;
 
+import com.mojang.datafixers.util.Either;
 import igentuman.nc.NuclearCraft;
 import igentuman.nc.client.sound.SoundHandler;
 import igentuman.nc.compat.cc.NCSolidFissionReactorPeripheral;
@@ -18,6 +19,7 @@ import igentuman.nc.recipes.NcRecipeType;
 import igentuman.nc.recipes.RecipeInfo;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
 import igentuman.nc.recipes.ingredient.ItemStackIngredient;
+import igentuman.nc.recipes.ingredient.creator.FluidStackIngredientCreator;
 import igentuman.nc.recipes.type.NcRecipe;
 import igentuman.nc.setup.registration.NCFluids;
 import igentuman.nc.util.CustomEnergyStorage;
@@ -30,7 +32,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.Item;
@@ -58,8 +59,8 @@ import static igentuman.nc.handler.config.CommonConfig.ENERGY_GENERATION;
 import static igentuman.nc.handler.config.FissionConfig.FISSION_CONFIG;
 import static igentuman.nc.multiblock.fission.FissionReactor.FISSION_BLOCKS;
 import static igentuman.nc.setup.registration.FissionFuel.ITEM_PROPERTIES;
-import static igentuman.nc.setup.registration.NCSounds.FISSION_REACTOR;
 import static igentuman.nc.setup.registration.NCParticleTypes.RADIATION;
+import static igentuman.nc.setup.registration.NCSounds.FISSION_REACTOR;
 import static net.minecraft.world.item.Items.AIR;
 
 public class FissionControllerBE<RECIPE extends FissionControllerBE.Recipe> extends FissionBE {
@@ -327,7 +328,7 @@ public class FissionControllerBE<RECIPE extends FissionControllerBE.Recipe> exte
         return NCFissionReactorDevice.createDevice(this);
     }
 
-//    @Nonnull
+//    @Nonnull TODO implement
 //    @Override
 //    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 //        if (cap == ForgeCapabilities.ITEM_HANDLER) {
@@ -965,8 +966,8 @@ public class FissionControllerBE<RECIPE extends FissionControllerBE.Recipe> exte
     public static class Recipe extends NcRecipe {
         private static final String codeId = "fission_reactor_controller";
 
-        public Recipe(ItemStackIngredient[] input, ItemStackIngredient[] output, FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids, double timeModifier, double powerModifier, double heatModifier, double rarity) {
-            super(input, output, timeModifier, powerModifier, heatModifier, rarity);
+        public Recipe(List<ItemStackIngredient> inputItems, List<ItemStackIngredient> outputItems, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> inputFluids, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> outputFluids, double timeModifier, double powerModifier, double heatModifier, double rarityModifier) {
+            super(inputItems, outputItems, inputFluids, outputFluids, timeModifier, powerModifier, heatModifier, rarityModifier);
             CATALYSTS.put(codeId, List.of(getToastSymbol()));
         }
 
@@ -992,8 +993,8 @@ public class FissionControllerBE<RECIPE extends FissionControllerBE.Recipe> exte
         }
 
         @Override
-        public @NotNull String getGroup() {
-            return FISSION_BLOCKS.get(codeId).get().getName().getString();
+        public @NotNull String getCodeId() {
+            return codeId;
         }
 
         @Override
@@ -1004,11 +1005,6 @@ public class FissionControllerBE<RECIPE extends FissionControllerBE.Recipe> exte
         public int getDepletionTime() {
             if (getFuelItem() == null) return 0;
             return (int) (getFuelItem().depletion * 20 * timeModifier);
-        }
-
-        @Override
-        public void write(FriendlyByteBuf buffer) {
-            /// TODO
         }
 
         public double getEnergy() {
@@ -1029,14 +1025,9 @@ public class FissionControllerBE<RECIPE extends FissionControllerBE.Recipe> exte
     public static class FissionBoilingRecipe extends NcRecipe {
         protected double conversionRate;
 
-        public FissionBoilingRecipe(ItemStackIngredient[] input, ItemStackIngredient[] output, FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids, double conversionRate, double powerModifier, double radiation, double rar) {
-            super(input, output, inputFluids, outputFluids, conversionRate, powerModifier, radiation, rar);
+        public FissionBoilingRecipe(List<ItemStackIngredient> inputItems, List<ItemStackIngredient> outputItems, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> inputFluids, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> outputFluids, double conversionRate, double powerModifier, double radiationModifier, double rarityModifier) {
+            super(inputItems, outputItems, inputFluids, outputFluids, conversionRate, powerModifier, radiationModifier, rarityModifier);
             this.conversionRate = conversionRate;
-        }
-
-        @Override
-        public @NotNull String getGroup() {
-            return "fission_boiling";
         }
 
         @Override
@@ -1049,8 +1040,8 @@ public class FissionControllerBE<RECIPE extends FissionControllerBE.Recipe> exte
         }
 
         @Override
-        public void write(FriendlyByteBuf buffer) {
-            //TODO
+        public String getCodeId() {
+            return "fission_boiling";
         }
     }
 }

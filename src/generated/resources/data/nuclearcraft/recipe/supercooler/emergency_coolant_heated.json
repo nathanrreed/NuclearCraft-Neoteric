@@ -1,0 +1,21 @@
+{
+  "type": "nuclearcraft:supercooler",
+  "inputFluids": [
+    {
+      "amount": 1000,
+      "tag": "c:emergency_coolant_heated"
+    }
+  ],
+  "inputItems": [],
+  "outputFluids": [
+    {
+      "amount": 1000,
+      "tag": "c:emergency_coolant"
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

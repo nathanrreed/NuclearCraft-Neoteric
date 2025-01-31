@@ -1,6 +1,5 @@
 package igentuman.nc.util;
 
-import com.lowdragmc.lowdraglib.misc.ItemHandlerHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -32,7 +31,7 @@ public final class StackUtils {
         if (size <= 0 || stack.isEmpty()) {
             return ItemStack.EMPTY;
         }
-        return ItemHandlerHelper.copyStackWithSize(stack, size);
+        return stack.copyWithCount(size);
     }
 
     @Nullable

@@ -1,0 +1,29 @@
+{
+  "type": "nuclearcraft:melter",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 1,
+      "ingredients": [
+        {
+          "item": "nuclearcraft:depleted_fuel_uranium_leu_235_za"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [
+    {
+      "ingredients": [
+        {
+          "amount": 144,
+          "id": "nuclearcraft:depleted_fuel_uranium_leu_235_za"
+        }
+      ]
+    }
+  ],
+  "outputItems": [],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

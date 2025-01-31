@@ -1,0 +1,53 @@
+{
+  "type": "nuclearcraft:assembler",
+  "inputFluids": [],
+  "inputItems": [
+    {
+      "amount": 2,
+      "ingredients": [
+        {
+          "tag": "c:dusts/bismuth"
+        }
+      ]
+    },
+    {
+      "amount": 2,
+      "ingredients": [
+        {
+          "tag": "c:dusts/strontium"
+        }
+      ]
+    },
+    {
+      "amount": 2,
+      "ingredients": [
+        {
+          "tag": "c:dusts/calcium"
+        }
+      ]
+    },
+    {
+      "amount": 2,
+      "ingredients": [
+        {
+          "tag": "c:dusts/copper"
+        }
+      ]
+    }
+  ],
+  "outputFluids": [],
+  "outputItems": [
+    {
+      "amount": 3,
+      "ingredients": [
+        {
+          "tag": "c:dusts/bscco"
+        }
+      ]
+    }
+  ],
+  "powerModifier": 1.0,
+  "radiationModifier": 1.0,
+  "rarityModifier": 1.0,
+  "timeModifier": 1.0
+}

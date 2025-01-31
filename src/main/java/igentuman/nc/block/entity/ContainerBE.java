@@ -128,15 +128,6 @@ public class ContainerBE extends NuclearCraftBE implements ISizeToggable {
         }
     }
 
-//    @Nonnull
-//    @Override
-//    public <T> Supplier<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-//        if (cap == Capabilities.ItemHandler.BLOCK && (side != null && sideConfig.get(side.ordinal()) != SideMode.DISABLED)) {
-//            return getItemHandler().cast();
-//        }
-//        return super.getCapability(cap, side);
-//    }
-
     @Override
     protected void saveClientData(CompoundTag tag, HolderLookup.Provider registries) {
         CompoundTag tank = new CompoundTag();

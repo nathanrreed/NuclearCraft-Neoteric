@@ -1,23 +1,27 @@
 package igentuman.nc.recipes.type;
 
+import com.mojang.datafixers.util.Either;
+import igentuman.nc.content.processors.Processors;
 import igentuman.nc.handler.OreVeinProvider;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
 import igentuman.nc.recipes.ingredient.ItemStackIngredient;
-import net.minecraft.network.FriendlyByteBuf;
+import igentuman.nc.recipes.ingredient.creator.FluidStackIngredientCreator;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 import static igentuman.nc.setup.registration.NCItems.NC_PARTS;
 
 public class OreVeinRecipe extends NcRecipe {
-    public OreVeinRecipe(ItemStackIngredient[] input, ItemStackIngredient[] output, FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids, double timeModifier, double powerModifier, double radiation, double rarityModifier) {
-        super(input, output, timeModifier, powerModifier, radiation, rarityModifier);
+    public OreVeinRecipe(List<ItemStackIngredient> inputItems, List<ItemStackIngredient> outputItems, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> inputFluids, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> outputFluids, double timeModifier, double powerModifier, double radiationModifier, double rarityModifier) {
+        super(inputItems, outputItems, inputFluids, outputFluids, timeModifier, powerModifier, radiationModifier, rarityModifier);
     }
 
     @Override
-    public @NotNull String getGroup() {
-        return "research_paper";
+    public String getCodeId() {
+        return Processors.ANALYZER;
     }
 
     @Override
@@ -39,11 +43,5 @@ public class OreVeinRecipe extends NcRecipe {
             score -= inputItems[i].getRepresentations().getFirst().getCount();
         }
         return getOreByScore(score, level, x, z);
-    }
-
-    @Override
-    public void write(FriendlyByteBuf buffer) {
-//        super.write(buffer); //TODO
-        buffer.writeDouble(rarityModifier);
     }
 }

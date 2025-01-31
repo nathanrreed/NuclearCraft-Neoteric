@@ -58,10 +58,7 @@ public class ItemHandlerWrapper implements IItemHandlerModifiable {
     @Nonnull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if( side != null &&
-                (handler.getMode(slot, 0) == SlotModePair.SlotMode.INPUT ||
-                        handler.getMode(slot, 0) == SlotModePair.SlotMode.PULL)
-        ) {
+        if (side != null && (handler.getMode(slot, 0) == SlotModePair.SlotMode.INPUT || handler.getMode(slot, 0) == SlotModePair.SlotMode.PULL)) {
             return ItemStack.EMPTY;
         }
         return this.extract.test(slot) ? this.handler.extractItem(slot, amount, simulate) : ItemStack.EMPTY;

@@ -1,13 +1,11 @@
 package igentuman.nc.recipes;
 
-import igentuman.nc.client.NcClient;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.UnknownNullability;
@@ -42,9 +40,9 @@ public class RecipeInfo<RECIPE extends AbstractRecipe> implements INBTSerializab
         data.putDouble("heat", heat);
         data.putDouble("radiation", radiation);
         data.putBoolean("stuck", stuck);
-        if (recipe != null) {
-            data.putString("recipe", recipeId);
-        }
+//        if (recipe != null) { //TODO READD
+//            data.putString("recipe", recipeId);
+//        }
         return data;
     }
 
@@ -57,11 +55,11 @@ public class RecipeInfo<RECIPE extends AbstractRecipe> implements INBTSerializab
             heat = ((CompoundTag) nbt).getDouble("heat");
             radiation = ((CompoundTag) nbt).getDouble("radiation");
             stuck = ((CompoundTag) nbt).getBoolean("stuck");
-            recipeId = ((CompoundTag) nbt).getString("recipe");
+//            recipeId = ((CompoundTag) nbt).getString("recipe");
             recipe = null;
-            if (!recipeId.isEmpty()) {
-                recipe = getRecipeFromTag(recipeId);
-            }
+//            if (!recipeId.isEmpty()) {
+//                recipe = getRecipeFromTag(recipeId);
+//            }
         }
     }
 
@@ -71,7 +69,7 @@ public class RecipeInfo<RECIPE extends AbstractRecipe> implements INBTSerializab
     }
 
     private RECIPE getRecipeFromTag(String recipe) {
-        ResourceLocation id =ResourceLocation.parse(recipe);
+        ResourceLocation id = ResourceLocation.parse(recipe);
         if (getLevel() == null) return null;
         try {
             return (RECIPE) getLevel().getRecipeManager().byKey(id).get().value();

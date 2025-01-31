@@ -38,7 +38,6 @@ public interface IItemStackIngredientCreator extends IIngredientCreator<Item, It
         //Support NBT that is on the stack in case it matters
         // Note: Only bother making it an NBT ingredient if the stack has NBT, otherwise there is no point in doing the extra checks
 
-
         Ingredient ingredient = stack.has(DataComponents.CUSTOM_DATA) ? DataComponentIngredient.of(true, stack) : Ingredient.of(stack);
         return from(ingredient, amount);
     }

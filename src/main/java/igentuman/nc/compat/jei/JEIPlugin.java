@@ -65,7 +65,6 @@ public class JEIPlugin implements IModPlugin {
         return recipeTypes;
     }
 
-
     public ResourceLocation getPluginUid() {
         return ResourceLocation.fromNamespaceAndPath(MODID, "jei_plugin");
     }
@@ -108,7 +107,6 @@ public class JEIPlugin implements IModPlugin {
     public <TYPE> RecipeType<TYPE> getRecipeType(RecipeType<? extends AbstractRecipe> in) {
         return (RecipeType<TYPE>) in;
     }
-
 
     public void registerRecipes(IRecipeRegistration registration) {
         try {

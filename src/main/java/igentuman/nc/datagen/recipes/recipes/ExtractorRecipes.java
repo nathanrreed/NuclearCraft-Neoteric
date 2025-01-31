@@ -2,8 +2,8 @@ package igentuman.nc.datagen.recipes.recipes;
 
 import igentuman.nc.content.processors.Processors;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
+import igentuman.nc.recipes.ingredient.ItemStackIngredient;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class ExtractorRecipes extends AbstractRecipeProvider {
 
     }
 
-    protected static void add(Ingredient inputItem, Ingredient outputItem, FluidStackIngredient outputFluid, double... modifiers) {
+    protected static void add(ItemStackIngredient inputItem, ItemStackIngredient outputItem, FluidStackIngredient outputFluid, double... modifiers) {
         itemsAndFluids(List.of(inputItem), List.of(outputItem), new ArrayList<>(), List.of(outputFluid), modifiers);
     }
 }

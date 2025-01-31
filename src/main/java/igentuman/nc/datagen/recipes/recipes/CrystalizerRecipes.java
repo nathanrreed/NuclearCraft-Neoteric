@@ -3,6 +3,8 @@ package igentuman.nc.datagen.recipes.recipes;
 import igentuman.nc.content.materials.Materials;
 import igentuman.nc.content.processors.Processors;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
+import igentuman.nc.recipes.ingredient.ItemStackIngredient;
+import igentuman.nc.recipes.ingredient.creator.ItemStackIngredientCreator;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.world.item.crafting.Ingredient;
 
@@ -24,7 +26,7 @@ public class CrystalizerRecipes extends AbstractRecipeProvider {
         itemsAndFluids(fluidIngredient(Materials.sulfur, 144), dustIngredient(Materials.sulfur));
         itemsAndFluids(fluidIngredient("boron_nitride_solution", 144), dustIngredient(Materials.boron_nitride));
         itemsAndFluids(fluidIngredient("uranium_oxide", 144), dustIngredient(Materials.yellowcake));
-        itemsAndFluids(fluidIngredient(Materials.polonium, 1000), Ingredient.of(stack("mekanism:pellet_polonium", 1)), 3D);
+        itemsAndFluids(fluidIngredient(Materials.polonium, 1000), ItemStackIngredientCreator.INSTANCE.from(stack("mekanism:pellet_polonium", 1)), 3D);
         itemsAndFluids(fluidIngredient(Materials.potassium_iodide, 144), dustIngredient(Materials.potassium_iodide));
         itemsAndFluids(fluidIngredient("fluorite_water", 144), dustIngredient(Materials.fluorite));
         itemsAndFluids(fluidIngredient("calcium_sulfate_solution", 144), dustIngredient(Materials.calcium_sulfate));
@@ -43,7 +45,7 @@ public class CrystalizerRecipes extends AbstractRecipeProvider {
         }
     }
 
-    protected static void itemsAndFluids(FluidStackIngredient inputFluid, Ingredient outputItem, double... modifiers) {
+    protected static void itemsAndFluids(FluidStackIngredient inputFluid, ItemStackIngredient outputItem, double... modifiers) {
         itemsAndFluids(new ArrayList<>(), List.of(outputItem), List.of(inputFluid), new ArrayList<>(), modifiers);
     }
 }
