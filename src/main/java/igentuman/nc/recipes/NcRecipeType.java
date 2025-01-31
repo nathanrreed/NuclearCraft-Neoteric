@@ -4,7 +4,6 @@ import igentuman.nc.block.entity.fission.FissionControllerBE;
 import igentuman.nc.block.entity.processor.NuclearFurnaceBE;
 import igentuman.nc.block.entity.turbine.TurbineControllerBE;
 import igentuman.nc.content.processors.Processors;
-import igentuman.nc.recipes.ingredient.FluidStackIngredient;
 import igentuman.nc.recipes.ingredient.ItemStackIngredient;
 import igentuman.nc.recipes.ingredient.creator.IngredientCreatorAccess;
 import igentuman.nc.recipes.type.NcRecipe;
@@ -52,7 +51,7 @@ public class NcRecipeType<RECIPE extends NcRecipe> implements RecipeType<RECIPE>
         return RECIPE_TYPES.register(name, () -> new NcRecipeType<>(name));
     }
 
-    private List<RecipeHolder<RECIPE>> cachedRecipes = Collections.emptyList();
+    private List<RECIPE> cachedRecipes = Collections.emptyList();
     private final ResourceLocation registryName;
 
     private NcRecipeType(String name) {
@@ -94,46 +93,44 @@ public class NcRecipeType<RECIPE extends NcRecipe> implements RecipeType<RECIPE>
         if (world == null) {
             world = ServerLifecycleHooks.getCurrentServer().overworld();
             if (world == null) {
-                return cachedRecipes.stream().map(RecipeHolder::value).toList();
+                return cachedRecipes;
             }
         }
         if (cachedRecipes.isEmpty()) {
             RecipeManager recipeManager = world.getRecipeManager();
-            List<RecipeHolder<RECIPE>> recipes = new ArrayList<>();
+            List<RECIPE> recipes;
             if (this.registryName.getPath().equals("nuclear_furnace")) {
                 recipes = getSmeltingRecipes(recipeManager);
             } else {
-                recipes = recipeManager.getAllRecipesFor(this);
+                recipes = recipeManager.getAllRecipesFor(this).stream().map(RecipeHolder::value).toList();
             }
             cachedRecipes = recipes.stream()
-                    .filter(recipe -> !recipe.value().isIncomplete())
+                    .filter(recipe -> !recipe.isIncomplete())
                     .toList();
         }
-        return cachedRecipes.stream().map(RecipeHolder::value).toList();
+        return cachedRecipes;
     }
 
-    private List<RecipeHolder<RECIPE>> getSmeltingRecipes(RecipeManager recipeManager) {
+    private List<RECIPE> getSmeltingRecipes(RecipeManager recipeManager) {
         List<RecipeHolder<SmeltingRecipe>> smelting = recipeManager.getAllRecipesFor(SMELTING);
-        List<RecipeHolder<RECIPE>> recipes = new ArrayList<>();
+        List<RECIPE> recipes = new ArrayList<>();
         for (RecipeHolder<SmeltingRecipe> recipe : smelting) {
             if (recipe.value().isIncomplete()) {
                 continue;
             }
-//            ItemStackIngredient output = IngredientCreatorAccess.item().from(recipe.getResultItem(RegistryAccess.EMPTY)); //TODO ADD
-//            recipes.add((RECIPE) new NuclearFurnaceBE.Recipe(
-//                    rl(getNFRecipeId(recipe)),
-//                    new ItemStackIngredient[]{IngredientCreatorAccess.item().from(recipe.getIngredients().get(0))},
-//                    new ItemStackIngredient[]{output},
-//                    new FluidStackIngredient[0],
-//                    new FluidStackIngredient[0],
-//                    recipe.value().getCookingTime() / 1000D, 1, 1, 1);
-//            recipes.add((RECIPE) this);
+            ItemStackIngredient output = IngredientCreatorAccess.item().from(recipe.value().getResultItem(RegistryAccess.EMPTY)); //TODO ADD
+            recipes.add((RECIPE) new NuclearFurnaceBE.Recipe(
+                    List.of(IngredientCreatorAccess.item().from(recipe.value().getIngredients().getFirst())),
+                    List.of(output),
+                    List.of(),
+                    List.of(),
+                    recipe.value().getCookingTime() / 1000D, 1, 1, 1));
         }
         return recipes;
     }
 
 //    private String getNFRecipeId(RecipeHolder<SmeltingRecipe> recipe) {
-//        return recipe.value().getId().toString().replaceAll("[^a-z0-9/._-]", "_") + "_nf";
+//        return recipe.id().getPath().toString().replaceAll("[^a-z0-9/._-]", "_") + "_nf";
 //    }
 
     /**
@@ -169,6 +166,7 @@ public class NcRecipeType<RECIPE extends NcRecipe> implements RecipeType<RECIPE>
         List<RecipeHolder<RECIPE>> recipes = manager.getAllRecipesFor(this);
         cachedRecipes = recipes.stream()
                 .filter(recipe -> !recipe.value().isIncomplete())
+                .map(RecipeHolder::value)
                 .toList();
     }
 }

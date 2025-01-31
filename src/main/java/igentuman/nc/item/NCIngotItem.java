@@ -12,6 +12,6 @@ public class NCIngotItem extends Item {
 
     @Override
     public boolean isEnabled(@NotNull FeatureFlagSet pEnabledFeatures) {
-        return Ingots.get().registered().containsKey(this.toString().replace("_ingot", ""));
+        return Ingots.get().registered().containsKey(this.toString().replaceAll("_ingot|nuclearcraft:", ""));
     }
 }

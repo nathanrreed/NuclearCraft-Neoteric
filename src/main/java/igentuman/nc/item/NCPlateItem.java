@@ -12,6 +12,6 @@ public class NCPlateItem extends Item {
 
     @Override
     public boolean isEnabled(@NotNull FeatureFlagSet pEnabledFeatures) {
-        return Plates.get().registered().containsKey(this.toString().replace("_plate", ""));
+        return Plates.get().registered().containsKey(this.toString().replaceAll("_plate|nuclearcraft:", ""));
     }
 }

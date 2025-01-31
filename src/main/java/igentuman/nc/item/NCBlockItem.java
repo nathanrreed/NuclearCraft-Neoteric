@@ -12,6 +12,6 @@ public class NCBlockItem extends Item {
 
     @Override
     public boolean isEnabled(@NotNull FeatureFlagSet pEnabledFeatures) {
-        return Blocks.get().registered().containsKey(this.toString().replace("_block", ""));
+        return Blocks.get().registered().containsKey(this.toString().replaceAll("_block|nuclearcraft:", ""));
     }
 }

@@ -12,6 +12,6 @@ public class NCDustItem extends Item {
 
     @Override
     public boolean isEnabled(@NotNull FeatureFlagSet pEnabledFeatures) {
-        return Dusts.get().registered().containsKey(this.toString().replace("_dust", ""));
+        return Dusts.get().registered().containsKey(this.toString().replaceAll("_dust|nuclearcraft:", ""));
     }
 }

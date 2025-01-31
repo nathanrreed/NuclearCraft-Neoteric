@@ -12,6 +12,6 @@ public class NCBGemItem extends Item {
 
     @Override
     public boolean isEnabled(@NotNull FeatureFlagSet pEnabledFeatures) {
-        return Gems.get().registered().containsKey(this.toString().replace("_gem", ""));
+        return Gems.get().registered().containsKey(this.toString().replaceAll("_gem|nuclearcraft:", ""));
     }
 }

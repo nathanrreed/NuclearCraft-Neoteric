@@ -1,8 +1,10 @@
 package igentuman.nc.block.entity.processor;
 
+import com.mojang.datafixers.util.Either;
 import igentuman.nc.content.processors.Processors;
 import igentuman.nc.recipes.ingredient.FluidStackIngredient;
 import igentuman.nc.recipes.ingredient.ItemStackIngredient;
+import igentuman.nc.recipes.ingredient.creator.FluidStackIngredientCreator;
 import igentuman.nc.recipes.type.NcRecipe;
 import igentuman.nc.util.annotation.NBTField;
 import igentuman.nc.util.annotation.NothingNullByDefault;
@@ -59,10 +61,9 @@ public class NuclearFurnaceBE extends NCProcessorBE<NuclearFurnaceBE.Recipe> {
 
     @NothingNullByDefault
     public static class Recipe extends NcRecipe {
-        public Recipe(ItemStackIngredient[] input, ItemStackIngredient[] output,
-                      FluidStackIngredient[] inputFluids, FluidStackIngredient[] outputFluids,
+        public Recipe(List<ItemStackIngredient> inputItems, List<ItemStackIngredient> outputItems, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> inputFluids, List<Either<FluidStackIngredientCreator.TaggedFluidStackIngredient, FluidStackIngredient>> outputFluids,
                       double timeModifier, double powerModifier, double heatModifier, double rarity) {
-            super(input, output, timeModifier, powerModifier, heatModifier, 1);
+            super(inputItems, outputItems, inputFluids, outputFluids, timeModifier, powerModifier, heatModifier, 1);
         }
 
         @Override

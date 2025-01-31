@@ -12,6 +12,6 @@ public class NCNuggetItem extends Item {
 
     @Override
     public boolean isEnabled(@NotNull FeatureFlagSet pEnabledFeatures) {
-        return Nuggets.get().registered().containsKey(this.toString().replace("_nugget", ""));
+        return Nuggets.get().registered().containsKey(this.toString().replaceAll("_nugget|nuclearcraft:", ""));
     }
 }

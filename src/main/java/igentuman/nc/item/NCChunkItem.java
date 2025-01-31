@@ -12,6 +12,6 @@ public class NCChunkItem extends Item {
 
     @Override
     public boolean isEnabled(@NotNull FeatureFlagSet pEnabledFeatures) {
-        return Chunks.get().registered().containsKey(this.toString().replace("_chunk", ""));
+        return Chunks.get().registered().containsKey(this.toString().replaceAll("_chunk|nuclearcraft:", ""));
     }
 }
