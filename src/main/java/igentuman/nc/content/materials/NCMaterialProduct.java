@@ -56,8 +56,6 @@ public class NCMaterialProduct {
     }
 
     public boolean isRegistered() {
-
         return registered;
     }
-
 }

@@ -15,7 +15,6 @@ import org.jetbrains.annotations.UnknownNullability;
 
 import javax.annotation.Nonnull;
 
-
 public class ItemStorageCapabilityHandler extends AbstractCapabilityHandler implements IItemHandlerModifiable, INBTSerializable<CompoundTag> {
 
     protected int slots;
@@ -175,6 +174,4 @@ public class ItemStorageCapabilityHandler extends AbstractCapabilityHandler impl
         if (slot < 0 || slot >= stacks.size())
             throw new RuntimeException("Slot " + slot + " not in valid range - [0," + stacks.size() + ")");
     }
-
-
 }

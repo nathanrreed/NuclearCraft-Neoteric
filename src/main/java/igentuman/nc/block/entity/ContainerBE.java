@@ -57,7 +57,6 @@ public class ContainerBE extends NuclearCraftBE implements ISizeToggable {
     }
 
     public void tickClient() {
-
     }
 
     public void tickServer() {

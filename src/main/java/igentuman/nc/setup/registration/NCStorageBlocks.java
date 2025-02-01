@@ -40,7 +40,6 @@ public class NCStorageBlocks {
     }
 
     private static void registerContainers() {
-
     }
 
     private static void registerBlockEntities() {
@@ -49,14 +48,12 @@ public class NCStorageBlocks {
                     () -> BlockEntityType.Builder
                             .of(BarrelBlocks.all().get(name).getBlockEntity(), STORAGE_BLOCKS.get(name).get())
                             .build(null)));
-
         }
         for (String name : ContainerBlocks.all().keySet()) {
             STORAGE_BE.put(name, BLOCK_ENTITIES.register(name,
                     () -> BlockEntityType.Builder
                             .of(ContainerBlocks.all().get(name).getBlockEntity(), STORAGE_BLOCKS.get(name).get())
                             .build(null)));
-
         }
     }
 
@@ -82,5 +79,4 @@ public class NCStorageBlocks {
     public static <B extends Block> DeferredItem<Item> fromBlock(DeferredBlock<B> block) {
         return ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), ITEM_PROPERTIES));
     }
-
 }

@@ -25,7 +25,6 @@ import static igentuman.nc.setup.registration.Registries.EFFECTS;
 import static igentuman.nc.setup.registration.Registries.STRUCTURES;
 
 public class Registration {
-
     public static final DeferredHolder<MobEffect, MobEffect> RADIATION_RESISTANCE = EFFECTS.register("radiation_resistance", () -> new RadiationResistance(MobEffectCategory.BENEFICIAL, 0xd4ffFF));
 
     public static void init() {

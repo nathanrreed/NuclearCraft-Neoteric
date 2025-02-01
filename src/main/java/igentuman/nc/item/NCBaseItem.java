@@ -17,7 +17,6 @@ public class NCBaseItem extends Item {
         this(new Properties());
     }
 
-
     public NCBaseItem(Properties props) {
         super(props);
     }

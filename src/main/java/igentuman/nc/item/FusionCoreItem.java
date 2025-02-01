@@ -35,10 +35,9 @@ public class FusionCoreItem extends BlockItem {
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         Level world = context.getLevel();
         BlockPos pos = context.getClickedPos().above();
-        if (!context.getClickedFace().equals(Direction.UP)) return InteractionResult.FAIL;
-        if (!canPlaceAt(world, pos)) return InteractionResult.FAIL;
-        UseOnContext cont = new UseOnContext(world, context.getPlayer(), context.getHand(), stack,
-                new BlockHitResult(context.getClickLocation(), context.getClickedFace(), pos, context.isInside()));
+        if (!context.getClickedFace().equals(Direction.UP)) return InteractionResult.PASS;
+        if (!canPlaceAt(world, pos)) return InteractionResult.PASS;
+        UseOnContext cont = new UseOnContext(world, context.getPlayer(), context.getHand(), stack, new BlockHitResult(context.getClickLocation(), context.getClickedFace(), pos, context.isInside()));
         return super.onItemUseFirst(stack, cont);
     }
 

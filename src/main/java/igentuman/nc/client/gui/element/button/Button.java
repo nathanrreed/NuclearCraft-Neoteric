@@ -1,5 +1,6 @@
 package igentuman.nc.client.gui.element.button;
 
+import igentuman.nc.block.entity.fusion.FusionCoreBE;
 import igentuman.nc.client.gui.ImageButtonSingleSprite;
 import igentuman.nc.client.gui.element.NCGuiElement;
 import igentuman.nc.client.gui.processor.side.SideConfigSlotSelectionScreen;
@@ -178,7 +179,7 @@ public class Button<T extends AbstractContainerScreen<?>> extends NCGuiElement {
     public static class ReactorPortRedstoneModeButton extends Button {
         public final BlockPos pos;
         public static final int BTN_ID = 71;
-        public byte mode = 2;
+        public byte mode = FusionCoreBE.SignalSource.HEAT;
         public byte strength = 0;
 
         public ReactorPortRedstoneModeButton(int btId, int xPos, int yPos, AbstractContainerScreen<?> screen, BlockPos pos) {

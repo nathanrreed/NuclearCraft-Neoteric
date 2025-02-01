@@ -445,8 +445,6 @@ public class FissionControllerBE<RECIPE extends FissionControllerBE.Recipe> exte
             }
         }
         irradiationHeat = 0;
-
-
     }
 
     private void hopToggleMode() {

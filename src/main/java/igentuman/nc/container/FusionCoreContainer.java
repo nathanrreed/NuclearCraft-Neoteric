@@ -18,7 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import static igentuman.nc.NuclearCraft.MODID;
 import static igentuman.nc.multiblock.fusion.FusionReactor.FUSION_BLOCKS;
 import static igentuman.nc.multiblock.fusion.FusionReactor.FUSION_CORE_PROXY;
-import static igentuman.nc.util.TextUtils.*;
+import static igentuman.nc.util.TextUtils.roundFormat;
+import static igentuman.nc.util.TextUtils.scaledFormat;
 
 public class FusionCoreContainer extends AbstractContainerMenu {
 
@@ -33,7 +34,7 @@ public class FusionCoreContainer extends AbstractContainerMenu {
     public FusionCoreContainer(int pContainerId, BlockPos pos, Inventory playerInventory) {
         super(FusionReactor.FUSION_CORE_CONTAINER.get(), pContainerId);
         this.playerEntity = playerInventory.player;
-        this.playerInventory =  new InvWrapper(playerInventory);
+        this.playerInventory = new InvWrapper(playerInventory);
         blockEntity = (FusionCoreBE<?>) playerEntity.getCommandSenderWorld().getBlockEntity(pos);
         layoutPlayerInventorySlots();
     }
@@ -57,7 +58,7 @@ public class FusionCoreContainer extends AbstractContainerMenu {
     }
 
     public Component getTitle() {
-        return Component.translatable("block."+MODID+"."+name);
+        return Component.translatable("block." + MODID + "." + name);
     }
 
     public boolean isCasingValid() {
@@ -65,11 +66,11 @@ public class FusionCoreContainer extends AbstractContainerMenu {
     }
 
     public BlockPos getValidationResultData() {
-        return  blockEntity.errorBlockPos;
+        return blockEntity.errorBlockPos;
     }
 
     public String getValidationResultKey() {
-        return  blockEntity.validationResult.messageKey;
+        return blockEntity.validationResult.messageKey;
     }
 
     public int getEnergy() {
@@ -81,7 +82,7 @@ public class FusionCoreContainer extends AbstractContainerMenu {
     }
 
     private void addSlotRange(IItemHandler handler, int x, int y, int amount, int dx) {
-        for (int i = 0 ; i < amount ; i++) {
+        for (int i = 0; i < amount; i++) {
             addSlot(new SlotItemHandler(handler, slotIndex, x, y));
             x += dx;
             slotIndex++;
@@ -89,7 +90,7 @@ public class FusionCoreContainer extends AbstractContainerMenu {
     }
 
     protected void addSlotBox(IItemHandler handler, int x, int y, int horAmount, int dx, int verAmount, int dy) {
-        for (int j = 0 ; j < verAmount ; j++) {
+        for (int j = 0; j < verAmount; j++) {
             addSlotRange(handler, x, y, horAmount, dx);
             y += dy;
         }
@@ -112,7 +113,7 @@ public class FusionCoreContainer extends AbstractContainerMenu {
     }
 
     public String getEfficiency() {
-        return roundFormat(blockEntity.efficiency*100);
+        return roundFormat(blockEntity.efficiency * 100);
     }
 
     public int energyPerTick() {
@@ -160,7 +161,7 @@ public class FusionCoreContainer extends AbstractContainerMenu {
     }
 
     public boolean isReady() {
-        return  isCasingValid()
+        return isCasingValid()
                 && hasAmplifiers()
                 && hasMagnets()
                 && hasCoolant()
@@ -198,7 +199,7 @@ public class FusionCoreContainer extends AbstractContainerMenu {
     }
 
     public int requiredEnergy() {
-        return blockEntity.rfAmplifiersPower+blockEntity.magnetsPower;
+        return blockEntity.rfAmplifiersPower + blockEntity.magnetsPower;
     }
 
     public boolean isRunning() {
@@ -206,7 +207,7 @@ public class FusionCoreContainer extends AbstractContainerMenu {
     }
 
     public int getPlasmaStability() {
-        return (int) (blockEntity.getPlasmaStability()*100);
+        return (int) (blockEntity.getPlasmaStability() * 100);
     }
 
     public int getAmlificationAdjustment() {

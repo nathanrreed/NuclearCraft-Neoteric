@@ -31,6 +31,14 @@ public class NCPlacedFeatures {
         return map;
     }
 
+    private static List<PlacementModifier> orePlacement(PlacementModifier countPlacement, PlacementModifier heightRange)    {
+        return List.of(countPlacement, InSquarePlacement.spread(), heightRange, BiomeFilter.biome());
+    }
+
+    private static List<PlacementModifier> commonOrePlacement(int count, PlacementModifier heightRange) {
+        return orePlacement(CountPlacement.of(count), heightRange);
+    }
+
     public static void bootstrap(BootstrapContext<PlacedFeature> context) {
         HolderGetter<ConfiguredFeature<?, ?>> configuredFeatures = context.lookup(Registries.CONFIGURED_FEATURE);
 
@@ -38,15 +46,14 @@ public class NCPlacedFeatures {
             NCOre ore = Ores.all().get(name);
             if (ore.dimensions.contains(0)) {
                 register(context, PLACED_FEATURES.get(name), configuredFeatures.getOrThrow(ORE_CONFIGURED_FEATURES.get(name)),
-                        OreGenerator.orePlacement(new OrePlacementModifier(ore.config().veinSize),
-                                HeightRangePlacement.uniform(VerticalAnchor.absolute(ore.config().height[0]), VerticalAnchor.absolute(ore.config().height[1]))));
+                        OreGenerator.orePlacement((CountPlacement.of(ore.config().veinSize)), HeightRangePlacement.uniform(VerticalAnchor.absolute(ore.config().height[0]), VerticalAnchor.absolute(ore.config().height[1]))));
+//                        OreGenerator.orePlacement(new OrePlacementModifier(ore.config().veinSize), VerticalAnchor.absolute(ore.config().height[1]))));
             }
             if (ore.dimensions.contains(-1)) {
                 register(context, PLACED_FEATURES.get(name), configuredFeatures.getOrThrow(ORE_CONFIGURED_FEATURES.get(name)),
                         OreGenerator.orePlacement(new OrePlacementModifier(ore.config().veinSize),
                                 HeightRangePlacement.uniform(VerticalAnchor.absolute(ore.config().config().height[0]), VerticalAnchor.absolute(ore.height[1]))));
             }
-
             if (ore.dimensions.contains(1)) {
                 register(context, PLACED_FEATURES.get(name), configuredFeatures.getOrThrow(ORE_CONFIGURED_FEATURES.get(name)),
                         OreGenerator.orePlacement(new OrePlacementModifier(ore.config().veinSize),
@@ -56,11 +63,8 @@ public class NCPlacedFeatures {
 
         register(context, PLACED_FEATURES.get("glowing_mushroom"),
                 configuredFeatures.getOrThrow(ORE_CONFIGURED_FEATURES.get("glowing_mushroom")),
-                List.of(
-                        RarityFilter.onAverageOnceEvery(2), InSquarePlacement.spread(), PlacementUtils.FULL_RANGE, BiomeFilter.biome()
-                ));
+                List.of(RarityFilter.onAverageOnceEvery(2), InSquarePlacement.spread(), PlacementUtils.FULL_RANGE, BiomeFilter.biome()));
     }
-
 
     private static ResourceKey<PlacedFeature> registerKey(String name) {
         return ResourceKey.create(Registries.PLACED_FEATURE, rl(name));

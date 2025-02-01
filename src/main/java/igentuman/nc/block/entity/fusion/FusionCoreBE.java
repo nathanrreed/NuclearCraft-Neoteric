@@ -61,7 +61,6 @@ import static net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction
 
 public class FusionCoreBE<RECIPE extends FusionCoreBE.Recipe> extends FusionBE {
 
-
     @NBTField
     public byte analogSignal = 0;
     @NBTField

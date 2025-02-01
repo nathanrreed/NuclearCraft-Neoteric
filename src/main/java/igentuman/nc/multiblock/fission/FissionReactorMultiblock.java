@@ -73,11 +73,11 @@ public class FissionReactorMultiblock extends AbstractNCMultiblock {
 
     public FissionReactorMultiblock(FissionControllerBE<?> fissionControllerBE) {
         super(
-                getBlocksByTagKey(FissionBlocks.CASING_BLOCKS.location().toString()),
-                getBlocksByTagKey(FissionBlocks.INNER_REACTOR_BLOCKS.location().toString())
+                getBlocksByTagKey(FissionBlocks.CASING_BLOCKS.location()),
+                getBlocksByTagKey(FissionBlocks.INNER_REACTOR_BLOCKS.location())
         );
         id = "fission_reactor_" + fissionControllerBE.getBlockPos().toShortString();
-        validModerators = getBlocksByTagKey(FissionBlocks.MODERATORS_BLOCKS.location().toString());
+        validModerators = getBlocksByTagKey(FissionBlocks.MODERATORS_BLOCKS.location());
         for (Block b : validModerators) {
             if (!WorldEvents.trackingBlocks.contains(b)) {
                 WorldEvents.trackingBlocks.add(b);

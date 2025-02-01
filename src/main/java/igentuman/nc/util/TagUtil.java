@@ -1,12 +1,13 @@
 package igentuman.nc.util;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -14,10 +15,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static igentuman.nc.handler.config.MaterialsConfig.MATERIAL_PRODUCTS;
 
@@ -64,7 +65,7 @@ public class TagUtil {
     }
 
     public static List<Block> getBlocksByTagKey(ResourceLocation key) {
-        return Arrays.stream(Ingredient.of(ItemTags.create(key)).getItems()).map(stack -> Block.byItem(stack.getItem())).toList();
+        return BuiltInRegistries.BLOCK.getTag(BlockTags.create(key)).map(holders -> holders.stream().map(Holder::value).toList()).orElseGet(List::of);
     }
 
     public static Block getSingleBlockByTagKey(String key) {

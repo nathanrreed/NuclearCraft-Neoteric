@@ -2,7 +2,7 @@
   "feature": "nuclearcraft:tin_ore",
   "placement": [
     {
-      "type": "nuclearcraft:nc_ore_modifier",
+      "type": "minecraft:count",
       "count": 7
     },
     {

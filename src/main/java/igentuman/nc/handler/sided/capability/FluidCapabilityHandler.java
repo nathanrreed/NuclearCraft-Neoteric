@@ -13,6 +13,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.*;
@@ -29,7 +30,6 @@ public class FluidCapabilityHandler extends AbstractCapabilityHandler implements
     private Map<Direction, Supplier<FluidHandlerWrapper>> handlerCache = new HashMap<>();
 
     public HashMap<Integer, Supplier<List<FluidStack>>> allowedFluids;
-
 
     public FluidCapabilityHandler(int inputSlots, int outputSlots, int inputCapacity, int outputCapacity) {
         tanks = NonNullList.create();

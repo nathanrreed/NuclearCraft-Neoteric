@@ -38,7 +38,6 @@ public class NCFluidBlock extends LiquidBlock {
         super(entry.getStillGetter().get(), Util.make(props, $ -> entryStatic = entry).noOcclusion().noCollission().noLootTable());
         this.entry = entry;
         entryStatic = null;
-
     }
 
     @Override

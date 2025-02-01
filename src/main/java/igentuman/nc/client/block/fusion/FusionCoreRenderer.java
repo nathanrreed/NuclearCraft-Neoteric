@@ -18,7 +18,8 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.AABB;
 
 import static com.mojang.math.Axis.YN;
 
@@ -76,22 +77,12 @@ public class FusionCoreRenderer implements BlockEntityRenderer<BlockEntity> {
                 ItemDisplayContext.FIXED,
                 false, pPoseStack, buffer, LightTexture.FULL_SKY, combinedOverlay,
                 base);
-        //blockRenderer.renderSingleBlock(blockstate, pPoseStack, buffer, packedLight, combinedOverlay, pBlockEntity.getModelData(), RenderType.cutout());
+//        blockRenderer.renderSingleBlock(blockstate, pPoseStack, buffer, packedLight, combinedOverlay, pBlockEntity.getModelData(), RenderType.cutout());
         pPoseStack.popPose();
     }
 
     @Override
-    public boolean shouldRenderOffScreen(BlockEntity pBlockEntity) {
-        return BlockEntityRenderer.super.shouldRenderOffScreen(pBlockEntity);
-    }
-
-    @Override
-    public int getViewDistance() {
-        return BlockEntityRenderer.super.getViewDistance();
-    }
-
-    @Override
-    public boolean shouldRender(BlockEntity pBlockEntity, Vec3 pCameraPos) {
-        return BlockEntityRenderer.super.shouldRender(pBlockEntity, pCameraPos);
+    public AABB getRenderBoundingBox(BlockEntity blockEntity) {
+        return AABB.of(new BoundingBox(blockEntity.getBlockPos()).inflatedBy(1));
     }
 }

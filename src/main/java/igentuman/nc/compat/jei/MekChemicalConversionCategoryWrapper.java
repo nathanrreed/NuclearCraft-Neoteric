@@ -96,8 +96,7 @@ public class MekChemicalConversionCategoryWrapper<T extends MekChemicalConversio
                 .buildAnimated(new TickTimer(100, 36, true), IDrawableAnimated.StartDirection.LEFT);
 
         if (recipe.inputChemical instanceof ChemicalStack) {
-            builder.addSlot(RecipeIngredientRole.INPUT, 12, 6)
-                    .addIngredients(IMekanismAccess.INSTANCE.jeiHelper().getChemicalStackHelper().getIngredientType(), List.of((ChemicalStack) recipe.inputChemical));
+            builder.addSlot(RecipeIngredientRole.INPUT, 12, 6).addIngredients(IMekanismAccess.INSTANCE.jeiHelper().getChemicalStackHelper().getIngredientType(), List.of(recipe.inputChemical));
         }
         slots[0] = guiHelper.createDrawable(rl("textures/gui/widgets.png"), 18, 0, 18, 18);
 

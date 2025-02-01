@@ -337,6 +337,9 @@ public class ItemCapabilityHandler extends AbstractCapabilityHandler implements 
 
     public boolean pullItems(Direction dir, boolean forceFlag, BlockPos pos) {
         IItemHandler cap = tile.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, pos.relative(dir), dir.getOpposite());
+        if (cap == null) {
+            return false;
+        }
         SidedContentHandler.RelativeDirection relativeDirection = SidedContentHandler.RelativeDirection.toRelative(dir, getFacing());
         for (SlotModePair pair : sideMap.get(relativeDirection.ordinal())) {
             if (pair.getMode() == PULL || (forceFlag && pair.getMode() == INPUT)) {

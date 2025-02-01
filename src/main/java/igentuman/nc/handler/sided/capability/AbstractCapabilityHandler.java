@@ -19,11 +19,11 @@ public abstract class AbstractCapabilityHandler {
     protected void initDefault() {
         sideMap = new HashMap<>();
         for (SidedContentHandler.RelativeDirection side : SidedContentHandler.RelativeDirection.values()) {
-            SlotModePair[] defaultSide = new SlotModePair[inputSlots+outputSlots];
+            SlotModePair[] defaultSide = new SlotModePair[inputSlots + outputSlots];
             for (int i = 0; i < inputSlots; i++) {
                 defaultSide[i] = new SlotModePair(SlotModePair.SlotMode.INPUT, i);
             }
-            for (int i = inputSlots; i < inputSlots+outputSlots; i++) {
+            for (int i = inputSlots; i < inputSlots + outputSlots; i++) {
                 defaultSide[i] = new SlotModePair(SlotModePair.SlotMode.OUTPUT, i);
             }
             sideMap.put(side.ordinal(), defaultSide);
@@ -43,7 +43,7 @@ public abstract class AbstractCapabilityHandler {
         SlotModePair slotModePair = sideSlots[slot];
         SlotModePair.SlotMode mode = slotModePair.getMode();
         sideMapUpdated = true;
-        if(getType(slot) == SidedContentHandler.SlotType.INPUT) {
+        if (getType(slot) == SidedContentHandler.SlotType.INPUT) {
             switch (mode) {
                 case DISABLED -> sideSlots[slot] = new SlotModePair(SlotModePair.SlotMode.INPUT, slot);
                 case INPUT -> sideSlots[slot] = new SlotModePair(SlotModePair.SlotMode.PULL, slot);
@@ -65,7 +65,7 @@ public abstract class AbstractCapabilityHandler {
     public boolean hasPull() {
         for (SlotModePair[] slotModePairs : sideMap.values()) {
             for (SlotModePair slotModePair : slotModePairs) {
-                if(slotModePair.getMode() == SlotModePair.SlotMode.PULL) {
+                if (slotModePair.getMode() == SlotModePair.SlotMode.PULL) {
                     return true;
                 }
             }
@@ -73,11 +73,10 @@ public abstract class AbstractCapabilityHandler {
         return false;
     }
 
-
     public boolean hasPush() {
         for (SlotModePair[] slotModePairs : sideMap.values()) {
             for (SlotModePair slotModePair : slotModePairs) {
-                if(slotModePair.getMode() == SlotModePair.SlotMode.PUSH || slotModePair.getMode() == SlotModePair.SlotMode.PUSH_EXCESS) {
+                if (slotModePair.getMode() == SlotModePair.SlotMode.PUSH || slotModePair.getMode() == SlotModePair.SlotMode.PUSH_EXCESS) {
                     return true;
                 }
             }
@@ -87,15 +86,15 @@ public abstract class AbstractCapabilityHandler {
 
     protected Direction getFacing() {
         Direction facing = Direction.NORTH;
-        if(tile == null) return facing;
-        if(tile.getBlockState().hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
+        if (tile == null) return facing;
+        if (tile.getBlockState().hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
             facing = tile.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
         }
         return facing;
     }
 
     public boolean haveAccessFromSide(Direction side, int slot) {
-        if(side == null) return true;
+        if (side == null) return true;
         SidedContentHandler.RelativeDirection relativeDirection =
                 SidedContentHandler.RelativeDirection.toRelative(side, getFacing());
         assert relativeDirection != null;
@@ -103,7 +102,7 @@ public abstract class AbstractCapabilityHandler {
     }
 
     public void setGlobalMode(int i, SlotModePair.SlotMode slotMode) {
-        for(SidedContentHandler.RelativeDirection dir: SidedContentHandler.RelativeDirection.values()) {
+        for (SidedContentHandler.RelativeDirection dir : SidedContentHandler.RelativeDirection.values()) {
             sideMap.get(dir.ordinal())[i].setMode(slotMode);
         }
     }

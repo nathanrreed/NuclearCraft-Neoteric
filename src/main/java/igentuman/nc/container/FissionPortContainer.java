@@ -23,7 +23,6 @@ public class FissionPortContainer extends AbstractContainerMenu {
     protected FissionPortBE portBE;
     protected Player playerEntity;
 
-
     protected String name = "fission_reactor_port";
     private int slotIndex = 0;
 
@@ -95,7 +94,6 @@ public class FissionPortContainer extends AbstractContainerMenu {
     public Component getTitle() {
         return Component.translatable("block." + MODID + "." + name);
     }
-
 
     private void addSlotRange(IItemHandler handler, int x, int y, int amount, int dx) {
         for (int i = 0; i < amount; i++) {

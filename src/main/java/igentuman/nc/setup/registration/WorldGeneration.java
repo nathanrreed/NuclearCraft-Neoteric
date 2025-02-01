@@ -25,8 +25,7 @@ import static igentuman.nc.NuclearCraft.rl;
 public class WorldGeneration {
     public static final ResourceKey<Biome> WASTELAND_BIOME = makeKey("wasteland");
 
-    public static final DeferredRegister<PlacementModifierType<?>> PLACEMENT_MODIFIERS =
-            DeferredRegister.create(Registries.PLACEMENT_MODIFIER_TYPE, MODID);
+    public static final DeferredRegister<PlacementModifierType<?>> PLACEMENT_MODIFIERS = DeferredRegister.create(Registries.PLACEMENT_MODIFIER_TYPE, MODID);
 
     public static final DeferredHolder<PlacementModifierType<?>, PlacementModifierType<OrePlacementModifier>> NC_ORE_MODIFIER = PLACEMENT_MODIFIERS.register("nc_ore_modifier", () -> () -> OrePlacementModifier.CODEC);
 
@@ -52,7 +51,7 @@ public class WorldGeneration {
     }
 
     public static class StructureLoader {
-        private static final String STRUCTURE_PATH = ":structures/fission_reactor   ";
+        private static final String STRUCTURE_PATH = ":structure/fission_reactor   ";
 
         public static StructureTemplate loadStructure(ServerLevel level, ResourceLocation structureLocation) {
             StructureTemplateManager manager = level.getStructureManager();

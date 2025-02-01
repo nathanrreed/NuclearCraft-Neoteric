@@ -48,7 +48,6 @@ public class FissionPortBE extends FissionBE {
         return Objects.requireNonNull(getLevel()).getBestNeighborSignal(worldPosition);
     }
 
-
     @Override
     public void tickServer() {
         if (NuclearCraft.instance.isNcBeStopped) return;

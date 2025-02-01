@@ -1,6 +1,8 @@
 package igentuman.nc.setup.registration;
 
 import igentuman.nc.block.entity.BarrelBE;
+import igentuman.nc.block.entity.fission.FissionPortBE;
+import igentuman.nc.block.entity.fusion.FusionCoreProxyBE;
 import igentuman.nc.content.energy.BatteryBlocks;
 import igentuman.nc.content.energy.RTGs;
 import igentuman.nc.content.energy.SolarPanels;
@@ -8,6 +10,8 @@ import igentuman.nc.content.processors.Processors;
 import igentuman.nc.content.storage.BarrelBlocks;
 import igentuman.nc.handler.ItemEnergyHandler;
 import igentuman.nc.item.*;
+import igentuman.nc.multiblock.fission.FissionReactor;
+import igentuman.nc.multiblock.fusion.FusionReactor;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.capabilities.Capabilities.ItemHandler;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -17,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static igentuman.nc.multiblock.fusion.FusionReactor.FUSION_CORE_PROXY_BE;
 import static igentuman.nc.setup.registration.NCComponents.FLUID_CONTENT;
 import static igentuman.nc.setup.registration.NCItems.*;
 import static net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage;
@@ -86,6 +91,33 @@ public class NCCapabilities {
             event.registerBlockEntity(ItemHandler.BLOCK, type.get(), (entity, context) -> entity.contentHandler.getItemCapability(context));
             event.registerBlockEntity(FluidHandler.BLOCK, type.get(), (entity, context) -> entity.contentHandler.getFluidCapability(context));
 //         TODO add CC cap  event.registerBlockEntity(PeripheralCapability.get(), type.get(), (entity, context) -> entity.contentHandler.get(context))
+            //TODO add mekanism chemicals
+            //TODO add OC2
+            //...
         }
+
+        // Fission Reactor Port
+        event.registerBlockEntity(EnergyStorage.BLOCK, FissionReactor.FISSION_BE.get("fission_reactor_port").get(), (entity, context) -> ((FissionPortBE) entity).controller() != null ? ((FissionPortBE) entity).controller().getEnergy().get() : null);
+        event.registerBlockEntity(ItemHandler.BLOCK, FissionReactor.FISSION_BE.get("fission_reactor_port").get(), (entity, context) -> ((FissionPortBE) entity).controller() != null ? ((FissionPortBE) entity).controller().contentHandler.getItemCapability(context) : null);
+        event.registerBlockEntity(FluidHandler.BLOCK, FissionReactor.FISSION_BE.get("fission_reactor_port").get(), (entity, context) -> ((FissionPortBE) entity).controller() != null ? ((FissionPortBE) entity).controller().contentHandler.getFluidCapability(context) : null);
+        //TODO add mekanism chemicals
+        //TODO add OC2
+        //TODO add CC
+
+        // Fusion Core Proxy
+        event.registerBlockEntity(EnergyStorage.BLOCK, FUSION_CORE_PROXY_BE.get(), (entity, context) -> ((FusionCoreProxyBE) entity).controller() != null ? ((FusionCoreProxyBE) entity).controller().getEnergy().get() : null);
+        event.registerBlockEntity(FluidHandler.BLOCK, FUSION_CORE_PROXY_BE.get(), (entity, context) -> ((FusionCoreProxyBE) entity).controller() != null ? ((FusionCoreProxyBE) entity).controller().contentHandler.getFluidCapability(context) : null);
+        //TODO add mekanism chemicals
+        //TODO add OC2
+        //TODO add CC
+
+//        // Fusion Reactor Core
+//        event.registerBlockEntity(EnergyStorage.BLOCK, FusionReactor.FUSION_BE.get("fusion_core").get(), (entity, context) -> ((FusionCoreBE<?>) entity).getEnergy().get());
+////        event.registerBlockEntity(ItemHandler.BLOCK, FusionReactor.FUSION_BE.get("fission_reactor_controller").get(), (entity, context) -> ((FusionCoreBE<?>) entity).getItemInventory());
+//        event.registerBlockEntity(FluidHandler.BLOCK, FusionReactor.FUSION_BE.get("fusion_core").get(), (entity, context) -> ((FusionCoreBE<?>) entity).contentHandler.getFluidCapability(context));
+//        //TODO add mekanism chemicals
+//        //TODO add OC2
+//        //TODO add CC
+
     }
 }
