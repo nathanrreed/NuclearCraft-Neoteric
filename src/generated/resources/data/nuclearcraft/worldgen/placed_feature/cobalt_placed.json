@@ -2,7 +2,7 @@
   "feature": "nuclearcraft:cobalt_ore",
   "placement": [
     {
-      "type": "minecraft:count",
+      "type": "nuclearcraft:nc_ore_modifier",
       "count": 7
     },
     {

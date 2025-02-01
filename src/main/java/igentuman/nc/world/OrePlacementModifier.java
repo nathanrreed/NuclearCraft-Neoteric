@@ -12,6 +12,7 @@ import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static igentuman.nc.handler.config.OreGenConfig.ORE_CONFIG;
@@ -69,11 +70,7 @@ public class OrePlacementModifier extends PlacementModifier {
     public Stream<BlockPos> getPositions(PlacementContext context, RandomSource random, BlockPos pos) {
         int actualCount = determinePlacementCount(context, random);
 
-        return Stream.generate(() -> new BlockPos(
-                pos.getX() + random.nextInt(16),
-                heightMap.get(name)[0] + random.nextInt(heightMap.get(name)[1] - heightMap.get(name)[0] + 1),
-                pos.getZ() + random.nextInt(16)
-        )).limit(actualCount);
+        return IntStream.range(0, actualCount).mapToObj(i -> pos);
     }
 
     private int determinePlacementCount(PlacementContext context, RandomSource random) {
