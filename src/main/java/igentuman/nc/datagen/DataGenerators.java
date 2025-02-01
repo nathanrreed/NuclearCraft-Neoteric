@@ -21,9 +21,11 @@ import static igentuman.nc.NuclearCraft.MODID;
 
 @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD)
 public class DataGenerators {
+    public static boolean isInDataGen = false;
 
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
+        isInDataGen = true;
         DataGenerator generator = event.getGenerator();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 

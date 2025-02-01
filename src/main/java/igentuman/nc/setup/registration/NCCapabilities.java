@@ -66,8 +66,6 @@ public class NCCapabilities {
             BarrelBlockItem item = (BarrelBlockItem) stack.getItem();
             return new FluidHandlerItemStack(FLUID_CONTENT, stack, item.getCapacity());
         }, BarrelBlocks.all().keySet().stream().map(name -> NCStorageBlocks.BLOCK_ITEMS.get(name).get()).toArray(ItemLike[]::new));
-
-        // Item Capabilities
     }
 
     private static void registerBlockCapabilities(RegisterCapabilitiesEvent event) {
@@ -110,14 +108,5 @@ public class NCCapabilities {
         //TODO add mekanism chemicals
         //TODO add OC2
         //TODO add CC
-
-//        // Fusion Reactor Core
-//        event.registerBlockEntity(EnergyStorage.BLOCK, FusionReactor.FUSION_BE.get("fusion_core").get(), (entity, context) -> ((FusionCoreBE<?>) entity).getEnergy().get());
-////        event.registerBlockEntity(ItemHandler.BLOCK, FusionReactor.FUSION_BE.get("fission_reactor_controller").get(), (entity, context) -> ((FusionCoreBE<?>) entity).getItemInventory());
-//        event.registerBlockEntity(FluidHandler.BLOCK, FusionReactor.FUSION_BE.get("fusion_core").get(), (entity, context) -> ((FusionCoreBE<?>) entity).contentHandler.getFluidCapability(context));
-//        //TODO add mekanism chemicals
-//        //TODO add OC2
-//        //TODO add CC
-
     }
 }

@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import static igentuman.nc.setup.registration.NCItems.NC_PARTS;
+import static igentuman.nc.setup.registration.NCItems.NC_SHIELDING;
+import static igentuman.nc.setup.registration.Tags.forgeIngot;
 
 public class ArmorMaterials {
 
@@ -26,8 +28,8 @@ public class ArmorMaterials {
     private static final HashMap<String, Integer> durabilityMultiplier = new HashMap<>();
 
     public static final Holder<ArmorMaterial> HAZMAT = register("hazmat", 5, List.of(1, 2, 3, 1, 3), 15, SoundEvents.ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, () -> Ingredient.of(NC_PARTS.get("bioplastic").get()));
-    public static final Holder<ArmorMaterial> TOUGH = register("tough", 33, List.of(3, 6, 8, 3, 11), 15, SoundEvents.ARMOR_EQUIP_DIAMOND, 3.5F, 0.2F, () -> Ingredient.of(NC_PARTS.get("tough_alloy").get()));
-    public static final Holder<ArmorMaterial> HEV = register("hev", 37, List.of(3, 5, 7, 3, 11), 25, SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, 0.3F, () -> Ingredient.of(NC_PARTS.get("dps").get()));
+    public static final Holder<ArmorMaterial> TOUGH = register("tough", 33, List.of(3, 6, 8, 3, 11), 15, SoundEvents.ARMOR_EQUIP_DIAMOND, 3.5F, 0.2F, () -> Ingredient.of(forgeIngot("tough_alloy")));
+    public static final Holder<ArmorMaterial> HEV = register("hev", 37, List.of(3, 5, 7, 3, 11), 25, SoundEvents.ARMOR_EQUIP_NETHERITE, 4.0F, 0.3F, () -> Ingredient.of(NC_SHIELDING.get("dps").get()));
 
     public static Holder<ArmorMaterial> register(String name, int pDurabilityMultiplier, List<Integer> pSlotProtections, int pEnchantmentValue, Holder<SoundEvent> pSound, float pToughness, float pKnockbackResistance, Supplier<Ingredient> pRepairIngredient) {
         durabilityMultiplier.put(name, pDurabilityMultiplier);

@@ -2,6 +2,7 @@ package igentuman.nc.world.ore;
 
 import igentuman.nc.NuclearCraft;
 import igentuman.nc.content.materials.Ores;
+import igentuman.nc.datagen.DataGenerators;
 import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
@@ -48,6 +49,15 @@ public class NCOre {
     }
 
     public NCOre config() {
+        if (DataGenerators.isInDataGen) { // Stops the errors during data gen
+            registered = true;
+            dimensions = Ores.all().get(name).dimensions;
+            veinSize = Ores.all().get(name).veinSize;
+            height[0] = Ores.all().get(name).height[0];
+            height[1] = Ores.all().get(name).height[1];
+            initialized = true;
+        }
+
         if (!initialized) {
             try {
                 int id = Ores.all().keySet().stream().toList().indexOf(name);

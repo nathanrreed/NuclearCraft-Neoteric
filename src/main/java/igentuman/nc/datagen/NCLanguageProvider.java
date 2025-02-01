@@ -174,6 +174,7 @@ public class NCLanguageProvider extends LanguageProvider {
         for (String name : STORAGE_BLOCKS.keySet()) {
             String title = convertToName(name);
             add(STORAGE_BLOCKS.get(name).get(), title);
+            add("tag.item.c.storage_blocks." + name, title + " Blocks");
         }
     }
 
@@ -452,6 +453,11 @@ public class NCLanguageProvider extends LanguageProvider {
         add("solar_panel.fe_generation", "Daytime Gen: %s FE/t");
         add("fission_port.descr", "One port for everything: Fluids, items, redstone, computers, etc...");
         add("irradiation_chamber.descr", "Irradiates items with neutron flux. \r\nHas to be placed in one line with moderator and fuel cell behind it."); //TODO parse or remove \r\n
+
+        add("tag.item.nuclearcraft.fission_reactor_casing", "Fission Reactor Casing");
+        add("tag.item.nuclearcraft.fusion_reactor_casing", "Fusion Reactor Casing");
+        add("tag.item.nuclearcraft.reactor_fuel", "Reactor Fuel");
+        add("tag.item.nuclearcraft.moderators", "Raw");
     }
 
     private void fuel() {
@@ -466,6 +472,7 @@ public class NCLanguageProvider extends LanguageProvider {
     private void ores() {
         for (String ore : NCBlocks.ORE_BLOCKS.keySet()) {
             add(NCBlocks.ORE_BLOCKS.get(ore).get(), convertToName(ore) + " Ore");
+            add("tag.item.c.ores." + ore, convertToName(ore) + " Ores");
         }
     }
 
@@ -480,6 +487,8 @@ public class NCLanguageProvider extends LanguageProvider {
     }
 
     private void isotopes() {
+        add("tag.item.c.isotopes.", "Isotopes");
+
         for (String name : FissionFuel.NC_ISOTOPES.keySet()) {
             add(FissionFuel.NC_ISOTOPES.get(name).get(), convertToName(name));
         }
@@ -524,6 +533,7 @@ public class NCLanguageProvider extends LanguageProvider {
     }
 
     private void parts() {
+        add("tag.item.nuclearcraft.parts", "Parts");
         for (String name : NCItems.NC_PARTS.keySet()) {
             add(NCItems.NC_PARTS.get(name).get(), convertToName(name));
         }
@@ -532,36 +542,42 @@ public class NCLanguageProvider extends LanguageProvider {
     private void gems() {
         for (String name : NCItems.NC_GEMS.keySet()) {
             add(NCItems.NC_GEMS.get(name).get(), convertToName(name) + " Gem");
+            add("tag.item.c.gems." + name, convertToName(name) + " Gems");
         }
     }
 
     private void ingots() {
         for (String ingot : NC_INGOTS.keySet()) {
             add(NC_INGOTS.get(ingot).get(), convertToName(ingot) + " Ingot");
+            add("tag.item.c.ingots." + ingot, convertToName(ingot) + " Ingots");
         }
     }
 
     private void plates() {
         for (String name : NCItems.NC_PLATES.keySet()) {
             add(NCItems.NC_PLATES.get(name).get(), convertToName(name) + " Plate");
+            add("tag.item.c.plates." + name, convertToName(name) + " Plates");
         }
     }
 
     private void dusts() {
         for (String name : NCItems.NC_DUSTS.keySet()) {
             add(NCItems.NC_DUSTS.get(name).get(), convertToName(name) + " Dust");
+            add("tag.item.c.dusts." + name, convertToName(name) + " Dusts");
         }
     }
 
     private void nuggets() {
         for (String name : NCItems.NC_NUGGETS.keySet()) {
             add(NCItems.NC_NUGGETS.get(name).get(), convertToName(name) + " Nugget");
+            add("tag.item.c.nuggets." + name, convertToName(name) + " Nuggets");
         }
     }
 
     private void chunks() {
         for (String name : NCItems.NC_CHUNKS.keySet()) {
             add(NCItems.NC_CHUNKS.get(name).get(), convertToName(name) + " Chunk");
+            add("tag.item.c.raw_materials." + name, "Raw " + convertToName(name));
         }
     }
 
